@@ -79,4 +79,3 @@ userArray.find((user) => user.id === "10");
 
 //del el -> filter -> change
 userArray.filter((user) => user.id === "10");
-
