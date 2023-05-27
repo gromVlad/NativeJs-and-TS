@@ -203,3 +203,160 @@ Promise.allSettled([promise1, promise2, promise3])
   });
 //Promise.any() -возврощает первый успешный
 //Promise.race(iterable) возвращает выполненный или отклонённый промис, в зависимости от того, с каким результатом завершится первый из переданных промисов, со значением или причиной отклонения этого промиса.
+
+// __Practice__
+// Task 01
+// Создайте промис, который постоянно находиться в состоянии pending.
+// В конструкторе промиса выведите в консоль сообщение "Promise is created".
+const myPromise = new Promise((resolve, reject) => {
+  console.log("Promise is created");
+  // здесь намеренно не вызываем ни resolve, ни reject
+});
+
+// Task 02
+// Создайте промис, который после создания сразу же переходит в состояние resolve
+// и возвращает строку 'Promise Data'
+// Получите данные промиса и выведите их в консоль
+const funReturnPromiseOnlyPending = () => {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      resolve('hello my frinds')
+    }, 3000);
+  })
+}
+const myPromise2 = funReturnPromiseOnlyPending()
+myPromise.then(resolve => console.log(resolve))//hello my frinds
+
+// Task 03
+// Создайте промис, который после создания сразу же переходит в состояние rejected
+// и возвращает строку 'Promise Error'
+// Получите данные промиса и выведите их в консоль
+const funReturnPromiseOnlyRejected = () => {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      reject('Error')
+    }, 3000);
+  })
+}
+const myPromise3 = funReturnPromiseOnlyRejected()
+myPromise.catch(error => console.log(error))//'Error'
+
+// Task 04
+// Создайте промис, который переходит в состояние resolved через 3с.
+// (Используйте setTimeout)
+// и возвращает строку 'Promise Data'
+// Получите данные промиса и выведите их в консоль
+const funReturnPromiseResolvedReturnText = () => {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      resolve('Promise Data')
+    }, 3000);
+  })
+}
+const myPromise4 = funReturnPromiseResolvedReturnText()
+myPromise.then(resolve => console.log(resolve))
+
+// Task 05
+// Создайте литерал объекта handlePromise со следующими свойствами:
+// promise, resolve, reject, onSuccess, onError
+// Проинициализируйте первые три свойства null,
+// а последние два функциями, которые принимают один параметр и выводят
+// в консоль сообщения: первая - `Promise is resolved with data: ${paramName}`
+// вторая - `Promise is rejected with error: ${paramName}`
+// Создайте три обработчика события click для кнопок "Create Promise", "Resolve Promise", "Reject Promise".
+// Первый обработчик, создает промис, заполняет первые три свойства,
+// описаного выше объекта: свойство promise получает новый созданный промис,
+// свойства resolve и reject получают ссылки на соответствующие функции
+// resolve и reject. Следующие два обработчика запускают методы resolve и reject.
+//html
+/* <button id="create-promise-btn">Create</button>
+  <button id="resolve-promise-btn">Resolve</button>
+  <button id="reject-promise-btn">Reject</button> */
+const handlePromise = {
+  promise: null,
+  resolve: null,
+  reject: null,
+  onSuccess: function (paramName) {
+    console.log(`Promise is resolved with data: ${paramName}`);
+  },
+  onError: function (paramName) {
+    console.log(`Promise is rejected with error: ${paramName}`);
+  }
+};
+
+const createPromiseBtn = document.querySelector('#create-promise-btn');
+createPromiseBtn.addEventListener('click', function () {
+  handlePromise.promise = new Promise((resolve, reject) => {
+    handlePromise.resolve = resolve;
+    handlePromise.reject = reject;
+  });
+});//promise: Promise {<pending>} 
+
+const resolvePromiseBtn = document.querySelector('#resolve-promise-btn');
+resolvePromiseBtn.addEventListener('click', function () {
+  handlePromise.resolve('resolved data');
+  handlePromise.onSuccess('resolved data');
+});//resolve : Promise {<fulfilled>: 'resolved data'}
+
+const rejectPromiseBtn = document.querySelector('#reject-promise-btn');
+rejectPromiseBtn.addEventListener('click', function () {
+  handlePromise.reject('error message');
+  handlePromise.onError('error message');
+});//promise: Promise {<rejected>: 'error message'}
+
+// Task 06
+// Создайте промис, который через 1 с возвращает строку "My name is".
+// Создайте функцию onSuccess, которая получает один параметр,
+// прибавляет к нему Ваше имя и возвращает новую строку из функции
+// Создайте функцию print, которая выводит в консоль значение своего параметра
+// Добавьте два метода then и передайте созданные функции.
+const newPromis = () => {
+  return new Promise((res, rej) => {
+    res("My name is")
+  })
+}
+const onSuccess = (text) => {
+  return text + " Vlad"
+}
+
+const printFun = (value) => {
+  return console.log(value)
+}
+const name = newPromis().then(res => onSuccess(res)).then(res => printFun(res)) //My name is Vlad
+
+// Task 7
+// Создайте три промиса. Первый промис возвращает объект { name: "Anna" } через 2с,
+// второй промис возвращает объект {age: 16} через 3 с, а третий {city: ''} через 4с.
+// Получите результаты работы промисов, объедините свойства объектов
+// и выведите в консоль {name, age, city}
+const promiseReturnAnna = () => {
+  return new Promise((res, rej) => {
+    setTimeout(() => {
+      res({ name: "Anna" })
+    }, 2000);
+  })
+}
+
+const promiseReturnAge = () => {
+  return new Promise((res, rej) => {
+    setTimeout(() => {
+      res({ age: 16 })
+    }, 3000);
+  })
+}
+
+const promiseReturnCity = () => {
+  return new Promise((res, rej) => {
+    setTimeout(() => {
+      res({ city: 'Minsk' })
+    }, 4000);
+  })
+}
+Promise.all([promiseReturnAnna(), promiseReturnAge(), promiseReturnCity()])
+  .then((values) => {
+    const [obj1, obj2, obj3] = values;
+    const result = { ...obj1, ...obj2, ...obj3 };
+    console.log(result);
+  })
+  .catch((error) => console.log(error));
+//{name: 'Anna', age: 16, city: 'Minsk'}
