@@ -383,12 +383,12 @@ console.log(3)
 //4
 
 // --Dimch lesson promise --
-//Promise объект который возврощает обещание, когда запрос пройдет оно выполниться корректно или с ошибкой.У promise нету свойст а только методы.
+//Promise объект который возврощает обещание, когда запрос пройдет оно выполниться корректно или с ошибкой.У promise нету свойст а только методы.после pending мы ожидает ответ он может быть один либо fulfield или reject.
 
 //Метод then() выполняеться после состояние pendind, как подписка, слушает когда обещание выполниться resolve.
 axios.get("http://google.com").then(res => console.log(res.data))
 
-//Подписываемся сразу и не ждем когда получим pending.Метод catch () ловит ошибки reject.
+//Подписываемся сразу и не ждем когда получим pending.Метод catch () ловит ошибки reject. Если promise reject то дальше он уже не resolve
 axios.get("http://google.com").catch(error => console.log(error.message))
 
 //В цепочке 
@@ -441,4 +441,194 @@ const userApi = {
 userApi.getuser().then(user => console.log(user))
 userApi.login("123",'4254').then((result) => console.log(result)).catch((err) => console.log(err));
 
-//цепочка методов , каждый раз при вызове then() возврощает новый promise. При return мы получаем в новый promise значение что возврощали
+//цепочка методов , каждый раз при вызове then() возврощает новый promise. При return(или => res.data это тоже return если одна строка ) мы получаем в новый promise значение что возврощали, также можно в then помещать другие запросы и далее уже от них получать ответ.
+axios.get("http://google.com").then(res => res.data).then(name => console.log(name))
+
+//без цепочек примерно так выглядили программы раньше  callBackHall
+const Apiget = () => {
+  return axios.get("http://google.com")
+}
+
+const lastPromise = Apiget()
+  .then(user => {
+    console.log(usser) 
+    Apiget()
+      .then(user => {
+        console.log(usser)
+        Apiget()
+          .then(user => {
+            console.log(usser)
+            Apiget()
+          })
+      })
+  })
+//c цепочкой
+const lastPromise2 = Apiget()
+  .then(user => {
+  console.log(usser)
+  Apiget()
+  })
+  .then(user => {
+  console.log(usser)
+  Apiget()
+  })
+  .then(user => {
+  console.log(usser)
+  Apiget()
+  })
+
+// __async await___
+//генераторы нам позволили брать результат возвращаеть его используя как синхронный код почти
+const Apiget2 = () => {
+  return axios.get("http://google.com")
+}
+
+//используем в функции с async далее по коду используем await
+async function run(){
+  let lastPromiseWithAsync = await Apiget2()
+  console.log(lastPromiseWithAsync)
+  let friend = await Apiget2(user.friend)
+  console.log(friend)
+}
+run()
+
+//Промисификация 
+//внедрение в коде promise не для запросов на сервер а для некторых выыслений и т.д., то есть взаимодействия с чем либо через promise.
+function getNumber(){
+  //const promise =Promise.resolve(Math.random())
+  const promise = new Promise((res,rej) => {
+    setTimeout(() => {
+      res(Math.random())
+    }, 2000);
+  })
+  return promise
+}
+getNumber().then(n=>console.log(n))
+getNumber().then(n=>console.log(n))
+
+//сохранить например в localstorage(он синхронный)
+const repo = {
+  save(data){
+    try{
+      localStorage.setItem('some-key', JSON.stringify(data))
+    } catch (err){
+      return false
+    }
+    return true
+  },
+  saveAsync(data){
+    const promise = new Promise ((res,rej) => {
+      try {
+        localStorage.setItem('some-key', JSON.stringify(data))
+        res(true)
+      } catch {
+        rej(false)
+      }
+      return promise
+    }) 
+  },
+  read () {
+    return JSON.parse(localStorage.getItem('some-key'))
+  },
+  readAsync(){
+    return new Promise ((res,rej) => {
+      const data = localStorage.getItem('some-key')
+      if (!data){
+        res(null)
+      } else {
+        res(JSON.parse(data))
+      }
+    })
+  }
+}
+
+repo.save({name:"it-cam"})
+repo.saveAsync({name:"it-cam"})
+  .then(() => console.log('saved'))
+  .catch((err) => console.log(err))
+
+const run = async () => {
+  await repo.saveAsync({ name: "it-cam" })
+  console.log('saved')
+  await repo.readAsync()
+  console.log("get data")
+}
+
+//секундомер
+setTimeout(() => {
+  console.log(1)
+  setTimeout(() => {
+    console.log(2)
+    setTimeout(() => {
+      console.log(3)
+    }, 1000);
+  }, 1000);
+}, 1000);
+
+//c async
+const wait = (time) => {
+  return new Promise ((res,rej) => {
+    setTimeout(() => {
+      res()
+    }, time);
+  })
+}
+async function run2 () {
+  await wait(1000)
+  console.log(1)
+  await wait(2000)
+  console.log(2)
+  await wait(3000)
+  console.log(3)
+}
+run()
+
+const finduser = (id) => {
+  const user = [{ id: 1, name: 'v', friend: 3 }, { id: 2, name: 'g', friend: 4 }]
+
+  return new Promise((res, rej) => {
+    setTimeout(() => {
+      let user = user.find(u => u.id === id)
+      if (user === null ){
+        rej('user not found')
+      } else {
+        res(user)
+      }
+    }, Math.random()* 1000);
+  })
+}
+
+//обработка ошибок catch также возврощает promise
+finduser(2).then(user => console.log(user)).catch(err => console.log('sorry error')).then(user => finduser(user.name))
+
+async function run2() {
+  try {
+    const user = await finduser(2)
+    console.log(user.name)
+    const user2 = await finduser(user.friend)
+    console.log(friend.name)
+    //также можно внутри дальше использовать try catch в try catch
+  } catch (err) {
+    console.log(err)
+  }
+}
+
+//можем также работать и с async без promise он тогда вернет просто результат а дальше в процессе расширения программы можно добавить promise. С then так не сработает , также можно сделать методы асинхронными чтобы они также возвращали promise
+const userApI2 = {
+  //async save (){
+  save (){
+
+  },
+  //async read (){
+  read (){
+    return {name:"N"}
+  }
+}
+
+async function userApI2Read () {
+  await userApI2.save()
+  console.log('save')
+  let data = userApI2.read()
+  console.log(data)
+}
+userApI2Read()
