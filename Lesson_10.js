@@ -360,3 +360,85 @@ Promise.all([promiseReturnAnna(), promiseReturnAge(), promiseReturnCity()])
   })
   .catch((error) => console.log(error));
 //{name: 'Anna', age: 16, city: 'Minsk'}
+
+//___eventLoop___
+console.log(1)
+console.log(2)
+let pr = new Promise((res) => {
+  console.log(2.1)
+  //асинхронный кад который выпопляет после основого кода
+  setTimeout(() => {
+    res()
+  }, 3000);
+  console.log(2.2);
+})
+//микротаска после 3с res получит и сработает
+pr.then(res => console.log(4))
+console.log(3)
+//1
+//2
+//2.1
+//2.2
+//3
+//4
+
+// --Dimch lesson promise --
+//Promise объект который возврощает обещание, когда запрос пройдет оно выполниться корректно или с ошибкой.У promise нету свойст а только методы.
+
+//Метод then() выполняеться после состояние pendind, как подписка, слушает когда обещание выполниться resolve.
+axios.get("http://google.com").then(res => console.log(res.data))
+
+//Подписываемся сразу и не ждем когда получим pending.Метод catch () ловит ошибки reject.
+axios.get("http://google.com").catch(error => console.log(error.message))
+
+//В цепочке 
+axios.get("http://google.com").then(res => console.log(res.data)).catch(error => console.log(error.message))
+
+//также есть метод finish - в любом случае показываеться
+axios.get("http://google.com").then(res => console.log(res.data)).catch(error => console.log(error.message)).finally(() => console.log('finish'))
+
+//___Promise методы 
+//Promise All - при reject ответе останавливаеться дальше не идет
+const otherPromise = Promise.all([promise1,promise2])
+//в result мы получим массив объектов результатов [promise1,promise2]
+otherPromise.then((result) => {
+  console.log(result[0],result[1])
+}).catch((err) => {
+  console.log(error)
+});
+
+//allSettled можно обрабатывать и resolve  и reject 
+const otherPromise2 = Promise.allSettled([promise1, promise2])
+//в result мы получим массив результатов [promise1,promise2] только со строкой в объекте status  и также поле value там результат promise, если ошибка то будет строка называться reason 
+otherPromise.then((result) => {
+  console.log(result)//[{status:"",value:{}},{}]
+  const data = res[0].status === 'fulfilled' ? result[0].value : {data:{vacans:null}}
+  const data2 = res[0].status === 'fulfilled' ? result[0].value : {name:result[1].reason}
+
+})
+
+//Cразу resolve получить - можно сделать заглушку пока не получили доступ к серверу
+const resolvePromise = Promise.resolve([{name:"v"},{name:"A"}])
+resolvePromise.then(data => console.log(data)).catch(error => console.log(error))
+
+//Cразу reject получить - можно сделать заглушку пока не получили доступ к серверу
+const rejectPromise = Promise.reject([{mes:"some error"}])
+rejectPromis.then(data => console.log(data)).catch(error => console.log(error))
+
+const userApi = {
+  getuser(){
+    return Promise.resolve([{ name: "v" }, { name: "A" }])
+  },
+  login(login,password) {
+    if (login !== 123 && password !== "123"){
+      return Promise.reject([{ mes: "some error" }])
+    } else {
+      return Promise.resolve([{ name: "v" }, { name: "A" }])
+    }
+  }
+}
+
+userApi.getuser().then(user => console.log(user))
+userApi.login("123",'4254').then((result) => console.log(result)).catch((err) => console.log(err));
+
+//цепочка методов , каждый раз при вызове then() возврощает новый promise. При return мы получаем в новый promise значение что возврощали
