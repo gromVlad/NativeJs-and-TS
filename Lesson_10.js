@@ -863,7 +863,7 @@ makeRequest();
 //методы статические promise (у promise есть методы доп. которые мы можем использовать с коробки)
 
 //Promise.al - > ждет пока resolve все запросы, данные в виде массива
-let makeRequestMulti = async() => {
+let makeRequestMulti = async () => {
   // let p1 = fetchR("google");
   // let p2 = fetchR("ms");
   // let p3 = fetchR("it-kam");
@@ -872,59 +872,125 @@ let makeRequestMulti = async() => {
   //   console.log("all finished");
   // });
 
-  let promises = [
-    fetchR("google"),
-    fetchR("ms"),
-    fetchR("it-kam")
-  ]
-  let data = await Promise.all(promises)
+  let promises = [fetchR("google"), fetchR("ms"), fetchR("it-kam")];
+  let data = await Promise.all(promises);
 };
 
 //-------------------------
 //например хотим реализовать типо крутилку при имплементации логина, загрузку, пока не получили ответ можем делать крутилку и т.д.
 let makeRequestMulti2 = async () => {
-  let dataKam = await fetchR("it-kam")
-  if (dataKam.auth){
-    let promises = [
-      fetchR("google"),
-      fetchR("ms"),
-    ]
+  let dataKam = await fetchR("it-kam");
+  if (dataKam.auth) {
+    let promises = [fetchR("google"), fetchR("ms")];
   }
-  let data = await Promise.all(promises)
+  let data = await Promise.all(promises);
 };
 
 //также почитать старая информация про xmlhttpRequest(XHR)
 
 //_________STEP_#15 2020-06-11________//
-let muPromise = new Promise ((res,rej) => {
+let muPromise = new Promise((res, rej) => {
   setTimeout(() => {
-    const random = Math.random()
-    res(random)
+    const random = Math.random();
+    res(random);
   }, 3000);
-  console.log(1)
-  console.log(2)
-  console.log(3)
-  console.log('My promise')
-})
-muPromise.then((res) => console.log('promise resolve ' + res ))
+  console.log(1);
+  console.log(2);
+  console.log(3);
+  console.log("My promise");
+});
+muPromise.then((res) => console.log("promise resolve " + res));
 //1 2 3 My promise promise resolve 0.87
 
-//что мы возврощаем первое то и будет у нас возвращаться в promise все отсальные rej и т.д.будет игнорироваться,  логиrу можно сделать с помощью ветвление (if или switch) 
+//что мы возврощаем первое то и будет у нас возвращаться в promise все отсальные rej и т.д.будет игнорироваться,  логиrу можно сделать с помощью ветвление (if или switch)
 const doAfter = (sec) => {
   return new Promise((res, rej) => {
     setTimeout(() => {
-      res('hello')
+      res("hello");
       //rej('error')
-    }, sec*1000);
-  })
-}
-doAfter(5).then((res) => console.log(res))//'hello'
-doAfter(10).then((res) => console.log(res))//'hello'
+    }, sec * 1000);
+  });
+};
+doAfter(5).then((res) => console.log(res)); //'hello'
+doAfter(10).then((res) => console.log(res)); //'hello'
 
-let promiseDo = doAfter(1)
-let prDo2 = promiseDo.then((res) => console.log(res))
-console.log('finish')
-//finish 
+let promiseDo = doAfter(1);
+let prDo2 = promiseDo.then((res) => console.log(res));
+console.log("finish");
+//finish
 //'hello'
 
 //каждый then  возврощает новый promise 1,23
+
+//-----------------------------
+doAfter(1)
+  .then((rand1) => {
+    console.log(rand1);
+    return rand1;
+  })
+  .then((rand1) => {
+    console.log(rand1);
+    let pr2 = doAfter(8);
+    return pr2;
+  })
+  .then((rand2) => {
+    console.log(rand2);
+    return rand2;
+  })
+  .then((rand2) => console.log(rand2));
+
+//---------------------------
+let microsoft = api.getVacanciesCountFromMicrosoft();
+let gPromise = api.getVacanciesCountFromGoogle();
+const allPromise = Promise.all([microsoft, gPromise]);
+
+allPromise
+  .then((res) => {
+    let reFromMS = res[0].data.vacancies;
+    let reFromG = res[1].data.vacancies;
+    console.log("it-kam");
+    api.sendStudentsCountToItKamasutra(reFromMS + reFromG).then((data) => {
+      console.log("it kam" + data);
+    });
+  })
+  .catch(() => {
+    alert("sorry reload your app");
+  });
+
+//-----------------------------
+
+//мы с then не можем передать сразу два значение поэтом нам надо временную создать переменную и используя замыкание  прокидывать туда значения
+let dataOne;
+api.getVacanciesCountFromMicrosoft();
+then((res) => {
+  console.log(res);
+  dataOne = res;
+  return api.getVacanciesCountFromGoogle();
+})
+  .then((res) => {
+    console.log(res);
+    api.sendStudentsCountToItKamasutra(dataOne + res);
+  })
+  .then((allData) => console.log(allData));
+
+  //with asunc await
+  async function loadVacanci (){
+    try {
+      let msCount = await api.getVacanciesCountFromMicrosoft()
+      let gCount = await api.getVacanciesCountFromGoogle()
+      let itKam = await api.sendStudentsCountToItKamasutra(msCount + gCount)
+      console.log('from it-kam :' + itKam)
+    } catch (error) {
+      alert(error)
+    }
+  }
+ 
+//2 вариант 
+async function loadVacanci() {
+    //можно сразу api.get засунуть в Promise.all()
+    let msCount = api.getVacanciesCountFromMicrosoft()
+    let gCount = api.getVacanciesCountFromGoogle()
+    let allP = await Promise.all([msCount, gCount])
+    let itKam = await api.sendStudentsCountToItKamasutra(allP[0] + allP[1])
+    console.log('from it-kam :' + itKam)
+}
