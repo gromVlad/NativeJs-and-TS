@@ -896,3 +896,35 @@ let makeRequestMulti2 = async () => {
 //также почитать старая информация про xmlhttpRequest(XHR)
 
 //_________STEP_#15 2020-06-11________//
+let muPromise = new Promise ((res,rej) => {
+  setTimeout(() => {
+    const random = Math.random()
+    res(random)
+  }, 3000);
+  console.log(1)
+  console.log(2)
+  console.log(3)
+  console.log('My promise')
+})
+muPromise.then((res) => console.log('promise resolve ' + res ))
+//1 2 3 My promise promise resolve 0.87
+
+//что мы возврощаем первое то и будет у нас возвращаться в promise все отсальные rej и т.д.будет игнорироваться,  логиrу можно сделать с помощью ветвление (if или switch) 
+const doAfter = (sec) => {
+  return new Promise((res, rej) => {
+    setTimeout(() => {
+      res('hello')
+      //rej('error')
+    }, sec*1000);
+  })
+}
+doAfter(5).then((res) => console.log(res))//'hello'
+doAfter(10).then((res) => console.log(res))//'hello'
+
+let promiseDo = doAfter(1)
+let prDo2 = promiseDo.then((res) => console.log(res))
+console.log('finish')
+//finish 
+//'hello'
+
+//каждый then  возврощает новый promise 1,23
