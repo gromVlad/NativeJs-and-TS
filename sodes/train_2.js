@@ -2,8 +2,8 @@ function hello() {
   console.log(this.name);
 }
 let name = hello.bind({ name: "vlad" });
-name();//vlad
-hello.call({ name: "vlad" });//vlad
+name(); //vlad
+hello.call({ name: "vlad" }); //vlad
 
 //
 let a = 10;
@@ -11,13 +11,13 @@ function yo() {
   a = 20;
 }
 yo();
-console.log(a);//20
+console.log(a); //20
 
 //
 let a1 = { name: "vlados" };
 a1[0] = " hey";
 a2[1] = "hell";
-console.log(a1);//{0: ' hey', name: 'vlados'}
+console.log(a1); //{0: ' hey', name: 'vlados'}
 
 //
 class User {
@@ -25,10 +25,10 @@ class User {
     counter: 1,
   };
   onChange = () => {
-    console.log(this.state.counter);//1
+    console.log(this.state.counter); //1
     //setState асинхронный и нельзя ожидать что он будет изменен и чтобы словить свежее значения надо передать callback 2 параметром ({ counter: 100 }, () => ...)
     this.setState({ counter: 100 });
-    console.log(this.state.counter);//1
+    console.log(this.state.counter); //1
   };
   render() {}
 }
@@ -43,7 +43,7 @@ console.log(hello.prototype === Object.prototype); // false
 //
 let man = { name: "nik" };
 //не функция а объект поэтому ошибка
-man.call(this);//TypeError: man.call is not a function
+man.call(this); //TypeError: man.call is not a function
 
 //
 a = 10;
@@ -51,11 +51,11 @@ function yo(a) {
   a = 100;
 }
 yo(30);
-console.log(a);//10
+console.log(a); //10
 
 //
-let hel = new Promise(() => { });
-let res = hel.then(() => { });//return Promis
+let hel = new Promise(() => {});
+let res = hel.then(() => {}); //return Promis
 
 //
 console.log(0);
@@ -67,7 +67,7 @@ console.log(2);
 
 //
 man = { name: "dim" };
-man.toString()//'[object Object]'
+man.toString(); //'[object Object]'
 
 //
 man = { lastName: "kuz" };
@@ -75,17 +75,17 @@ function hello(first) {
   alert(first + this.lastName);
 }
 //const hello12 = hello.bind(man,'dm' )
-const hello12 = hello.bind(man)
-hello12('dm'); //dmKuz
+const hello12 = hello.bind(man);
+hello12("dm"); //dmKuz
 
 //
 const a2 = 10;
 function yo(a) {
   a = 100;
-  return a
+  return a;
 }
 yo(30);
-console.log(a2);//10
+console.log(a2); //10
 
 //
 let hello = new Promise(() => {});
@@ -97,12 +97,12 @@ let result = hello.catch(() => 15);
 async function yo() {
   return 16;
 }
-res = yo();//Promise
-res.then(r => console.log(r)) //16
+res = yo(); //Promise
+res.then((r) => console.log(r)); //16
 
 //
 let shit = () => () => () => () => 10;
-shit()()()();//10
+shit()()()(); //10
 
 //
 function hello() {}
@@ -117,12 +117,12 @@ man = {
   hello: () => {
     console.log(this.name);
   },
-  hello2(){
+  hello2() {
     let bla = () => {
       console.log(this.name);
-    }
-    bla()
-  }
+    };
+    bla();
+  },
 };
 man.hello(); // - windows scope
 man.hello2(); // jack
@@ -133,40 +133,41 @@ function yo() {
   a3 = 100;
 }
 yo();
-console.log(a3)//TypeError: Assignment to constant variable.
+console.log(a3)(
+  //TypeError: Assignment to constant variable.
 
-//
-(async () => {
+  //
+  async () => {
     hello = new Promise((res, rej) => {
       rej(10);
     });
     try {
       let res = await hello;
     } catch (error) {
-      console.log('error ', error)
+      console.log("error ", error);
     }
-    console.log(res);//undefined
-  } 
+    console.log(res); //undefined
+  }
 )();
 
 //
 man = { name: "fer", age: 28 };
 man2 = { age: 18 };
-let gog = { ...man, ...man2 };//{ name: "fer", age: 18 }
+let gog = { ...man, ...man2 }; //{ name: "fer", age: 18 }
 
 //
 function makeCounter(start = 0) {
-  let count = start
-  console.log(count)
+  let count = start;
+  console.log(count);
   return function () {
     return count++;
   };
 }
 let f = makeCounter();
-f();//0
-f();//1
+f(); //0
+f(); //1
 // 1 () - внутреннея функци, 2() - примитивное число , 3 () - не может вызввать у примитива () поэтому error
-makeCounter()()()//error
+makeCounter()()(); //error
 
 //
 for (let i = 0; i < 10; i++) {
@@ -228,7 +229,7 @@ console.log(3);
 let a4 = { name: "Dimych" };
 let names = ["tanya", "ignat", "dima"];
 let newArr = names.forEach((n) => (a4[n] = "hey"));
-console.log(a4);//{name: 'Dimych', tanya: 'hey', ignat: 'hey', dima: 'hey'}
+console.log(a4); //{name: 'Dimych', tanya: 'hey', ignat: 'hey', dima: 'hey'}
 
 //
 a5 = {};
@@ -315,84 +316,88 @@ new Promise((rs, rj) => {
   .catch((value) => console.log(value));
 
 //
-let A = 1
+let A = 1;
 try {
-  A = sum(A,1)
+  A = sum(A, 1);
 } catch (error) {
-  A += 2
-} finally{
-  A ++
-}//4 
+  A += 2;
+} finally {
+  A++;
+} //4
 
 //
-//виртуальный DOM: html parse-> DOM (совокупность объектов) напрямую взаимодействовать с DOM сложно поэтому React создал виртуальный DOM (более упрощеннные объекты по сравнению с оригинальным DOM). На любое измнение я буду создавать новую копию DOM виртуального и сравнивать со старой версией виртуального DOM. 
+//виртуальный DOM: html parse-> DOM (совокупность объектов) напрямую взаимодействовать с DOM сложно поэтому React создал виртуальный DOM (более упрощеннные объекты по сравнению с оригинальным DOM). На любое измнение я буду создавать новую копию DOM виртуального и сравнивать со старой версией виртуального DOM.
 
-//React создает виртуальный DOM на основе JSX.JSX поподая в браузер становиться js -> далее React create.Element. и на основе их будет сравнения а потом уже перерисовка. 
-
-//
-var a1
-var b1
-let d = 1
-let c
-console.log(a1) // undefined
-console.log(b1) //0
-console.log(c) //undefined
-console.log(d) // 1 
-console.log(e1) //error is not defined
-console.log(f1) // undefined
-console.log(g1) // undefined
-console.log(yo()) // function
-console.log(yo2()) // is not a function
-
-function yo(){}
-var yo2 = () => {}
-
-let e1
-var f1 = 16
-var g1
+//React создает виртуальный DOM на основе JSX.JSX поподая в браузер становиться js -> далее React create.Element. и на основе их будет сравнения а потом уже перерисовка.
 
 //
-function sum(a,b) {
-  return a + b
+var a1;
+var b1;
+let d = 1;
+let c;
+console.log(a1); // undefined
+console.log(b1); //0
+console.log(c); //undefined
+console.log(d); // 1
+console.log(e1); //error is not defined
+console.log(f1); // undefined
+console.log(g1); // undefined
+console.log(yo()); // function
+console.log(yo2()); // is not a function
+
+function yo() {}
+var yo2 = () => {};
+
+let e1;
+var f1 = 16;
+var g1;
+
+//
+function sum(a, b) {
+  return a + b;
 }
-sum(10,12)
-sum(10,1234)
-sum(10,12422)
-sum(10,12242424)
+sum(10, 12);
+sum(10, 1234);
+sum(10, 12422);
+sum(10, 12242424);
 
 //корированая функция
 function addto10(b) {
-  return sum(10,b) 
+  return sum(10, b);
 }
-addto10(1234)
-addto10(12422)
-addto10(12)
-addto10(12242424)
+addto10(1234);
+addto10(12422);
+addto10(12);
+addto10(12242424);
 
 //the same
 //let addto10 = sum.bind(null,10)
 
 //
-function arrN (...num){console.log(num)}
-arrN(1)//[1]
-arrN(10)//[10]
+function arrN(...num) {
+  console.log(num);
+}
+arrN(1); //[1]
+arrN(10); //[10]
 
 //
-function hello (a,b,c){console.log(a,b,c)}
-hello(...[1, 2, 3])//1 2 3
+function hello(a, b, c) {
+  console.log(a, b, c);
+}
+hello(...[1, 2, 3]); //1 2 3
 
 //
-function hello(a,b,c){
-  return `${a} ${b} ${c}`
+function hello(a, b, c) {
+  return `${a} ${b} ${c}`;
 }
 
-function carry(fun,...prms) {
+function carry(fun, ...prms) {
   return (...param) => {
-    return f(...prms,...param)
-  }
+    return f(...prms, ...param);
+  };
 }
-let helloDK = carry(hello,'d','k')
-helloDK('!',"&")
+let helloDK = carry(hello, "d", "k");
+helloDK("!", "&");
 
 //
 //target - непосредственный элемент, с которого было сработано событие.
@@ -402,20 +407,127 @@ helloDK('!',"&")
 //e.preventDefault() - отменить дефолтное поведение, не обновляеться браузер
 
 //
-function hello(){
-  console.log(this.name)
+function hello() {
+  console.log(this.name);
 }
 //у стрелочной функции нет prototype
 let hello2 = () => {
-  console.log(this.name)
-}
-hello.__proto__ === hello2.__proto__ //true === Function.prototype
+  console.log(this.name);
+};
+hello.__proto__ === hello2.__proto__; //true === Function.prototype
 //прототип есть у функции и у классов
-hello.prototype === hello2.prototype//false
+hello.prototype === hello2.prototype; //false
 
 //
 function hello(sign) {
-  console.log(this.name + sign)
+  console.log(this.name + sign);
 }
-man = {name:'dim'}
-//4.06
+man = { name: "dim" };
+let newHello = hello.apply(man, ["!"]); //dim!
+let newHello2 = hello.call(man, "!"); //dim!
+
+//
+a = 10;
+b = 10;
+function yo(a, c) {
+  a++; //NaN
+  b--; //9
+  c++; //NaN
+}
+yo();
+console.log(a, b, c); //c is not defined
+
+//
+var w = 1,
+  z = 2;
+function foo(x = w + 1, y = x + 1, z = z + 1) {
+  console.log(x, y, z);
+}
+foo(); //Cannot access 'z' before initialization
+
+//
+var obj = {
+  a: function () {
+    console.log(this.prop);
+  },
+  prop: 5,
+};
+//функция это объект поэтому мы можем добовлять ему разные свойтсво
+obj.a.prop = 2;
+obj.a.prop;
+obj.a(); //5
+var fn = obj.a;
+fn(); //undefined
+//когда мы к примитиву обращаемся как объекту то движок вокруг создает временный объект, то есть создался и присвоился и дальше при повторном вызове удалился
+"gfdff".q = 234; //234
+
+//но можем сделать str как объект навароченный
+let strN = new String("jack");
+strN.yo = 125;
+strN.yo; //125
+
+//
+var a1 = "hello";
+function b() {
+  if (false) {
+    var a1 = "world";
+  } else {
+    var b = "man";
+  }
+  console.log(b); //man
+  console.log(a1); //undefined
+}
+b();
+
+//
+//тут запитая и первый после запятой знак будет игнорироваться
+a = (1, 5 - 1) * 2;
+console.log(a); //8
+
+//
+alert(yo)[
+  //должен передоваться callback
+  (1, 2)
+].forEach(alert); //yo is not defined
+
+//
+function sumf(a) {
+  if (a === 0) {
+    return 0;
+  }
+  return a + sumf(a - 1);
+}
+sumf(4); //10
+
+//2 вариант
+function sumf2(n, sum = 0) {
+  sum = n + sum;
+  if (n === 1) {
+    return sum;
+  } else {
+    return sumf2(n - 1, sum);
+  }
+}
+sumf2(4); //10
+
+//
+let dim = {
+  name: "dim",
+  toString() {
+    return "js";
+  },
+};
+alert("hello " + dim); //hello js
+//автоматов в [] браузер превращает объект в строку
+b = {};
+b[dim] = 18;
+
+//
+let abc = {
+  _value: null,
+  name: "dim",
+  valueOf() {
+    return (this._value = this._value === null ? 3 : 4);
+  },
+};
+if (+abc === 3 && +abc === 4) alert("fgsdgdfg");//fgsdgdfg
