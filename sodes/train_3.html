@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <!-- 1 -->
+    <div name="1" class="yo"><!-- t1 ct1 -->
+      <div name = '2' class="yo"><!-- t2 ct2 t2 ct1 -->
+        <button name="3" class="yo">ok</button><!-- t3 ct3 t3 ct2 t3 ct1 -->
+      </div>
+    </div>
+
+    <script>
+      //1
+      document.querySelectorAll('.yo').forEach(el => el.addEventListener('click',(e)=>{
+        console.log(e.target.name)//куда кликнули на ком произошел клик
+        console.log(e.currentTarget.name)//подписка на события будет всплывать и сработаем на каком элементе сработает подписка
+      }))
+    </script>
+</body>
+</html>
