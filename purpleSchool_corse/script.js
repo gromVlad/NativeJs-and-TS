@@ -1064,7 +1064,863 @@ score.forEach((el, i) => {
 // Раунд 3: 0
 // Раунд 4: 15
 
-//-------------------ы
+//-------------------
+//map
+//возврощает новый массив
+const transactionInUSD = [10, 20, 30, 40];
 
+const transactionInRUB2 = transactionInUSD
+  .map((transaction, i) => {
+    console.log(i);
+    return transaction * 60;
+  });
+// Output:
+// 0
+// 1
+// 2
+// 3
 
+console.log(transactionInRUB2);
+// Output: [600, 1200, 1800, 2400]
 
+//-------------------
+//Filter
+const operations = [10, -5, 20, -15, 30, 0, 40];
+
+const positiveRUBOperations = operations
+  .filter(operation => {
+    return operation > 0;
+  })
+  .map(operation => operation * 60);
+
+console.log(positiveRUBOperations);
+// Output: [600, 1200, 1800, 2400]
+
+//------------------
+//Упражнение - вывод изменений цен
+const prices = [[100, 200], [120, 100], [200, 350]];
+
+const result = prices
+  .map(product => product[1] - product[0])
+  .filter(price => price > 0);
+console.log(result);
+// Output: [100, 20, 150]
+
+//----------------
+//Reduce
+const operations = [10, -5, 20, -15, 30, 0, 40];
+
+const finalBalance = operations.reduce((acc, operation, i) => {
+  console.log(`Итерация ${i}, acc: ${acc}, operation ${operation}`);
+  return (acc += operation);
+}, 0);
+
+console.log(finalBalance);
+// Output:
+// Итерация 0, acc: 0, operation 10
+// Итерация 1, acc: 10, operation -5
+// Итерация 2, acc: 5, operation 20
+// Итерация 3, acc: 25, operation -15
+// Итерация 4, acc: 10, operation 30
+// Итерация 5, acc: 40, operation 0
+// Итерация 6, acc: 40, operation 40
+// 80
+
+const minElement = operations.reduce((acc, operation) => {
+  if (operation > acc) {
+    return acc;
+  } else {
+    return operation;
+  }
+}, 0);
+console.log(minElement);
+// Output:
+// -15
+
+//-------------------------
+//Упражнение - среднее значение
+const arr = [2, 4, 4, 10];
+
+const avg = arr.reduce((acc, el, i) => {
+  if (i !== arr.length - 1) {
+    return acc + el;
+  } else {
+    return (acc + el) / arr.length;
+  }
+}, 0);
+console.log(avg);
+// Output: 5
+
+//-----------------------
+//find и findIndex
+const arr = [2, 4, 4, 10, 20];
+
+let elGT5;
+
+//ищет первый элемент удоволетворяющий условию
+elGT5 = arr.find(el => el > 5);
+
+//возврощает индекс элемента удоволетворяющий условию
+elGT5Index = arr.findIndex(el => el < 0);
+console.log(elGT5);
+console.log(elGT5Index);
+// Output:
+// 10
+// -1
+
+//------------------------
+//some
+const arr = [2, 4, 4, 10, 20];
+
+function some(array, element) {
+  const res = array.find(el => el === element);
+  return res == undefined ? false : true;
+}
+
+console.log(some(arr, 0));
+// Output: false
+
+console.log(arr.some(el => el === 0));
+// Output: false
+
+//-----------------------
+//Flat и flatMap
+const prices = [[2, 4], [3, 4], [10, [20, 50]]];
+//значения глубины соединения массива
+const res = prices.flat(10);
+//map + flat (глубины соединения массива 1)
+const res2 = prices.flatMap(el => el.concat([1]));
+console.log(res);
+console.log(res2);
+// Output:
+// [2, 4, 3, 4, 10, 20, 50]
+// [2, 4, 1, 3, 4, 1, 10, [20, 50], 1]
+
+//---------------------
+//sort
+//мутирует существующий массив
+const users = ['Вася', 'Маша', 'Катя', 'Аня'];
+console.log(users);
+// Output: ["Вася", "Маша", "Катя", "Аня"]
+
+users.sort();
+console.log(users);
+// Output: ["Аня", "Вася", "Катя", "Маша"]
+
+//чтобы не сортировались как строки то нужно написать условие 
+const operations = [100, -300, -100, 50, 480];
+// < 0 - a, b - сохраняем порядок
+// > 0 - b, a - меняем порядок
+operations.sort((a, b) => a - b);
+console.log(operations);
+// Output: [-300, -100, 50, 100, 480]
+
+operations.sort((a, b) => {
+  if (a < b) {
+    return 1;
+  }
+  if (a > b) {
+    return -1;
+  }
+});
+console.log(operations);
+// Output: [480, 100, 50, -100, -300]
+
+//---------------------
+//Быстрое создание массивов
+const arr = [1, 2, 3, 4, 5];
+
+console.log(new Array(1, 2, 3, 4, 5));
+// Output: [1, 2, 3, 4, 5]
+
+const arr2 = new Array(5);
+console.log(arr2);
+// Output: [empty × 5]
+
+arr2.fill(1, 0, 3);
+//2 с позиции 3 до 5
+arr2.fill(2, 3, 5);
+console.log(arr2);
+// Output: [1, 1, 1, 2, 2]
+
+const arr3 = Array.from({ length: 5 }, (cur, i) => i + 1);
+console.log(arr3);
+// Output: [1, 2, 3, 4, 5]
+
+//-------------------
+//Базовые методы Строки
+const userName = 'Вася Пупкина';
+console.log(userName);
+// Output: "Вася Пупкина"
+
+console.log(userName[0] + userName[1]);
+// Output: "Ва"
+
+console.log(userName.charAt(2));
+// Output: "с"
+
+console.log(userName.length);
+// Output: 12
+
+console.log(userName.indexOf('уп'));
+// Output: 6
+
+console.log(userName.lastIndexOf('а'));
+// Output: 11
+
+console.log(userName.includes('уп'));
+// Output: true
+
+console.log(userName.includes('упd'));
+// Output: false
+
+console.log(userName.slice(5));
+// Output: "Пупкина"
+
+console.log(userName.slice(5, 8));
+// Output: "Пуп"
+
+//-----------------------------
+//Упражнение - выделение имени
+const fullUserName = 'Вася aka Terminator Perdinator Пупкин';
+
+const userName = fullUserName.slice(0, fullUserName.indexOf(' '));
+console.log(userName);
+// Output: "Вася"
+
+const userSurname = fullUserName.slice(
+  fullUserName.lastIndexOf(' ') + 1,
+  fullUserName.length
+);
+console.log(userSurname);
+// Output: "Пупкин"
+
+//------------------------
+//Преобразование строки
+const str = 'Вася Пупкина';
+console.log(str.includes('а'));
+// Output: true
+
+console.log(str.startsWith('В'));
+// Output: true
+
+console.log(str.endsWith('н'));
+// Output: true
+
+console.log(str.toLowerCase());
+// Output: "вася пупкина"
+
+console.log(str.toUpperCase());
+// Output: "ВАСЯ ПУПКИНА"
+
+console.log(str.replace('В', 'Ф'));
+// Output: "Фася Пупкина"
+
+console.log(str.replace('П', 'Д'));
+// Output: "Вася Дупкина"
+
+console.log(str.replaceAll('а', 'и'));
+// Output: "Вися Пупкини"
+
+console.log(str.replace(/а/g, 'и'));
+// Output: "Вися Пупкини"
+
+const str2 = ' Вася Пупкина   \n';
+console.log(str2.trimStart());
+// Output: "Вася Пупкина   \n"
+
+//--------------------------
+//Упражнение - проверка номера
+///* проверить является ли это номером телефона России */
+const num1 = '89103235356';
+const num2 = '+79103235356';
+const num3 = '+7(910)3235356';
+const num4 = '+7(910) 323-53-56';
+const num5 = '  +7(910) 323-53-56  ';
+/* не верные */
+const num1Error = '89103235';
+const num2Error = '+7d910d323-53-56';
+const num3Error = '9+7103235356';
+const num4Error = '89103g35356';
+
+function isPhoneNumber(num) {
+  num = num.trim();
+  num = num.replace('+7', '8');
+  if (!num.startsWith('8')) {
+    return false;
+  }
+  num = num.replaceAll('(', '');
+  num = num.replaceAll(')', '');
+  num = num.replaceAll(' ', '');
+  num = num.replaceAll('-', '');
+  if (num.length != 11) {
+    return false;
+  }
+  let onlyNumber = true;
+  for (const char of num) {
+    //true если string - если в номере есть строка а не цифра
+    if (isNaN(Number(char))) {
+      onlyNumber = false;
+      break;
+    }
+  }
+  return onlyNumber;
+}
+
+const num1 = '89103235356';
+console.log(isPhoneNumber(num1));
+// Output: true
+
+const num2 = '+79103235356';
+console.log(isPhoneNumber(num2));
+// Output: true
+
+const num3 = '+7(910)3235356';
+console.log(isPhoneNumber(num3));
+// Output: true
+
+const num4 = '+7(910) 323-53-56';
+console.log(isPhoneNumber(num4));
+// Output: true
+
+const num5 = '  +7(910) 323-53-56  ';
+console.log(isPhoneNumber(num5));
+// Output: true
+
+const num1Error = '89103235';
+console.log(isPhoneNumber(num1Error));
+// Output: false
+
+const num2Error = '+7d910d323-53-56';
+console.log(isPhoneNumber(num2Error));
+// Output: false
+
+const num3Error = '9+7103235356';
+console.log(isPhoneNumber(num3Error));
+// Output: false
+
+const num4Error = '89103g35356';
+console.log(isPhoneNumber(num4Error));
+// Output: false
+
+//--------------------
+//Строки и массивы
+const userFullName = 'Вася Пупкин Васильевич';
+console.log(userFullName.split(' '));
+// Output: ["Вася", "Пупкин", "Васильевич"]
+
+const [firstName, familyName, lastName] = userFullName.split(' ');
+console.log(firstName);
+// Output: "Вася"
+console.log(familyName);
+// Output: "Пупкин"
+console.log(lastName);
+// Output: "Васильевич"
+
+const arr = ['Ты', 'знаешь', 'JS'];
+console.log(arr.join(' '));
+// Output: "Ты знаешь JS"
+
+//--------------------
+//Дополнение строк
+const film = 'Звёздные Воины';
+console.log(film.padStart(50, '*'));
+// Output: "********************************Звёздные Воины"
+console.log(film.padEnd(50, '*'));
+// Output: "Звёздные Воины********************************"
+console.log(film.repeat(10));
+// Output: "Звёздные ВоиныЗвёздные ВоиныЗвёздные ВоиныЗвёздные ВоиныЗвёздные ВоиныЗвёздные ВоиныЗвёздные ВоиныЗвёздные ВоиныЗвёздные ВоиныЗвёздные Воины"
+
+//-------------------
+//Упражнение - маскировка карты
+const card = '2342834503458353';
+console.log(card.slice(-4).padStart(16, '*'));
+// Output: "************8353"
+
+//-------------------
+//Знакомство с объектами / Обращение к элементам
+const user = {
+  name: 'Вася',
+  surname: 'Пупкин',
+  age: 24,
+  skills: [
+    'Программирование',
+    'Готовка'
+  ],
+  eduBasic: 'Школа 10',
+  eduPro: 'МФТИ'
+};
+
+console.log(user.city);
+// Output: undefined
+
+console.log(user.skills);
+// Output: ["Программирование", "Готовка"]
+
+console.log(user['skills']);
+// Output: ["Программирование", "Готовка"]
+
+const level = 'Pro';
+console.log(user['edu' + level]);
+// Output: "МФТИ"
+
+//add
+user.city = 'Москва';
+user['city'] = 'Москва';
+console.log(user.city);
+// Output: "Москва"
+
+//change
+user.age = 30;
+user['age'] = 30;
+console.log(user);
+/*
+Output:
+{
+  name: 'Вася',
+  surname: 'Пупкин',
+  age: 30,
+  skills: ['Программирование', 'Готовка'],
+  eduBasic: 'Школа 10',
+  eduPro: 'МФТИ',
+  city: 'Москва'
+}
+*/
+
+//--------------------
+//Упражнение - сортировка пользователей
+/* отсортировать пользователей по возрасту */
+const users = [
+  { name: 'Вася', age: 30 },
+  { name: 'Катя', age: 18 },
+  { name: 'Аня', age: 40 },
+  { name: 'Петя', age: 25 },
+];
+console.log(users.sort((a, b) => a.age - b.age));
+/*
+Output:
+[
+  { name: 'Катя', age: 18 },
+  { name: 'Петя', age: 25 },
+  { name: 'Вася', age: 30 },
+  { name: 'Аня', age: 40 }
+]
+*/
+
+//--------------------
+//Упражнение - преобразование объектов
+const users = [
+  {
+    name: 'Вася',
+    surname: 'Пупкин',
+    age: 30,
+    skills: ['Разработка', 'DevOps']
+  },
+  {
+    name: 'Катя',
+    surname: 'Белова',
+    age: 18,
+    skills: ['Дизайн']
+  },
+];
+
+const userData = users.map(user => {
+  return {
+    fullName: `${user.name} ${user.surname}`,
+    skillNum: user.skills.length
+  };
+});
+console.log(userData);
+/*
+Output:
+[
+  { fullName: 'Вася Пупкин', skillNum: 2 },
+  { fullName: 'Катя Белова', skillNum: 1 }
+]
+*/
+
+//--------------------
+//Методы объектов
+const user = {
+  name: 'Вася',
+  surname: 'Пупкин',
+  age: 24,
+  //this - контекст вызова
+  getFullName: function () {
+    return this.name + ' ' + this.surname;
+  }
+};
+
+console.log(user.getFullName());
+// Output: "Вася Пупкин"
+
+//-------------------
+//Упражнение - кошелёк
+const wallet = {
+  balance: 0,
+  operations: [],
+  increase: function (sum, reason) {
+    this.balance += sum;
+    this.operations.push({
+      reason: reason,
+      sum: sum
+    })
+    return true;
+  },
+  decrease: function (sum, reason) {
+    if (this.balance < sum) {
+      console.log('Недостаточно баланса');
+      return false;
+    }
+    this.balance -= sum;
+    this.operations.push({
+      reason: reason,
+      sum: -sum
+    })
+    return true;
+  },
+  getOperationLenght: function () {
+    return this.operations.length;
+  }
+};
+
+console.log(wallet.increase(1000, 'Зарплата'));
+// Output: true
+
+console.log(wallet.getOperationLenght());
+// Output: 1
+
+console.log(wallet.decrease(2000, 'Покупка ноутбука'));
+// Output: Недостаточно баланса
+// false
+
+console.log(wallet.getOperationLenght());
+// Output: 1
+
+console.log(wallet.decrease(500, 'Покупка телефон'));
+// Output: true
+
+console.log(wallet.getOperationLenght());
+// Output: 2
+
+console.log(wallet.balance);
+// Output: 500
+
+console.log(wallet.operations);
+/*
+Output:
+[
+  { reason: 'Зарплата', sum: 1000 },
+  { reason: 'Покупка телефон', sum: -500 }
+]
+*/
+
+//------------------------
+//Enhance object literals
+/* const wallet = {
+  balance: 0,
+  operations: [],
+  increase: function (sum, reason) {
+    this.balance += sum;
+    //можем опустить описание значения т.к. оно совподает
+    this.operations.push({
+      reason,
+      sum
+    })
+    return true;
+  }, */
+
+//-------------------------
+//Итерирование по объекту
+const cities = {
+  msk: {
+    let: 200,
+    temp: 25
+  },
+  spb: {
+    lt: 100,
+    temp: 20
+  }
+}
+
+let sumTemp = 0;
+let citiesCount = Object.keys(cities).length;
+
+// for (const key in cities) {
+// 	sumTemp += cities[key].temp;
+// }
+// console.log(sumTemp / citiesCount);
+
+for (const key of Object.keys(cities)) {
+  sumTemp += cities[key].temp;
+}
+console.log(sumTemp / citiesCount);
+// Output: 22.5
+
+//----------------------
+//Деструктуризация и rest
+const user = {
+  name: 'Вася',
+  age: 40,
+  city: 'Moscow'
+};
+
+const { age, ...userWithoutAge } = user;
+
+console.log(age);
+// Output: 40
+
+console.log(userWithoutAge);
+// Output: { name: 'Вася', city: 'Moscow' }
+
+const additionalData = {
+  skills: ['Разработка', 'Дизайн'],
+  creditCard: '2342-2345-2734-2356' 
+};
+
+user.test = 'sdfs';
+
+// user = {
+// 	...user,
+// 	...additionalData
+// }
+
+console.log(user);
+// Output: { name: 'Вася', age: 40, city: 'Moscow', test: 'sdfs' }
+
+//----------------------
+//Optional chaining
+const cities = {
+  msk: {
+    temp: {
+      celsius: 25
+    }
+  },
+  spb: {
+
+  }
+};
+
+const city = 'msk';
+
+if (cities[city] != undefined && cities[city].temp != undefined) {
+  console.log(cities[city].temp.celsius);
+}
+// Output: 25
+
+console.log(cities[city]?.temp?.celsius);
+// Output: 25
+
+//-----------------------
+//Упражнение - склад
+/*
+  Сделать объект склад с методами добавления на склад, поиска
+  по складку товара и расчёт веса
+*/
+const warehouse = {
+  goods: [],
+  findGoodById: function (id) {
+    return this.goods.find(g => g.id == id);
+  },
+  addGood: function (good) {
+    const existedGood = this.findGoodById(good.id)
+    if (existedGood) {
+      console.log('Этот товар уже есть на складе');
+      return;
+    }
+    this.goods.push(good);
+  },
+  getWeightKg: function () {
+    return this.goods.reduce((acc, el) =>
+      acc += el.weight?.kg ? el.weight.kg : 0,
+      0
+    );
+  }
+};
+
+const car = {
+  id: 1,
+  weight: {
+    kg: 1000
+  },
+  brand: 'Ford'
+};
+
+const chair = {
+  id: 2,
+  weight: {
+    kg: 2
+  },
+};
+
+const paper = {
+  id: 3,
+  color: 'red'
+};
+
+warehouse.addGood(car);
+warehouse.addGood(car);
+warehouse.addGood(chair);
+warehouse.addGood(paper);
+console.log(warehouse.goods);
+
+let findedItem = warehouse.findGoodById(6);
+console.log(findedItem);
+// Output: undefined
+
+findedItem = warehouse.findGoodById(1);
+console.log(findedItem);
+// Output: { id: 1, weight: { kg: 1000 }, brand: 'Ford' }
+
+const w = warehouse.getWeightKg();
+console.log(w);
+// Output: 1002
+
+//---------------------
+//Раздел Как работает JS под капотом
+//Высокоуровневый, компилируемый, мультипарадигменный, однопоточный, динамический типизированный
+
+//Высоуровневый языки - автоматическое управления реурсами (js,go,python). 
+//Низкоуровневый языки - ручное управления ресурсами (оперативкой и т.д.) (C Pust C++)
+
+//Компилируемый из байт код потом а машинный код по ходу
+
+//Мультипарадигменный 
+//Парадигма - подход к тому как структурируем код, какие используем техники и стиль кода (процедупрные, ООП, функциональный)
+
+//Работает в одном потоке, Event Loop - позволяет асинхронные задачи исполнять в фоновом режиме
+
+//------------------------
+//Процесс исполнение
+//Движок исполнения (3 основный движка)
+//Есть Call Stack вызова это контекст исполнения
+//Heap - объекты в памяти
+
+//Компилируемый код - файл кода (портируемый) - исполнения 
+//Интерпритация - исходный код - исполнения (прочитали и исполнили, построчно)
+//JIT - исходный код который сразу компилируем (но не будет портируемым а сразу исполняемым) а потом исполняем
+
+//Как работает движок
+//JS - AST(абстрактное дерево которое удобно для восприятие машины) - Компиляция (преобразуем в байт код а потом в машинныйко) - исполения. Также есть оптимизация (позволяет код сделать более эффективным)
+
+//Среда исполнения JS
+//Сам движок (Call Stack / Heap)
+//Web API / Node (DOM, Timers, Fetch,Geo)
+//Callback Queue - очередь callback (асинхронщина)
+//Управляет всем Event Loop (бесконечный цикл) - обеспечивает совместную работу всех трех компонент
+
+//-------------------
+//Контекст исполнения и stack вызова
+//Сначало создаеться глобальный контекст, потом выполения - берем верхний уровень кода и начинаем ее исполнять
+
+//Внутри контестка находиться 3 блока
+//- окружения перемнных (let,const,var, function,arguments)
+//- Scope Chains - ссылки на переменные вне текущего контекста
+//- this
+
+const user = {
+  name:'vlad',
+  roles:['admin']
+}
+
+function isUserAdmin (user) {
+  return user.roles.includes('admin')
+}
+
+const createYserWithAge = (user,age) => {
+  const newUser = {
+    ...user,
+    age
+  }
+  return newUser
+}
+//Clobal -> user, isUserAdmin,createYserWithAge
+//Scope isUserAdmin
+//Scope createYserWithAge
+
+//--------
+const a = 5
+function double (a){
+  return a * a
+}
+
+function logDouble (a) {
+  console.log(double(a));
+}
+
+console.log('Old value ',a );
+logDouble(a)
+
+//_stack
+// _Global
+//const a = 5
+//double()
+//logDouble()
+//console.log()
+
+//_logDouble stack - фактический когда попали в эту функцию то перешли в новый контекст этой функции
+//double()
+//console.log()
+
+//когда закончили исполнения этой функции у нас уходит контекст и со стэка берем следующий элемент (благодоря такому устройству у js нету возможности потеряться)
+
+//--------------------
+//Пример работы call stack
+const sum = 1;
+console.log('start');
+console.log(sum);
+
+function add5(n) {
+  n = n + 5;
+  if (n > 100) {
+    return n;
+  }
+  console.log(n);
+  return add5(n);
+}
+
+add5(sum);
+console.log('ended');
+/* start
+1
+6
+11
+16
+21
+26
+31
+36
+41
+46
+51
+56
+61
+66
+71
+76
+81
+86
+91
+96
+101
+ended */
+
+//--------------------
+//Примитивы и объекты
+//примитивы - number,string,boolean,undefined,null,symbol,bigint
+let firstName = 'vlad' //в call stake ссылка 0001 'vlad'
+let firstName2 = firstName // ссылка 0001 'vlad' - указывают на одну и ту же значения в пямяти
+firstName = 'new'//// ссылка 0002 'new' -> новая область памяти с новым значением
+console.log(firstName);// new
+console.log(firstName2); //vlad
+
+//объекты - arrays, objects,functions ... 
+//cсылочный тип данных находяться в куче(heap)
+//не находяться в call stake т.к. они могут быть очень большие а heap фактический неограничено
+const user1 = {
+  name:'vlad'
+} //в call stake ссылка 0003 -> ccылка на кучу в определенную область памяти {name:'vlad'}
+const user2 = user1 //ссылка также на 0003 
+user.name = 'vlados'// в куче где был vlad появляеться vlados / не создаем новый объект а просто поменяли структуру нашего объекта а ссылка продолжает ссылаться туда же
+console.log(user1);// vlados
+console.log(user2);// vlados
