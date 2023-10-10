@@ -1924,3 +1924,195 @@ const user2 = user1 //ссылка также на 0003
 user.name = 'vlados'// в куче где был vlad появляеться vlados / не создаем новый объект а просто поменяли структуру нашего объекта а ссылка продолжает ссылаться туда же
 console.log(user1);// vlados
 console.log(user2);// vlados
+
+//_пример
+const user  = {
+  name:'vlad',
+  id:2,
+  roles:['admin']
+}
+//хоть и const но все равно можем изменять структуру объекта 
+user.name = 'newUser'
+console.log(user);
+
+//метода создание нового объекта на основании другого
+//берет новый объект(1) и объединяет с текущем (2)
+const newUser = Object.assign({},user)
+
+//spred
+//не полностью скопировали объект т.к. произошло неглубое копирование и roles будет указывать на оригинал
+//можно использовать глубое копирование 
+const newuser2 = {
+  ...user
+}
+
+//------------------
+//______Scope и this_____
+//scope - область видемости перемнной, где переменные будут доступны
+
+//Lexical Scoping - в js используем лексический scope то есть scope объявляя переменную внутри функции мы помещаем ее в scope этой функции и т.д.
+
+//3 вида scope 
+//глобальный scope  
+const b = 10
+
+//scope функций внутри функций
+function a (){
+  const c = 5
+}
+
+//блочный scope внутри блока 
+if (b < 10){
+  const d = 'yes'
+}
+
+//!!!var не ограничиваеться scope она сразу же путает scope, не использовать, всегда использовать строгий режим
+
+//scope chain
+//позволяет строить цепочки
+//глобальный scope доступен везде т.к по цепочке вверху и поэтому везде доступен
+
+//stack не будет равен scope 
+function one() {
+  function two (){
+    three()
+  }
+  two()
+}
+function three(){}
+one()
+//stack -> three() / two() / one() / global
+//scope -> global -> ((one() -> two()) and three())
+
+//---------------
+//Strict mode
+//ограничить страе ошибки и методы js
+'use strict';
+//нельзя без let и const объявить переменную
+//функции ограничиваються scope  без этого всплывают наружу
+
+let myCoolVariable = 1;
+
+if (true) {
+  myCoolVariable = 3;
+}
+console.log(myCoolVariable);//3
+
+
+function a(b, b) {
+  console.log(b);
+}
+a(1, 1)//error дублирующий параметр поэтому ошибка при использований use strict
+//3 1
+
+//----------------
+//Пример scope chain
+'user strict';
+
+let successMessage = 'Успех';
+const user = {
+  name: 'Вася',
+  roles: []
+}
+
+function addRole(user, role) {
+  //if scope
+  if (role == 'admin') {
+    const message = 'Ошибка';
+    console.log(message); //'Ошибка
+    return user;
+  }
+
+  user.roles.push(role);
+  let successMessage = 'Ура';
+  console.log(successMessage);//"ypa"
+
+  //fun scope
+  function logRoles() {
+    console.log(user.roles);//['admsin']
+  }
+  logRoles();
+
+  return user;
+}
+
+console.log(addRole(user, 'admsin'));//{name: 'Вася', roles: Array(1)}
+console.log(successMessage);//Успех
+
+//---------------------
+//Пример поднятия
+//functions -> всплытие да / начальное значение сама функция
+//var -> да / undefined
+//let,const -> нет / uninitialized
+//arrow func -> зависит от var,let,const / -//-//-
+
+//TDZ -> зона где перемнные не доступны тоесть обращаемся к ним до их объявление
+
+//_пример
+function addUser() {
+  console.log('User added');
+}
+
+let arr1 = () => {
+  console.log('arr1');
+}
+
+addUser(); // User added
+console.log(b);//undefined
+let a = 3;
+var b = 2;
+console.log(b);//2
+
+arr1();//arr1
+
+addUser();//User added
+
+//-------------------
+//this
+//Переменная которая создаеться при исполнении контекста вызова, не статичен
+//метод - на объект этого метода
+//function - undefined
+//arrow func - this родительского scope
+//event listener - dom элемент к которому он прикреплен
+
+'use strict';
+
+// console.log(this);
+
+function addNum(num1, num2) {
+  console.log(this);
+  return num1 + num2;
+}
+
+const addNum2 = (num1, num2) => {
+  console.log(this);
+  return num1 + num2;
+}
+
+const user = {
+  name: 'Вася',
+  surname: 'Пупкин',
+  getFullName: function () {
+    console.log(this);
+    return this.name + ' ' + this.surname;
+  }
+}
+
+user.getFullName();
+
+const user2 = {
+  name: 'Марина',
+  surname: 'Катц'
+};
+
+user2.getFullName = user.getFullName;
+user2.getFullName();
+
+const getFullName = user2.getFullName;
+getFullName();
+
+// Результат:
+
+// { name: 'Вася', surname: 'Пупкин', getFullName: [Function: getFullName] }
+// { name: 'Марина', surname: 'Катц', getFullName: [Function: getFullName] }
+// undefined
