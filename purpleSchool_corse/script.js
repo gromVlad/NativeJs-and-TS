@@ -3991,6 +3991,440 @@ const newTask = new Task('Task2', new Date('2023/1/1'));
 console.log(newTask._dueDate = new Date()); // Output: <current date>, since it sets the _dueDate property directly
 
 //----------------------
+//Static
+//объявление не на ptototype  а в самом классе. Они не находяться в prototype
+'use strict';
+
+class Test {
+  static a = 1;
+  static hello() {
+    console.log('Hello');
+  }
+
+  static {
+    let b = 5;
+    this.a = 5;
+  }
+}
+
+Test.hello(); // Output: "Hello", as it calls the static method hello() that logs "Hello"
+console.log(Test.a); // Output: 5, as the static block in the class sets the value of static property a to 5
+
+//------------------------
+//Приватные методы и свойства
+//Приватные поля доступны только внутри
+
+'use strict';
+
+class Car {
+  #vin; // Private field
+  speed; // Instance property
+  #test2; 
+
+  constructor() {
+    //не можем сразу присвоить что то приватному методу нужно сначало объявить его в конструктора
+    this.#test2 = 5; // Private field
+    this.test3 = 5; // Instance property
+  }
+
+  //доступен только при помощи публичного метода
+  #changeVin() { // Private method
+    console.log('changed');
+  }
+
+  test() {
+    this.#changeVin(); // Calling the private method
+  }
+
+  //напрямую не можем никак повлиять
+  static #field = 3; // Private static field
+
+  //можем изменить через метод неприватный
+  static { // Static block
+    this.#field = 5; // Updating the private static field
+  }
+}
+
+const car = new Car(); // Creating a new instance of Car
+
+car.test(); // Output: "changed", as the test() method calls the private method #changeVin()
+
+//----------------------
+//Упражнение - класс пользователя
+'use strict';
+/*
+  Реализовать класс пользователя, со свойствами
+  - логин
+  - пароль
+  Причём пароль при установке должен переворачиваться
+  и в таком виде храниться.
+  Пароль и логин после создания изменить нельзя. Так же у
+  класса добавить методы
+  - Смены пароля (передаём старый и новый пароль)
+  - Сверки пароля
+*/
+
+class User {
+  #login; // Private field for login
+  #_passWord; // Private field for password
+
+  constructor(login, password) {
+    this.#login = login;
+    this.#passWord = password;
+  }
+
+  //для изменения this.#passWord
+  set #passWord(pass) {
+    this.#_passWord = pass.split('').reverse().join(''); // Reverse the password and store it
+  }
+
+  //получить this.#passWord
+  get #passWord() {
+    return this.#_passWord.split('').reverse().join(''); // Reverse the stored password and return it
+  }
+
+  get login() {
+    return this.#login;
+  }
+
+  checkPassword(pass) {
+    return this.#passWord === pass; 
+  }
+
+  changePassword(oldPass, newPass) {
+    if (!this.checkPassword(oldPass)) {
+      return false;
+    }
+    this.#passWord = newPass;
+    return true; 
+  }
+}
+
+const user = new User('a@a.ru', '123'); // Create a new user instance
+console.log(user.checkPassword('234')); // Output: false, as the provided password doesn't match the stored password
+console.log(user.checkPassword('123')); // Output: true, as the provided password matches the stored password
+console.log(user.changePassword('123', '234')); // Output: true, as the old password matches and the password is successfully changed
+console.log(user); // Output: User object with login and password properties (password is reversed)
+
+//--------------------
+//Object.create
+'use strict';
+
+const User = {
+  init(email, password) {
+    this.email = email;
+    this.password = password;
+  },
+  log() {
+    console.log('Log');
+  }
+};
+
+//фактический вручную создали цепочку прототипов
+const user = Object.create(User);
+//Объект на основании которого мы создаем кладеться в prototype
+console.log(user.__proto__ === User); //true
+user.log(); //'Log'
+
+user.init('a@a.ru', '123');
+console.log(user);
+/*
+Output:
+{
+  email: 'a@a.ru',
+  password: '123'
+}
+*/
+
+//Получили цепочку User -> user -> admin / в его prototype есть {email: 'a@a.ru',password: '123'} и также методы init() и log()
+//Получили механизм наследований информаций одного объекта в другое
+const admin = Object.create(user);
+console.log(admin);
+/*
+Output:
+{
+  email: 'a@a.ru',
+  password: '123'
+}
+*/
+admin.log(); // Output: Log 
+console.log(admin.email); // Output: 'a@a.ru' 
+
+//----------------------
+//Абстракция и инкапсуляция
+'use strict';
+/* Абстракция VS Инкапсуляция
+  - Название
+  - Режисёр
+  - Наш рейтинг
+  - Длительность
+  - Страна производства
+  - Актёры
+  - Трейлер
+  ...
+*/
+
+//Инкапсуляция #name; #author; #length;
+
+class Film {
+  #name;
+  #author;
+  rating;
+  #length;
+
+  constructor(name, author, length) {
+    this.#name = name;
+    this.#author = author;
+    this.#length = length;
+  }
+
+  get name() {
+    return this.#name;
+  }
+
+  get author() {
+    return this.#author;
+  }
+
+  get length() {
+    return this.#length;
+  }
+}
+
+const film = new Film('Avatar', 'Cameron', 240)
+console.log(film);//{rating: undefined, #name: 'Avatar', #author: 'Cameron', #length: 240}
+
+//--------------------
+//Наследование
+'use strict';
+//Objects (Objects.prototype) -> Book (Book.prototype) -> Audiobook (Audiobook.prototype)
+
+const Book = function (title, author) {
+  this.title = title;
+  this.author = author;
+}
+
+Book.prototype.buy = function () {
+  console.log('Buy');
+}
+
+const AudioBook = function (title, author, lenMin) {
+  //наследуем свойство с Book только передаем this AudioBook
+  Book.call(this, title, author);
+  this.lenMin = lenMin;
+}
+
+//очередь важна - сначало связываем цепочку а далее указываем контруктор
+//связываем цепочку прототипов
+AudioBook.prototype = Object.create(Book.prototype);
+//дополнительно указываем что конструктор будет равно AudioBook т.к. сейчас он указывает на Book
+AudioBook.prototype.constructor = AudioBook;
+
+AudioBook.prototype.log = function () {
+  console.log(`${this.title} - ${this.lenMin}`);
+}
+
+const book = new AudioBook('Lord Of The Rings', 'Tolkien', 20 * 60);
+book.log(); // Output: "Lord Of The Rings - 1200" 
+book.buy(); // Output: "Buy" - Logs "Buy" 
+console.log(book);
+/*
+Output:
+{
+  title: 'Lord Of The Rings',
+  author: 'Tolkien',
+  lenMin: 1200
+}
+*/
+console.log(book instanceof AudioBook); // Output: true 
+console.log(book instanceof Book); // Output: true 
+
+//----------------------
+//Наследование в ES6
+'use strict';
+
+//Objects (Objects.prototype) -> Book (Book.prototype) -> Audiobook (Audiobook.prototype)
+
+//то же самое только с классами
+class Book {
+  constructor(title, author) {
+    this.title = title;
+    this.author = author;
+  }
+
+  buy() {
+    console.log('Buy');
+  }
+}
+
+class AudioBook extends Book {
+  constructor(title, author, lenMin) {
+    super(title, author);
+    this.lenMin = lenMin;
+  }
+
+  log() {
+    console.log(`${this.title} - ${this.lenMin}`);
+  }
+}
+
+const book = new AudioBook('Lord Of The Rings', 'Tolkien', 60 * 20);
+book.log(); // Output: "Lord Of The Rings - 1200" 
+book.buy(); // Output: "Buy" 
+
+//-------------------------
+//Override методов
+
+'use strict';
+class Book {
+  constructor(title, author) {
+    this.title = title;
+    this.author = author;
+  }
+
+  info() {
+    console.log(`${this.title} - ${this.author}`);
+  }
+}
+
+const book1 = new Book('Lord Of The Rings', 'Tolkien');
+book1.info(); // Output: Lord Of The Rings - Tolkien
+
+class EBook extends Book {
+  constructor(title, author, pages) {
+    super(title, author);
+    this.pages = pages;
+  }
+
+  //хотим поменять поведения метода, получить расширенную версию
+  info() {
+    console.log(`${this.title} - ${this.author} - ${this.pages}`);
+  }
+}
+
+const book2 = new EBook('Lord Of The Rings', 'Tolkien', 100);
+book2.info(); // Output: Lord Of The Rings - Tolkien - 100
+
+//-----------------------------
+//Упражнение - Удар по орку
+/*
+Сделать класс врага со здоровьем и методом получения урона
+Сделать класс меча, который имеет силу и метод нанесения
+урона.
+Сделать класс орка, который в 50% случаев не получает урон.
+*/
+
+class Enemy {
+  health;
+  constructor(health) {
+    this.health = health;
+  }
+
+  recieveDamage(damage) {
+    this.health = this.health - damage;
+    console.log(this.health);
+  }
+}
+
+class Sword {
+  #damage;
+  constructor(damage) {
+    this.#damage = damage;
+  }
+
+  strike(enemy) {
+    enemy.recieveDamage(this.#damage);
+  }
+}
+
+class Orc extends Enemy {
+  constructor(health) {
+    super(health);
+  }
+
+  //Override метода но все свойства оригинала должны быть публичные
+  recieveDamage(damage) {
+    if (Math.random() > 0.5) {
+      this.health = this.health - damage;
+    }
+    console.log(this.health);
+  }
+}
+
+const enemy = new Orc(10);
+const sword = new Sword(3);
+sword.strike(enemy); // Orc's health: 7
+sword.strike(enemy); // Orc's health: 4 (50% chance to receive damage)
+sword.strike(enemy); // Orc's health: 1 (50% chance to receive damage)
+
+//------------------
+//Полиморфизм
+//Ad - hock  полиморфизм - возможность по разному исполнять функцию в зависемости от типов данных
+2 + 4 //6
+2 + "4" //6
+//Параметрический полиморфизм - можем исполнять одну и ту же функцию только с разным типом аргументов
+console.log(1);
+console.log('1');
+//Полиморфизм подтипов (OOП) 
+
+class Troll extends Enemy {
+
+}
+
+const enemy2 = new Troll(20);
+sword.strike(enemy); // Orc's health: 7
+sword.strike(enemy); // Orc's health: 4 (50% chance to receive damage)
+sword.strike(enemy); // Orc's health: 1 (50% chance to receive damage)
+
+sword.strike(enemy2); // Troll's health: 17
+sword.strike(enemy2); // Troll's health: 14 (50% chance to receive damage)
+sword.strike(enemy2); // Troll's health: 11 (50% chance to receive damage)
+
+//---------------------
+//Паттерн Builder и chaining
+'use strict';
+
+class Wallet {
+  balance = 0;
+
+  //реализуем цепочку с помощью возвращения объекта this
+  add(sum) {
+    this.balance += sum;
+    return this;
+  }
+
+  remove(sum) {
+    this.balance -= sum;
+    return this;
+  }
+}
+
+const wallet = new Wallet();
+const res = wallet
+  .add(100)
+  .remove(10)
+  .add(10);
+console.log(res.balance); // 100
+
+class Builder {
+  house = {};
+
+  addRoof() {
+    this.house.roof = 'Roof';
+    return this;
+  }
+
+  addFloor() {
+    this.house.floor = 'Floor';
+    return this;
+  }
+
+  execute() {
+    return this.house;
+  }
+}
+
+const res2 = new Builder().addRoof().addFloor().execute();
+console.log(res2); // { roof: 'Roof', floor: 'Floor' }
+
 //
-
-
