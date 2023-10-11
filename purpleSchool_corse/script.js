@@ -3070,4 +3070,927 @@ console.log(wetherMap.get(arr)); // 'array'
 console.log(wetherMap.get({ a: 1 })); // undefined
 
 //----------------------
+//Быстрое создание Map из Объекта
+const wetherMap = new Map([
+  ['London', '10'],
+  ['Moscow', '7'],
+]);
+console.log(wetherMap);// Map { 'London' => '10', 'Moscow' => '7' }
+
+const wetherObject = {
+  london: 10,
+  moscow: 7,
+  paris: 14
+};
+
+console.log(Object.entries(wetherObject));
+const wetherMap2 = new Map(Object.entries(wetherObject));//// [ [ 'london', 10 ], [ 'moscow', 7 ], [ 'paris', 14 ] ]
+console.log(wetherMap2.size);//3
+
+//--------------------
+//Итерация по Map
+'use strict';
+
+const weatherMap = new Map([
+  ['London', 10],
+  ['Moscow', 7],
+  ['Paris', 14],
+]);
+
+for (const [key, value] of weatherMap) {
+  console.log(key);
+  console.log(value);
+}
+// London
+// 10
+// Moscow
+// 7
+// Paris
+// 14
+
+//in Arrray
+console.log([...weatherMap]);//[ ['London', 10], ['Moscow', 7], ['Paris', 14] ]
+console.log([...weatherMap.keys()]);//[ 'London', 'Moscow', 'Paris' ]
+console.log([...weatherMap.values()]);//[ 10, 7, 14 ]
+
+//-----------------
+//Упражнение - swap ключей и значений
+'use strict';
+/* Необходимо поменять местами ключи и значения в следующем Map */
+let weatherMap = new Map([
+  ['London', 10],
+  ['Moscow', 7],
+  ['Paris', 14],
+]);
+
+weatherMap = new Map([...weatherMap].map(el => el.reverse()));
+console.log(weatherMap);
+
+// Результат:
+
+// Map { 10 => 'London', 7 => 'Moscow', 14 => 'Paris' }
+
+//------------------
+//WeakMap
+'use strict';
+let a = { a: 1 };
+let b = { b: 1 };
+
+const map = new WeakMap();
+
+//установить в кчестве ключа только объекты и массивы
+map.set(a, 'testA');
+map.set(b, 'testB');
+
+//получить
+console.log(map.get(a)); // 'testA'
+console.log(map.has(a)); // true
+console.log(map); // WeakMap { [Object: null prototype] { a: 1 } => 'testA', { b: 1 } => 'testB' }
+
+//удалил тот елемент т.к. он уже не явл. объектом
+a = null;
+setTimeout(() => {
+  console.log(map); // WeakMap { { b: 1 } => 'testB' }
+}, 1000);
+
+let cache = new WeakMap();
+
+function getValue(obj) {
+  if (!cache.has(obj)) {
+    const res = 1; /* сложные вычисления ))) */
+    cache.set(obj, res);
+  }
+  return cache.get(obj);
+}
+
+const res = getValue(b);
+console.log(res); // 1
+const res2 = getValue(b);
+console.log(res2); // 1
+
+//-----------------------
+//WeakSet
+//похожи на WeakMap
+'use strict';
+
+let a = { a: 1 };
+let b = { b: 2 };
+const set = new WeakSet([a, b]);
+a = null;
+setTimeout(() => {
+  console.log(set);
+}, 1000);
+
+// Результат (после 1 секунды):
+
+// WeakSet { { b: 2 } }
+
+//---------------------
+//Конвертация и проверка чисел
+'use strict';
+
+console.log(10 === 10.0); // true
+console.log(0.1 + 0.2 === 0.3); // false
+console.log(0.1 + 0.2); // 0.30000000000000004
+
+console.log(Number('10')); // 10
+console.log(+'20'); // 20
+
+//получить число в определенной системе исчеслений
+console.log(Number.parseInt('11', 10)); // 11
+console.log(Number.parseInt('11 sec', 10)); // 11
+console.log(Number.parseInt('sec 11', 10)); // NaN
+
+
+console.log(Number.parseFloat('11.5', 10)); // 11.5
+console.log(Number.parseFloat('11.5 sec', 10)); // 11.5
+console.log(Number.parseFloat('sec 11.5', 10)); // NaN
+
+//если не число то true
+console.log(Number.isNaN(Number('10sdfs'))); // true
+console.log(Number.isNaN(10 / 0)); // false
+
+//если только число вернет true  / не число и бесконечность вернет false
+console.log(Number.isFinite(10 / 0)); // false
+console.log(Number.isFinite(Number('10sdfs'))); // false
+console.log(Number.isFinite(10)); // true
+
+//если целое число то true
+console.log(Number.isInteger(10)); // true
+console.log(Number.isInteger(10.4)); // false
+
+//---------------------
+//Библиотека Math
+'use strict';
+
+console.log(Math.sqrt(36)); // 6
+//the same
+console.log(36 ** (1 / 2)); // 6
+console.log(Math.cbrt(27)); // 3
+//the same
+console.log(16 ** (1 / 4)); // 2
+
+console.log(Math.sign(-100)); // -1
+console.log(Math.sign(35)); // 1
+
+//абсолютный
+console.log(Math.abs(-100)); // 100
+console.log(Math.abs(100)); // 100
+
+//экспонента
+console.log(Math.exp(3)); // 20.085536923187668
+
+//max
+console.log(Math.max(1, -2, 10, 0, 19)); // 19
+console.log(Math.max(1, -2, '10', true, '19')); // 19
+console.log(Math.max(1, -2, '10', true, 1.2)); // 10
+console.log(Math.min(1, -2, 10, 0, 19)); // -2
+
+const arr = [1, -2, 10, 0, 19];
+console.log(Math.max(...arr)); // 19
+
+console.log(Math.random()); // Random number between 0 and 1
+
+//--------------------
+//Округление
+'use strict';
+
+//до ближайщего целого
+console.log(Math.round(1.4)); // 1
+console.log(Math.round(1.6)); // 2
+console.log(Math.round(1.499999)); // 1
+
+//до верхнего значения
+console.log(Math.ceil(1.1)); // 2
+console.log(Math.ceil(1)); // 1
+console.log(Math.ceil(0.1)); // 1
+
+//до нижнего значения
+console.log(Math.floor(0.1)); // 0
+console.log(Math.floor(2.9)); // 2
+
+//обрезать число 
+console.log(Math.trunc(2.9)); // 2
+console.log(Math.trunc(2.1)); // 2
+console.log(Math.trunc(1.1111)); // 1
+
+//округляет оптиционально (получаем строку)
+console.log(1.499999.toFixed(1)); // "1.5"
+console.log(Number((1.499999).toFixed(1))); // 1.5
+
+//------------------
+//Упражнение - Функция случайного числа
+function random(min, max) {
+  return Math.floor(Math.random() * (max - min + 1) + min);
+}
+
+console.log(random(1, 20));//7
+
+//-----------------
+//Оператор остатка от деления
+'use strict';
+
+console.log(15 / 2); // 7.5
+console.log(15 % 2); // 1 (остаток от деления 15 на 2)
+console.log(14 % 2); // 0 (остаток от деления 14 на 2)
+
+const isEven = n => n % 2 === 0;
+const isOdd = n => n % 2 === 1;
+function isEvenFunc(n) {
+  return n % 2 === 0;
+}
+
+console.log(isEven(17)); // false (17 нечетное число)
+console.log(isEven(12)); // true (12 четное число)
+console.log(isOdd(17)); // true (17 нечетное число)
+console.log(isOdd(12)); // false (12 четное число)
+
+//---------------
+//Разделитель чисел
+'use strict';
+
+//the same
+const bigNum1 = 350_500_000;
+const bigNum2 = 350500000;
+
+//the same
+const payment = 20_10;
+const paymentInR = 20.10;
+const paymentInR2 = 2_0.1_0;
+
+console.log(Number('350_500_000')); // NaN
+console.log(Number('350500000')); // 350500000
+//работает некоректно
+console.log(Number.parseInt('350_500_000')); // 350
+console.log(Number.parseFloat('350_500_000.10')); // 350500000.1
+
+//---------------
+//Работа с BigInt
+//позволяет работать с большими числами чем максимальное в js
+'use strict';
+
+const max = 2 ** 53 - 1;
+console.log(Number.MAX_SAFE_INTEGER); // 9007199254740991
+console.log(Number.MIN_SAFE_INTEGER); // -9007199254740991
+console.log(max); // 9007199254740991
+//дальше максимального числа нормально не будет показываться
+console.log(max + 1); // 9007199254740992
+console.log(max + 2); // 9007199254740992
+console.log(max + 3); // 9007199254740994
+
+console.log(2342342343524623465745345345n); // 2342342343524623465745345345n
+//не передовать число а строку т.к. может работать некоректно
+console.log(BigInt(2342342343524623465745345345)); // 2342342343524623465745345345n
+console.log(BigInt('2342342343524623465745345345')); // 2342342343524623465745345345n
+
+//можем только работать BigInt и BigInt / BigInt и число работает некоректно
+console.log(10n + 10n); // 20n
+console.log(10n + BigInt(10)); // 20n
+console.log(10n * 10n); // 100n
+console.log(2342342343524623465745345345n * 2342342343524623465745345345n); // 5485912915480688668270610812899933662610025n
+
+console.log(10n * BigInt(10)); // 100n
+console.log(10n / 3n); // 3n
+console.log(10 / 3); // 3.3333333333333335
+
+//сравнение работает и с обычными числами
+console.log(10n < 20); // true
+console.log(10n == 10); // true
+console.log(10n === 10); // false
+console.log(typeof 10n); // bigint
+
+//------------------
+//Интернационализация чисел
+//с помощью Intl API
+
+'use strict';
+
+const options1 = {
+  style: 'currency',
+  currency: 'RUB'
+};
+
+const options2 = {
+  style: 'currency',
+  currency: 'USD'
+};
+
+const options3 = {
+  style: 'decimal',
+};
+
+const options4 = {
+  style: 'percent',
+};
+
+const options5 = {
+  style: 'unit',
+  unit: 'celsius',
+};
+
+console.log(new Intl.NumberFormat('ru-RU', options1).format(23000)); // "23 000,00 ₽"
+console.log(new Intl.NumberFormat('en-US', options2).format(23000)); // "$23,000.00"
+console.log(new Intl.NumberFormat('ru-RU', options3).format(10000)); // "10 000"
+console.log(new Intl.NumberFormat('ru-RU', options4).format(0.1)); // "10%"
+console.log(new Intl.NumberFormat('ru-RU', options5).format(25)); // "25°C"
+
+//---------------------
+//Упражнение - Конвертер валют
+'use strict';
+/*
+  Напишите функцию, которая принимает 3 параметра:
+  - Сумма
+  - Валюта исходная
+  - Валюта для конвертации
+  И возвращает строку уже сконвертированной суммы с постфиксом
+  валюты. Если не смог, то null.
+  Для примера 3 валюты.
+*/
+
+function convert(sum, initialCurrency, convertCurrency) {
+  const allCurrencies = [
+    { name: 'USD', mult: 1 },
+    { name: 'RUB', mult: 1 / 60 },
+    { name: 'EUR', mult: 1.1 },
+  ];
+  const initial = allCurrencies.find(c => c.name === initialCurrency);
+  if (!initial) {
+    return null;
+  }
+  const convert = allCurrencies.find(c => c.name === convertCurrency);
+  if (!convert) {
+    return null;
+  }
+  return new Intl
+    .NumberFormat('ru-RU', { style: 'currency', currency: convert.name })
+    .format(sum * initial.mult / convert.mult);
+}
+
+console.log(convert(10000, 'RUB', 'USD')); // "$166.67"
+console.log(convert(10000, 'RUB', 'EUR')); // "€153.85"
+console.log(convert(100, 'USD', 'RUB')); // "6000 ₽"
+console.log(convert(100, 'USD', 'EUR')); // "€91.74"
+console.log(convert(100, 'EUR', 'RUB')); // "6600 ₽"
+console.log(convert(100, 'TG', 'RUB')); // null
+console.log(convert(100, 'EUR', 'TG')); // null
+
+//----------------------
+//Создание дат
+'use strict';
+
+const now = new Date();
+
+console.log(now); // Current date and time
+
+//прочитать определенную дату
+console.log(new Date('02-01-2023')); // Thu Feb 01 2023 00:00:00 GMT+0000 (Coordinated Universal Time)
+console.log(new Date('02/01/2023')); // Thu Feb 01 2023 00:00:00 GMT+0000 (Coordinated Universal Time)
+console.log(new Date('2023/01/02')); // Mon Jan 02 2023 00:00:00 GMT+0000 (Coordinated Universal Time)
+console.log(new Date('10 Jan 2023')); // Tue Jan 10 2023 00:00:00 GMT+0000 (Coordinated Universal Time)
+console.log(new Date('10 янв 2023')); // Tue Jan 10 2023 00:00:00 GMT+0000 (Coordinated Universal Time)
+console.log(new Date('Dec 22 2022 20:40:03')); // Thu Dec 22 2022 20:40:03 GMT+0000 (Coordinated Universal Time)
+
+//числовые данные передаем
+console.log(new Date(2024, 11, 31, 10, 5, 10)); // Wed Dec 31 2024 10:05:10 GMT+0000 (Coordinated Universal Time)
+console.log(new Date(2024, 12, 10 + 100)); // Invalid Date (January has an index of 0, so 12 is out of range)
+
+//стартовая дата (юникс время)
+console.log(new Date(0)); // Thu Jan 01 1970 02:00:00 GMT+0200 (Eastern European Standard Time)
+console.log(new Date(1 * 24 * 60 * 60 * 1000)); // Fri Jan 02 1970 02:00:00 GMT+0200 (Eastern European Standard Time)
+
+//милисекунды которые прошли с начало старта юникс времени
+console.log(Date.now()); // Current timestamp
+console.log(new Date(Date.now())); // Current date and time - текущую дату
+
+//методы даты получения
+console.log(now.getFullYear()); // Current year (e.g., 2023)
+console.log(now.getMonth()); // Current month (0-11, where 0 is January and 11 is December)
+console.log(now.getDate()); // Current day of the month (1-31)
+console.log(now.getDay()); // Current day of the week (0-6, where 0 is Sunday and 6 is Saturday)
+console.log(now.getHours()); // Current hour (0-23)
+console.log(now.getMinutes()); // Current minute (0-59)
+console.log(now.getTime()); // Current timestamp in milliseconds since January 1, 1970
+
+//получения будущей даты
+console.log(new Date(now.setFullYear(2030))); // Updated date with the year set to 2030
+console.log(new Date(now.setMonth(10))); // Updated date with the month set to November (index 10)
+
+//--------------------------
+//Операции с датами
+'use strict';
+
+const date1 = new Date(2024, 10, 15);
+const date2 = new Date(2024, 11, 15);
+console.log(Number(date1)); // 1742889600000 (timestamp in milliseconds)
+console.log(date2 - date1); // 2592000000 (difference in milliseconds)
+
+function getDaysBetweenDates(dateFirst, dateSecond) {
+  return Math.abs(dateSecond - dateFirst) / (1000 * 60 * 60 * 24);
+}
+
+console.log(getDaysBetweenDates(date1, date2)); // 30 (number of days between the two dates)
+
+//---------------------------
+//Сравнение дат
+'use strict';
+
+const first = new Date(2024, 10, 4);
+const second = new Date(2024, 10, 4);
+
+console.log(first < second); // false
+console.log(first == second); // false
+console.log(first === second); // false
+
+//нам нужно конвертировать в милисекунды либо в число
+console.log(first.getTime() == second.getTime()); // true
+console.log(first.getTime() === second.getTime()); // true
+console.log(Number(first) === Number(second)); // true
+console.log(+first === +second); // true
+
+//---------------------------
+//Упражнение - Проверка на день рождения
+'use strict';
+
+/*
+    Сделать функцию, которая принимает пользователя и
+    проверяет, есть ли у него сегодня день рождения или нет
+*/
+
+const user1 = {
+  name: 'Vasia',
+  birthday: '12/22/2022'
+};
+
+function isBirthday(user) {
+  const birthdayDate = new Date(user.birthday);
+  const now = new Date();
+  if (
+    birthdayDate.getMonth() === now.getMonth() &&
+    birthdayDate.getDate() === now.getDate()
+  ) {
+    return true;
+  }
+  return false;
+}
+
+console.log(isBirthday(user1));//false
+
+//--------------------
+//Интернационализация дат
 //
+
+'use strict';
+
+const date = new Date();
+
+console.log(date);//[Текущая дата и время] Wed Oct 11 2023 13:41:12 GMT+0300 (Москва, стандартное время)
+console.log(new Intl.DateTimeFormat('ru-RU').format(date)); //[Дата и время в формате ru - RU] 11.10.2023
+
+const options1 = {
+  hour: 'numeric',
+  minute: 'numeric'
+};
+
+console.log(new Intl.DateTimeFormat('ru-RU', options1).format(date));//[Дата и время в формате ru - RU с опциями] 13:41
+
+const options2 = {
+  hour: 'numeric',
+  minute: 'numeric',
+  month: 'long',
+  weekday: 'short',
+  year: '2-digit'
+};
+
+console.log(new Intl.DateTimeFormat('en-US', options2).format(date));//[Дата и время в формате en - US с опциями] October 23 Wed at 1:41 PM
+console.log(new Intl.DateTimeFormat('ru-RU', options2).format(date));//[Дата и время в формате ru - RU с опциями] октябрь 23 г. ср в 13:41
+
+console.log(navigator.language);//[Язык браузера] ru-RU
+console.log(new Intl.DateTimeFormat(navigator.language, options1).format(date));//[Дата и время в формате, соответствующем языку браузера с опциями] 13:41
+
+//------------------------
+//Создание таймеров
+setTimeout(() => {
+  console.log('hello');
+}, 3000,'finish'); //3c
+
+setTimeout((mes) => {
+  console.log(mes);
+}, 3000, 'finish'); // 3s -> 'finish'
+
+setTimeout((mes,mes2) => {
+  console.log(mes);
+  console.log(mes2);
+}, 3000, 'finish', "!!!"); // 3s -> 'finish' "!!!"
+
+const timer = setTimeout((mes, mes2) => {
+  console.log(mes);
+  console.log(mes2);
+}, 3000, 'finish', "!!!") //1 получили id таймера а потом отменили его
+
+//отменить таймер
+clearTimeout(timer)
+
+//---------------------
+//Таймеры и Event Loop
+console.log(1);
+
+setTimeout(() => {
+  console.log(2);
+}, 3000)
+
+console.log(3);
+
+//1 stack 
+//console.log(1);
+
+//2 stack -> web API
+//setTimeout -> web API пошел запрос в web API, передалось функция отложенная
+
+//3 stack
+//console.log(3);
+
+//4 Callback Queue
+//ждем секунду а далее setTimeout -> Callback Queue
+
+//5 stack
+/* (() => {
+  console.log(2);
+} */
+//помещаеться в стэк и выполняеться
+
+//-----------------
+//Точность таймеров
+'use strict';
+//не совсем точен в измерениях т.к. Event Loop надо время обхода и вот это дельта дает погрешность
+
+const mark1 = performance.now(); //число милисекунд с начало запуска приложения
+
+setTimeout(() => {
+  const mark2 = performance.now();
+  console.log(mark2 - mark1);
+}, 1000); //103 ,20 / 1104,30 -> разница больше 1 cекунды
+//1002
+
+//-----------------
+//Работа с интервалами
+'use strict';
+
+const interval = setInterval(() => {
+  console.log(new Date());
+}, 1000);
+
+//интервал прекратился через 5 секунд
+const timer = setTimeout(() => {
+  clearInterval(interval);
+}, 5000);
+
+//индефикаторы не пересекаються
+
+console.log(interval); // Output: <intervalId> 5 
+console.log(timer); // Output: <timerId> 6
+/* Wed Oct 11 2023 14:02:07 GMT+0300 (Москва, стандартное время)
+VM46:3 Wed Oct 11 2023 14:02:08 GMT+0300 (Москва, стандартное время)
+VM46:3 Wed Oct 11 2023 14:02:09 GMT+0300 (Москва, стандартное время)
+VM46:3 Wed Oct 11 2023 14:02:10 GMT+0300 (Москва, стандартное время)
+VM46:3 Wed Oct 11 2023 14:02:11 GMT+0300 (Москва, стандартное время) */
+
+//---------------------
+//Упражнение - Таймер пиццы
+'use strict';
+
+/* 
+  Таймер пиццы
+  Сделать таймер пиццы (функцию, принимающую время),
+  который будет выводить в консоль секунды,
+  оставшиеся до готовности пиццы и сообщение по готовности.
+  00:04
+  00:03
+  00:01
+  00:00
+  🍕!!!
+*/
+
+function pizzaTimer(ms) {
+  const end = new Date().getTime() + ms;
+  const interval = setInterval(() => {
+    console.log(
+      new Intl.DateTimeFormat('ru-RU', {
+        minute: 'numeric',
+        second: 'numeric'
+        //убираем погрешность Event Loop (+100)
+      }).format(end + 100 - new Date())
+    );
+  }, 1000);
+
+  setTimeout(() => {
+    clearInterval(interval);
+    console.log('🍕!!!');
+  }, ms);
+}
+
+pizzaTimer(5000);
+/* 00:04
+00:03
+00:02
+00:01 
+🍕!!!*/
+
+//---------------
+//Объектно ориентированное программирование
+//-Парадигма програмирование, основанного на концепции объектов
+//-Объекты мы описываем реальные модели из жизни
+//-Мы складываем все данные об объектах и его поведении внутри
+//-Из них мы строим приожения, позволяя им взаиможействовать между собой
+
+//Благдоря ООП более структурироваый код, легче его подерживать и читать
+
+//Классы и его instances
+//Class - определяет структуру
+//Обеспечивает простое взаимодействие -> new Objects
+
+//Принципы ООП
+//-Абстракция - выделение для решений задачи важного, скрывая несуществующие
+//-Инкапсуляция - обеспечивает возможность приватных методов которые не досупны извне
+//Наследование - возможность переиспользовать логику, перенаследовать данные
+//Полиморфизм - позволяет использовать объекты с одинаковыми интерфейсам без информации о типе и внутренней структуре
+
+//-------------
+//Реализация ООП в JS
+//С помощью наследования прототипов объекта
+//все наследованные объекты имеет доступ к прототипу, и не копирует все методы а использует прототип. Объект -> Прототип
+
+'use strict';
+
+const a = [1];
+console.dir(a);
+//[[Prototype]]:Array(0) -> прототип массива с его всеми методами они не копируються а просто доступны (как будто получаем ссылку на исходник который можем потом использовать у себя в коде), поэтому мы далее можем пользоваться всеми методами.
+
+//Прототипное наследование это основа благодоря чему мы можем создовать instances объекта
+
+//Существует 3 метода создание 
+//-Constructor functions
+//-ES6 Classes
+//-Objects.create()
+
+//-----------------------
+//Оператор new
+'use strict';
+
+//функция конструктор
+const User = function (email, password) {
+  this.email = email;
+  this.password = password + '%%%';
+};
+
+const user1 = new User('a@a.ru', '123');
+console.log(user1); // Output: User { email: 'a@a.ru', password: '123%%%' }
+
+const user2 = new User('a2@a.ru', '1234');
+console.log(user2); // Output: User { email: 'a2@a.ru', password: '1234%%%' }
+
+console.log(user2 instanceof User); // Output: true
+
+//Когда говорим new то:
+// Создаётся пустой объект
+// Вызывается User функция
+// this = пустому объекту / не undefined а пустой объект в котором мы можем что-то добовлять
+// объект связывается с prototype
+// возвращается объект
+
+//----------------------
+//Prototype
+'use strict';
+
+//функция конструктор
+const Book = function (title, author) {
+  this.author = author;
+  this.title = title;
+  this.isRead = false;
+  //не пишем функцию внутри т.к. функция создаться сразу внутри всех наследников
+};
+
+//добавить методы в prototype который будет доступен наследникам но не будет находиться в них
+Book.prototype.read = function () {
+  this.isRead = true;
+};
+
+//и в дополнении мы говорим что не у книги самой будет этот prototypе а создаем для будущих instances которые будут созданы из нашей книги 
+Book.prototype.cover = 'Paper';
+
+const lordOftheRing = new Book('Lord of the Rings', 'Tolkien');
+lordOftheRing.read();
+
+console.log(lordOftheRing);//{author: 'Tolkien', title: 'Lord of the Rings', isRead: true}
+console.log(lordOftheRing.cover);//Paper
+console.log(lordOftheRing.hasOwnProperty('cover')); // Output: false
+console.log(lordOftheRing.hasOwnProperty('author')); // Output: true
+
+//proto - увидеть что находиться в prototype
+console.log(lordOftheRing.__proto__);//{cover: 'Paper', read: ƒ, constructor: ƒ}
+
+console.log(lordOftheRing.__proto__ === Book.prototype); // Output: true
+//the same
+console.log(Book.prototype.isPrototypeOf(lordOftheRing)); // Output: true
+console.log(Book.prototype.isPrototypeOf(Book)); // Output: false
+
+//добавли метод в исходный конструктор 
+Array.prototype.first = function () {
+  // Custom prototype method
+};
+const a = [5];
+console.log(a.first); // Output: [Function: first]
+
+// Создаётся функция-конструктор Book
+// Внутри функции присваиваются свойства author, title и isRead объекту через this
+// Book.prototype содержит методы read и свойство cover
+// Создаётся экземпляр lordOftheRing с помощью конструктора Book
+// Вызывается метод read на экземпляре lordOftheRing
+// Выводятся свойства и методы экземпляра lordOftheRing
+// Выводится значение свойства cover через прототип
+// Выводится информация о принадлежности свойств к экземпляру или прототипу
+// Проверяется прототип объекта lordOftheRing и его соответствие Book.prototype
+// Проверяется прототип Book.prototype и его отношение к объекту Book
+// Добавляется пользовательский метод first в прототип Array
+// Выводится значение свойства first для массива a
+
+//---------------------
+//Упражнение - Корзина товаров
+
+/*
+  Реализовать на функциях и прототипах корзину товаров с методами
+  - Добавить товар
+  - Увеличить число товаров
+  - Уменьшить число товаров (удалить если их 0)
+*/
+const product = { id: 1, name: 'Bread', count: 1 };
+
+const Cart = function () {
+  this.products = [];
+}
+
+//Добавить товар
+Cart.prototype.addProduct = function (product) {
+  //если вдруг есть такой же продукт о ничего добовляем
+  if (this.products.find(product => product.id === product.id)) {
+    return;
+  }
+  this.products.push(product);
+}
+
+//Увеличить число товаров
+Cart.prototype.increaseAmount = function (id) {
+  this.products = this.products.map(product => {
+    if (product.id == id) {
+      product.count++;
+      return product;
+    }
+    return product;
+  })
+}
+
+//Уменьшить число товаров
+Cart.prototype.decreaseAmount = function (id) {
+  this.products = this.products
+    .map(product => {
+      if (product.id == id) {
+        product.count--;
+        return product;
+      }
+      return product;
+    })
+    //убирем тем что стали 0
+    .filter(product => product.count > 0);
+}
+
+const cart = new Cart();
+cart.addProduct(product);//{id: 1, name: 'Bread', count: 1}
+cart.increaseAmount(1);
+cart.decreaseAmount(1);
+cart.decreaseAmount(1);
+console.log(cart)//{id: 1, name: 'Bread', count: 0}
+
+const cart2 = new Cart();
+cart2.addProduct(product);
+console.log(cart2)//{id: 1, name: 'Bread', count: 1}
+
+//---------------------
+//Цепочки prototype
+'use strict';
+
+const Book = function (title, author) {
+  this.author = author;
+  this.title = title;
+}
+Book.prototype.isRead = false;
+
+const lordOfTheRings = new Book('1', '1');
+
+//если что то не найдет в самой Book то он пойдет по цепочке дальше в поисках нужного свойства или метода по цепочке (hasOwnProperty метод objects)
+console.log(lordOfTheRings.hasOwnProperty('title'));//true
+
+
+//Book.prototype есть прототип Objects , тоесть ссылка на исходный прототип нашей Book (new Objects)
+//Book (Book.prototype) <- __proto__ <-  Objects(Objects.prototype) <- null (последнее звено всегда null)
+console.log(Book.prototype.__proto__);//{constructor: ƒ, __defineGetter__: ƒ, __defineSetter__: ƒ, hasOwnProperty: ƒ, __lookupGetter__: ƒ, …} / методы объекта
+
+//Это цепочка выше и есть prototype цепочка
+
+//1)Пустой объект lordOfTheRings
+//2)Вызов конструктора и создание свойств author / title
+//3)Связывание с Book.prototype через ___proto__
+//4)Возврат вновь созданного объекта
+
+//-----------------------
+//Классы
+//основано на функции конструктора
+//классы не поднимаються наверх
+//да же если 'use strict'; мода нет все равно все будет работать как будто он включен
+
+//функция конструктор
+const Book = function (title, author) {
+  this.author = author;
+  this.title = title;
+  this.isRead = false;
+}
+Book.prototype.read = function () {
+  this.isRead = true;
+};
+
+//class
+class BookClass {
+  //сразу свойства со значением
+  isRead = false;
+
+  //по сути воспроизводит функцию конструктор
+  constructor(title, author) {
+    this.author = author;
+    this.title = title;
+  }
+
+  //добавляем методы
+  read() {
+    this.isRead = true;
+  }
+}
+
+const lotr = new BookClass('lotr', 'Tolkien');
+console.log(lotr);//BookClass {isRead: false, author: 'Tolkien', title: 'lotr'}
+console.log(lotr instanceof BookClass);//true
+lotr.read();//BookClass {isRead: true, author: 'Tolkien', title: 'lotr'}
+console.log(lotr.__proto__);// constructor:class BookClass и функция read: ƒ read()
+
+//----------------------
+//Setters и getters
+//возможность использовать методы как свойства
+
+'use strict';
+
+const task = {
+  title: 'Task1',
+  dueTo: new Date('2023/01/01'),
+
+  //получать значение
+  get isOverdue() {
+    return this.dueTo < new Date();
+  },
+
+  //присваивает значение обеспечивает дополнительную валидацию
+  set isOverdue(isOverdueTask) {
+    if (!isOverdueTask) {
+      this.dueTo = new Date();
+    }
+  }
+};
+
+//обращаемся как к свойсту
+console.log(task.isOverdue); // Output: true, since the current date is after the due date (2023/01/01)
+task.isOverdue = false; // This sets the task as not overdue, so it updates the dueTo date with the current date
+console.log(task); // Output: { title: 'Task1', dueTo: <current date> }
+
+
+class Task {
+  constructor(title, dueDate) {
+    this.title = title;
+    this.dueDate = dueDate;
+  }
+
+  get isOverdue() {
+    return this.dueDate < new Date();
+  }
+
+  set dueDate(date) {
+    if (date < new Date()) {
+      return;
+    }
+    this._dueDate = date;
+  }
+}
+
+const newTask = new Task('Task2', new Date('2023/1/1'));
+// console.log(newTask.dueDate = new Date('2024/1/1'));
+console.log(newTask._dueDate = new Date()); // Output: <current date>, since it sets the _dueDate property directly
+
+//----------------------
+//
+
+
