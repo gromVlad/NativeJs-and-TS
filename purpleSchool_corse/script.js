@@ -2991,4 +2991,83 @@ function addHabbit(event) {
 })();
 
 //-------------------------------
-//________
+//____________Javascript-advanced____________________
+
+//------------------
+//Sets
+//Множество - совокупность объектов, уникальных
+'use strict';
+
+const flights = ['Russia', 'USA', 'London', 'London', 'USA'];
+
+const setFlights = new Set(flights);
+console.log(setFlights);// Set { 'Russia', 'USA', 'London' }
+console.log(setFlights.size);//3
+console.log(setFlights.has('Russia'));//true
+setFlights.add('Paris');
+setFlights.delete('London');
+console.log(setFlights);// Set { 'Russia', 'USA', 'Paris' }
+
+for (const flight of setFlights) {
+  console.log(flight);
+}
+//Russia
+// USA
+// Paris
+
+console.log([...setFlights]);//['Russia', 'USA', 'Paris' ]
+
+const setObj = new Set([{ a: 1 }, { b: 2 }, { b: 2 }]);
+console.log(setObj);//Set { { a: 1 }, { b: 2 }, { b: 2 } } - уникакализации не получаем т.к. объекты
+console.log(new Set('abcd'));//Set { 'a', 'b', 'c', 'd' }
+
+//---------------------
+//Основы работы с Map
+//примитивная структура данных но очень производительная
+//-пустой по умолчанию
+//-любой ключ
+//-получения size
+//-оптимизирован для частых операций
+//-По умолчанию нет stringify / parse
+
+//создать
+const wetherMap = new Map();
+
+//наполнить (можно использовать цепочку)
+wetherMap
+  .set('London', '10')
+  .set('Moscow', '7');
+
+//получить
+console.log(wetherMap.get('Moscow')); // '7'
+console.log(wetherMap.get('not found')); // undefined
+
+//есть ли
+console.log(wetherMap.has('Moscow')); // true
+console.log(wetherMap.has('not found')); // false
+
+//удаление
+console.log(wetherMap.delete('London')); // true
+
+//очистить wetherMap.clear()
+
+//можем использовать что угодно вместо ключа если элементы одинаковый то будет сохранен последний как в  объекте
+wetherMap
+  .set(1, 5)
+  .set(true, 'yes')
+  .set(false, 'no')
+  .set(arr, 'array')
+  .set({ a: 1 }, { b: 1 });
+
+console.log(wetherMap);
+
+//размер
+console.log(wetherMap.size); // 7
+
+//не использует значения в качестве ключа поэтому нам надо его сначало отдельно создать а потом уже вызвать
+const arr = [1, 2, 3];
+console.log(wetherMap.get(arr)); // 'array'
+console.log(wetherMap.get({ a: 1 })); // undefined
+
+//----------------------
+//
