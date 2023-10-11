@@ -2829,8 +2829,166 @@ function addDays(event) {
   event.preventDefault();
   const data = new FormData(event.target);
   //получили значения input c name="comment"
-  console.log(data.get('comment'));
+  console.log(data.get("comment"));
 }
 
 //--------------------
-//
+//Добавление дня
+let globalActiveHabbitId;
+
+/*function rerender(activeHabbitId) {
+	   globalActiveHabbitId = activeHabbitId
+     . . .*/
+
+function addDays(event) {
+  const form = event.target;
+  event.preventDefault();
+  const data = new FormData(form);
+  const comment = data.get("comment");
+  form["comment"].classList.remove("error");
+  if (!comment) {
+    form["comment"].classList.add("error");
+  }
+  habbits = habbits.map((habbit) => {
+    if (habbit.id === globalActiveHabbitId) {
+      return {
+        ...habbit,
+        days: habbit.days.concat([{ comment }]),
+      };
+    }
+    return habbit;
+  });
+  form["comment"].value = "";
+  rerender(globalActiveHabbitId);
+  saveData();
+}
+
+//-----------------------
+//Удаление дня
+//<button class="habbit__delete" onclick="deleteDay(${index})">
+
+function deleteDay(index) {
+  habbits = habbits.map((habbit) => {
+    if (habbit.id === globalActiveHabbitId) {
+      habbit.days.splice(index, 1);
+      return {
+        ...habbit,
+        days: habbit.days,
+      };
+    }
+    return habbit;
+  });
+  rerender(globalActiveHabbitId);
+  saveData();
+}
+
+//--------------------------
+//Появление попап окна
+/* popup: {
+		index: document.getElementById('add-habbit-popup')
+	}
+  . . . 
+  
+  <div class="cover cover_hidden" id="add-habbit-popup">
+  <button class="menu__add" onclick="togglePopup()">
+  <button class="popup__close" onclick="togglePopup()">*/
+
+function togglePopup() {
+  if (page.popup.index.classList.contains("cover_hidden")) {
+    page.popup.index.classList.remove("cover_hidden");
+  } else {
+    page.popup.index.classList.add("cover_hidden");
+  }
+}
+
+//-----------------------
+//Select выбора иконки
+/* <button class="icon icon_active" onclick="setIcon(this, 'sport')"> 
+
+popup: {
+		index: document.getElementById('add-habbit-popup'),
+		iconField: document.querySelector('.popup__form input[name="icon"]')
+	}*/
+
+function setIcon(context, icon) {
+  page.popup.iconField.value = icon;
+  const activeIcon = document.querySelector(".icon.icon_active");
+  activeIcon.classList.remove("icon_active");
+  context.classList.add("icon_active");
+}
+
+//------------------------
+//Упражнение - форма добавления привычки
+
+//универсальная цункций сброса формы
+function resetForm(form, fields) {
+  for (const field of fields) {
+    form[field].value = "";
+  }
+}
+
+//универсальная цункций добовления формы
+function validateAndGetFormData(form, fields) {
+  const formData = new FormData(form);
+  const res = {};
+  for (const field of fields) {
+    const fieldValue = formData.get(field);
+    form[field].classList.remove("error");
+    if (!fieldValue) {
+      form[field].classList.add("error");
+    }
+    res[field] = fieldValue;
+  }
+  let isValid = true;
+  for (const field of fields) {
+    if (!res[field]) {
+      isValid = false;
+    }
+  }
+  if (!isValid) {
+    return;
+  }
+  return res;
+}
+
+//добовления данных из формы в стэйт
+function addHabbit(event) {
+  event.preventDefault();
+  const data = validateAndGetFormData(event.target, ["name", "icon", "target"]);
+  if (!data) {
+    return;
+  }
+  const maxId = habbits.reduce(
+    (acc, habbit) => (acc > habbit.id ? acc : habbit.id),
+    0
+  );
+  habbits.push({
+    id: maxId + 1,
+    name: data.name,
+    target: data.target,
+    icon: data.icon,
+    days: [],
+  });
+  resetForm(event.target, ["name", "target"]);
+  togglePopup();
+  saveData();
+  rerender(maxId + 1);
+}
+
+//-----------------------------
+//id привычки в url
+/* document.location.replace(document.location.pathname + '#' + activeHabbitId); */
+
+(() => {
+  loadData();
+  const hashId = Number(document.location.hash.replace('#', ''));
+  const urlHabbit = habbits.find(habbit => habbit.id == hashId);
+  if (urlHabbit) {
+    rerender(urlHabbit.id);
+  } else {
+    rerender(habbits[0].id);
+  }
+})();
+
+//-------------------------------
+//________
