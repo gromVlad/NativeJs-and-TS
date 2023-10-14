@@ -2981,8 +2981,8 @@ function addHabbit(event) {
 
 (() => {
   loadData();
-  const hashId = Number(document.location.hash.replace('#', ''));
-  const urlHabbit = habbits.find(habbit => habbit.id == hashId);
+  const hashId = Number(document.location.hash.replace("#", ""));
+  const urlHabbit = habbits.find((habbit) => habbit.id == hashId);
   if (urlHabbit) {
     rerender(urlHabbit.id);
   } else {
@@ -2996,17 +2996,17 @@ function addHabbit(event) {
 //------------------
 //Sets
 //Множество - совокупность объектов, уникальных
-'use strict';
+("use strict");
 
-const flights = ['Russia', 'USA', 'London', 'London', 'USA'];
+const flights = ["Russia", "USA", "London", "London", "USA"];
 
 const setFlights = new Set(flights);
-console.log(setFlights);// Set { 'Russia', 'USA', 'London' }
-console.log(setFlights.size);//3
-console.log(setFlights.has('Russia'));//true
-setFlights.add('Paris');
-setFlights.delete('London');
-console.log(setFlights);// Set { 'Russia', 'USA', 'Paris' }
+console.log(setFlights); // Set { 'Russia', 'USA', 'London' }
+console.log(setFlights.size); //3
+console.log(setFlights.has("Russia")); //true
+setFlights.add("Paris");
+setFlights.delete("London");
+console.log(setFlights); // Set { 'Russia', 'USA', 'Paris' }
 
 for (const flight of setFlights) {
   console.log(flight);
@@ -3015,11 +3015,11 @@ for (const flight of setFlights) {
 // USA
 // Paris
 
-console.log([...setFlights]);//['Russia', 'USA', 'Paris' ]
+console.log([...setFlights]); //['Russia', 'USA', 'Paris' ]
 
 const setObj = new Set([{ a: 1 }, { b: 2 }, { b: 2 }]);
-console.log(setObj);//Set { { a: 1 }, { b: 2 }, { b: 2 } } - уникакализации не получаем т.к. объекты
-console.log(new Set('abcd'));//Set { 'a', 'b', 'c', 'd' }
+console.log(setObj); //Set { { a: 1 }, { b: 2 }, { b: 2 } } - уникакализации не получаем т.к. объекты
+console.log(new Set("abcd")); //Set { 'a', 'b', 'c', 'd' }
 
 //---------------------
 //Основы работы с Map
@@ -3034,29 +3034,27 @@ console.log(new Set('abcd'));//Set { 'a', 'b', 'c', 'd' }
 const wetherMap = new Map();
 
 //наполнить (можно использовать цепочку)
-wetherMap
-  .set('London', '10')
-  .set('Moscow', '7');
+wetherMap.set("London", "10").set("Moscow", "7");
 
 //получить
-console.log(wetherMap.get('Moscow')); // '7'
-console.log(wetherMap.get('not found')); // undefined
+console.log(wetherMap.get("Moscow")); // '7'
+console.log(wetherMap.get("not found")); // undefined
 
 //есть ли
-console.log(wetherMap.has('Moscow')); // true
-console.log(wetherMap.has('not found')); // false
+console.log(wetherMap.has("Moscow")); // true
+console.log(wetherMap.has("not found")); // false
 
 //удаление
-console.log(wetherMap.delete('London')); // true
+console.log(wetherMap.delete("London")); // true
 
 //очистить wetherMap.clear()
 
 //можем использовать что угодно вместо ключа если элементы одинаковый то будет сохранен последний как в  объекте
 wetherMap
   .set(1, 5)
-  .set(true, 'yes')
-  .set(false, 'no')
-  .set(arr, 'array')
+  .set(true, "yes")
+  .set(false, "no")
+  .set(arr, "array")
   .set({ a: 1 }, { b: 1 });
 
 console.log(wetherMap);
@@ -3072,29 +3070,29 @@ console.log(wetherMap.get({ a: 1 })); // undefined
 //----------------------
 //Быстрое создание Map из Объекта
 const wetherMap = new Map([
-  ['London', '10'],
-  ['Moscow', '7'],
+  ["London", "10"],
+  ["Moscow", "7"],
 ]);
-console.log(wetherMap);// Map { 'London' => '10', 'Moscow' => '7' }
+console.log(wetherMap); // Map { 'London' => '10', 'Moscow' => '7' }
 
 const wetherObject = {
   london: 10,
   moscow: 7,
-  paris: 14
+  paris: 14,
 };
 
 console.log(Object.entries(wetherObject));
-const wetherMap2 = new Map(Object.entries(wetherObject));//// [ [ 'london', 10 ], [ 'moscow', 7 ], [ 'paris', 14 ] ]
-console.log(wetherMap2.size);//3
+const wetherMap2 = new Map(Object.entries(wetherObject)); //// [ [ 'london', 10 ], [ 'moscow', 7 ], [ 'paris', 14 ] ]
+console.log(wetherMap2.size); //3
 
 //--------------------
 //Итерация по Map
-'use strict';
+("use strict");
 
 const weatherMap = new Map([
-  ['London', 10],
-  ['Moscow', 7],
-  ['Paris', 14],
+  ["London", 10],
+  ["Moscow", 7],
+  ["Paris", 14],
 ]);
 
 for (const [key, value] of weatherMap) {
@@ -3109,21 +3107,21 @@ for (const [key, value] of weatherMap) {
 // 14
 
 //in Arrray
-console.log([...weatherMap]);//[ ['London', 10], ['Moscow', 7], ['Paris', 14] ]
-console.log([...weatherMap.keys()]);//[ 'London', 'Moscow', 'Paris' ]
-console.log([...weatherMap.values()]);//[ 10, 7, 14 ]
+console.log([...weatherMap]); //[ ['London', 10], ['Moscow', 7], ['Paris', 14] ]
+console.log([...weatherMap.keys()]); //[ 'London', 'Moscow', 'Paris' ]
+console.log([...weatherMap.values()]); //[ 10, 7, 14 ]
 
 //-----------------
 //Упражнение - swap ключей и значений
-'use strict';
+("use strict");
 /* Необходимо поменять местами ключи и значения в следующем Map */
 let weatherMap = new Map([
-  ['London', 10],
-  ['Moscow', 7],
-  ['Paris', 14],
+  ["London", 10],
+  ["Moscow", 7],
+  ["Paris", 14],
 ]);
 
-weatherMap = new Map([...weatherMap].map(el => el.reverse()));
+weatherMap = new Map([...weatherMap].map((el) => el.reverse()));
 console.log(weatherMap);
 
 // Результат:
@@ -3132,15 +3130,15 @@ console.log(weatherMap);
 
 //------------------
 //WeakMap
-'use strict';
+("use strict");
 let a = { a: 1 };
 let b = { b: 1 };
 
 const map = new WeakMap();
 
 //установить в кчестве ключа только объекты и массивы
-map.set(a, 'testA');
-map.set(b, 'testB');
+map.set(a, "testA");
+map.set(b, "testB");
 
 //получить
 console.log(map.get(a)); // 'testA'
@@ -3171,7 +3169,7 @@ console.log(res2); // 1
 //-----------------------
 //WeakSet
 //похожи на WeakMap
-'use strict';
+("use strict");
 
 let a = { a: 1 };
 let b = { b: 2 };
@@ -3187,32 +3185,31 @@ setTimeout(() => {
 
 //---------------------
 //Конвертация и проверка чисел
-'use strict';
+("use strict");
 
 console.log(10 === 10.0); // true
 console.log(0.1 + 0.2 === 0.3); // false
 console.log(0.1 + 0.2); // 0.30000000000000004
 
-console.log(Number('10')); // 10
-console.log(+'20'); // 20
+console.log(Number("10")); // 10
+console.log(+"20"); // 20
 
 //получить число в определенной системе исчеслений
-console.log(Number.parseInt('11', 10)); // 11
-console.log(Number.parseInt('11 sec', 10)); // 11
-console.log(Number.parseInt('sec 11', 10)); // NaN
+console.log(Number.parseInt("11", 10)); // 11
+console.log(Number.parseInt("11 sec", 10)); // 11
+console.log(Number.parseInt("sec 11", 10)); // NaN
 
-
-console.log(Number.parseFloat('11.5', 10)); // 11.5
-console.log(Number.parseFloat('11.5 sec', 10)); // 11.5
-console.log(Number.parseFloat('sec 11.5', 10)); // NaN
+console.log(Number.parseFloat("11.5", 10)); // 11.5
+console.log(Number.parseFloat("11.5 sec", 10)); // 11.5
+console.log(Number.parseFloat("sec 11.5", 10)); // NaN
 
 //если не число то true
-console.log(Number.isNaN(Number('10sdfs'))); // true
+console.log(Number.isNaN(Number("10sdfs"))); // true
 console.log(Number.isNaN(10 / 0)); // false
 
 //если только число вернет true  / не число и бесконечность вернет false
 console.log(Number.isFinite(10 / 0)); // false
-console.log(Number.isFinite(Number('10sdfs'))); // false
+console.log(Number.isFinite(Number("10sdfs"))); // false
 console.log(Number.isFinite(10)); // true
 
 //если целое число то true
@@ -3221,7 +3218,7 @@ console.log(Number.isInteger(10.4)); // false
 
 //---------------------
 //Библиотека Math
-'use strict';
+("use strict");
 
 console.log(Math.sqrt(36)); // 6
 //the same
@@ -3242,8 +3239,8 @@ console.log(Math.exp(3)); // 20.085536923187668
 
 //max
 console.log(Math.max(1, -2, 10, 0, 19)); // 19
-console.log(Math.max(1, -2, '10', true, '19')); // 19
-console.log(Math.max(1, -2, '10', true, 1.2)); // 10
+console.log(Math.max(1, -2, "10", true, "19")); // 19
+console.log(Math.max(1, -2, "10", true, 1.2)); // 10
 console.log(Math.min(1, -2, 10, 0, 19)); // -2
 
 const arr = [1, -2, 10, 0, 19];
@@ -3253,7 +3250,7 @@ console.log(Math.random()); // Random number between 0 and 1
 
 //--------------------
 //Округление
-'use strict';
+("use strict");
 
 //до ближайщего целого
 console.log(Math.round(1.4)); // 1
@@ -3269,13 +3266,13 @@ console.log(Math.ceil(0.1)); // 1
 console.log(Math.floor(0.1)); // 0
 console.log(Math.floor(2.9)); // 2
 
-//обрезать число 
+//обрезать число
 console.log(Math.trunc(2.9)); // 2
 console.log(Math.trunc(2.1)); // 2
 console.log(Math.trunc(1.1111)); // 1
 
 //округляет оптиционально (получаем строку)
-console.log(1.499999.toFixed(1)); // "1.5"
+console.log((1.499999).toFixed(1)); // "1.5"
 console.log(Number((1.499999).toFixed(1))); // 1.5
 
 //------------------
@@ -3284,18 +3281,18 @@ function random(min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
-console.log(random(1, 20));//7
+console.log(random(1, 20)); //7
 
 //-----------------
 //Оператор остатка от деления
-'use strict';
+("use strict");
 
 console.log(15 / 2); // 7.5
 console.log(15 % 2); // 1 (остаток от деления 15 на 2)
 console.log(14 % 2); // 0 (остаток от деления 14 на 2)
 
-const isEven = n => n % 2 === 0;
-const isOdd = n => n % 2 === 1;
+const isEven = (n) => n % 2 === 0;
+const isOdd = (n) => n % 2 === 1;
 function isEvenFunc(n) {
   return n % 2 === 0;
 }
@@ -3307,7 +3304,7 @@ console.log(isOdd(12)); // false (12 четное число)
 
 //---------------
 //Разделитель чисел
-'use strict';
+("use strict");
 
 //the same
 const bigNum1 = 350_500_000;
@@ -3315,19 +3312,19 @@ const bigNum2 = 350500000;
 
 //the same
 const payment = 20_10;
-const paymentInR = 20.10;
+const paymentInR = 20.1;
 const paymentInR2 = 2_0.1_0;
 
-console.log(Number('350_500_000')); // NaN
-console.log(Number('350500000')); // 350500000
+console.log(Number("350_500_000")); // NaN
+console.log(Number("350500000")); // 350500000
 //работает некоректно
-console.log(Number.parseInt('350_500_000')); // 350
-console.log(Number.parseFloat('350_500_000.10')); // 350500000.1
+console.log(Number.parseInt("350_500_000")); // 350
+console.log(Number.parseFloat("350_500_000.10")); // 350500000.1
 
 //---------------
 //Работа с BigInt
 //позволяет работать с большими числами чем максимальное в js
-'use strict';
+("use strict");
 
 const max = 2 ** 53 - 1;
 console.log(Number.MAX_SAFE_INTEGER); // 9007199254740991
@@ -3341,7 +3338,7 @@ console.log(max + 3); // 9007199254740994
 console.log(2342342343524623465745345345n); // 2342342343524623465745345345n
 //не передовать число а строку т.к. может работать некоректно
 console.log(BigInt(2342342343524623465745345345)); // 2342342343524623465745345345n
-console.log(BigInt('2342342343524623465745345345')); // 2342342343524623465745345345n
+console.log(BigInt("2342342343524623465745345345")); // 2342342343524623465745345345n
 
 //можем только работать BigInt и BigInt / BigInt и число работает некоректно
 console.log(10n + 10n); // 20n
@@ -3363,40 +3360,40 @@ console.log(typeof 10n); // bigint
 //Интернационализация чисел
 //с помощью Intl API
 
-'use strict';
+("use strict");
 
 const options1 = {
-  style: 'currency',
-  currency: 'RUB'
+  style: "currency",
+  currency: "RUB",
 };
 
 const options2 = {
-  style: 'currency',
-  currency: 'USD'
+  style: "currency",
+  currency: "USD",
 };
 
 const options3 = {
-  style: 'decimal',
+  style: "decimal",
 };
 
 const options4 = {
-  style: 'percent',
+  style: "percent",
 };
 
 const options5 = {
-  style: 'unit',
-  unit: 'celsius',
+  style: "unit",
+  unit: "celsius",
 };
 
-console.log(new Intl.NumberFormat('ru-RU', options1).format(23000)); // "23 000,00 ₽"
-console.log(new Intl.NumberFormat('en-US', options2).format(23000)); // "$23,000.00"
-console.log(new Intl.NumberFormat('ru-RU', options3).format(10000)); // "10 000"
-console.log(new Intl.NumberFormat('ru-RU', options4).format(0.1)); // "10%"
-console.log(new Intl.NumberFormat('ru-RU', options5).format(25)); // "25°C"
+console.log(new Intl.NumberFormat("ru-RU", options1).format(23000)); // "23 000,00 ₽"
+console.log(new Intl.NumberFormat("en-US", options2).format(23000)); // "$23,000.00"
+console.log(new Intl.NumberFormat("ru-RU", options3).format(10000)); // "10 000"
+console.log(new Intl.NumberFormat("ru-RU", options4).format(0.1)); // "10%"
+console.log(new Intl.NumberFormat("ru-RU", options5).format(25)); // "25°C"
 
 //---------------------
 //Упражнение - Конвертер валют
-'use strict';
+("use strict");
 /*
   Напишите функцию, которая принимает 3 параметра:
   - Сумма
@@ -3409,46 +3406,47 @@ console.log(new Intl.NumberFormat('ru-RU', options5).format(25)); // "25°C"
 
 function convert(sum, initialCurrency, convertCurrency) {
   const allCurrencies = [
-    { name: 'USD', mult: 1 },
-    { name: 'RUB', mult: 1 / 60 },
-    { name: 'EUR', mult: 1.1 },
+    { name: "USD", mult: 1 },
+    { name: "RUB", mult: 1 / 60 },
+    { name: "EUR", mult: 1.1 },
   ];
-  const initial = allCurrencies.find(c => c.name === initialCurrency);
+  const initial = allCurrencies.find((c) => c.name === initialCurrency);
   if (!initial) {
     return null;
   }
-  const convert = allCurrencies.find(c => c.name === convertCurrency);
+  const convert = allCurrencies.find((c) => c.name === convertCurrency);
   if (!convert) {
     return null;
   }
-  return new Intl
-    .NumberFormat('ru-RU', { style: 'currency', currency: convert.name })
-    .format(sum * initial.mult / convert.mult);
+  return new Intl.NumberFormat("ru-RU", {
+    style: "currency",
+    currency: convert.name,
+  }).format((sum * initial.mult) / convert.mult);
 }
 
-console.log(convert(10000, 'RUB', 'USD')); // "$166.67"
-console.log(convert(10000, 'RUB', 'EUR')); // "€153.85"
-console.log(convert(100, 'USD', 'RUB')); // "6000 ₽"
-console.log(convert(100, 'USD', 'EUR')); // "€91.74"
-console.log(convert(100, 'EUR', 'RUB')); // "6600 ₽"
-console.log(convert(100, 'TG', 'RUB')); // null
-console.log(convert(100, 'EUR', 'TG')); // null
+console.log(convert(10000, "RUB", "USD")); // "$166.67"
+console.log(convert(10000, "RUB", "EUR")); // "€153.85"
+console.log(convert(100, "USD", "RUB")); // "6000 ₽"
+console.log(convert(100, "USD", "EUR")); // "€91.74"
+console.log(convert(100, "EUR", "RUB")); // "6600 ₽"
+console.log(convert(100, "TG", "RUB")); // null
+console.log(convert(100, "EUR", "TG")); // null
 
 //----------------------
 //Создание дат
-'use strict';
+("use strict");
 
 const now = new Date();
 
 console.log(now); // Current date and time
 
 //прочитать определенную дату
-console.log(new Date('02-01-2023')); // Thu Feb 01 2023 00:00:00 GMT+0000 (Coordinated Universal Time)
-console.log(new Date('02/01/2023')); // Thu Feb 01 2023 00:00:00 GMT+0000 (Coordinated Universal Time)
-console.log(new Date('2023/01/02')); // Mon Jan 02 2023 00:00:00 GMT+0000 (Coordinated Universal Time)
-console.log(new Date('10 Jan 2023')); // Tue Jan 10 2023 00:00:00 GMT+0000 (Coordinated Universal Time)
-console.log(new Date('10 янв 2023')); // Tue Jan 10 2023 00:00:00 GMT+0000 (Coordinated Universal Time)
-console.log(new Date('Dec 22 2022 20:40:03')); // Thu Dec 22 2022 20:40:03 GMT+0000 (Coordinated Universal Time)
+console.log(new Date("02-01-2023")); // Thu Feb 01 2023 00:00:00 GMT+0000 (Coordinated Universal Time)
+console.log(new Date("02/01/2023")); // Thu Feb 01 2023 00:00:00 GMT+0000 (Coordinated Universal Time)
+console.log(new Date("2023/01/02")); // Mon Jan 02 2023 00:00:00 GMT+0000 (Coordinated Universal Time)
+console.log(new Date("10 Jan 2023")); // Tue Jan 10 2023 00:00:00 GMT+0000 (Coordinated Universal Time)
+console.log(new Date("10 янв 2023")); // Tue Jan 10 2023 00:00:00 GMT+0000 (Coordinated Universal Time)
+console.log(new Date("Dec 22 2022 20:40:03")); // Thu Dec 22 2022 20:40:03 GMT+0000 (Coordinated Universal Time)
 
 //числовые данные передаем
 console.log(new Date(2024, 11, 31, 10, 5, 10)); // Wed Dec 31 2024 10:05:10 GMT+0000 (Coordinated Universal Time)
@@ -3477,7 +3475,7 @@ console.log(new Date(now.setMonth(10))); // Updated date with the month set to N
 
 //--------------------------
 //Операции с датами
-'use strict';
+("use strict");
 
 const date1 = new Date(2024, 10, 15);
 const date2 = new Date(2024, 11, 15);
@@ -3492,7 +3490,7 @@ console.log(getDaysBetweenDates(date1, date2)); // 30 (number of days between th
 
 //---------------------------
 //Сравнение дат
-'use strict';
+("use strict");
 
 const first = new Date(2024, 10, 4);
 const second = new Date(2024, 10, 4);
@@ -3509,7 +3507,7 @@ console.log(+first === +second); // true
 
 //---------------------------
 //Упражнение - Проверка на день рождения
-'use strict';
+("use strict");
 
 /*
     Сделать функцию, которая принимает пользователя и
@@ -3517,8 +3515,8 @@ console.log(+first === +second); // true
 */
 
 const user1 = {
-  name: 'Vasia',
-  birthday: '12/22/2022'
+  name: "Vasia",
+  birthday: "12/22/2022",
 };
 
 function isBirthday(user) {
@@ -3533,62 +3531,80 @@ function isBirthday(user) {
   return false;
 }
 
-console.log(isBirthday(user1));//false
+console.log(isBirthday(user1)); //false
 
 //--------------------
 //Интернационализация дат
 //
 
-'use strict';
+("use strict");
 
 const date = new Date();
 
-console.log(date);//[Текущая дата и время] Wed Oct 11 2023 13:41:12 GMT+0300 (Москва, стандартное время)
-console.log(new Intl.DateTimeFormat('ru-RU').format(date)); //[Дата и время в формате ru - RU] 11.10.2023
+console.log(date); //[Текущая дата и время] Wed Oct 11 2023 13:41:12 GMT+0300 (Москва, стандартное время)
+console.log(new Intl.DateTimeFormat("ru-RU").format(date)); //[Дата и время в формате ru - RU] 11.10.2023
 
 const options1 = {
-  hour: 'numeric',
-  minute: 'numeric'
+  hour: "numeric",
+  minute: "numeric",
 };
 
-console.log(new Intl.DateTimeFormat('ru-RU', options1).format(date));//[Дата и время в формате ru - RU с опциями] 13:41
+console.log(new Intl.DateTimeFormat("ru-RU", options1).format(date)); //[Дата и время в формате ru - RU с опциями] 13:41
 
 const options2 = {
-  hour: 'numeric',
-  minute: 'numeric',
-  month: 'long',
-  weekday: 'short',
-  year: '2-digit'
+  hour: "numeric",
+  minute: "numeric",
+  month: "long",
+  weekday: "short",
+  year: "2-digit",
 };
 
-console.log(new Intl.DateTimeFormat('en-US', options2).format(date));//[Дата и время в формате en - US с опциями] October 23 Wed at 1:41 PM
-console.log(new Intl.DateTimeFormat('ru-RU', options2).format(date));//[Дата и время в формате ru - RU с опциями] октябрь 23 г. ср в 13:41
+console.log(new Intl.DateTimeFormat("en-US", options2).format(date)); //[Дата и время в формате en - US с опциями] October 23 Wed at 1:41 PM
+console.log(new Intl.DateTimeFormat("ru-RU", options2).format(date)); //[Дата и время в формате ru - RU с опциями] октябрь 23 г. ср в 13:41
 
-console.log(navigator.language);//[Язык браузера] ru-RU
-console.log(new Intl.DateTimeFormat(navigator.language, options1).format(date));//[Дата и время в формате, соответствующем языку браузера с опциями] 13:41
+console.log(navigator.language); //[Язык браузера] ru-RU
+console.log(new Intl.DateTimeFormat(navigator.language, options1).format(date)); //[Дата и время в формате, соответствующем языку браузера с опциями] 13:41
 
 //------------------------
 //Создание таймеров
-setTimeout(() => {
-  console.log('hello');
-}, 3000,'finish'); //3c
+setTimeout(
+  () => {
+    console.log("hello");
+  },
+  3000,
+  "finish"
+); //3c
 
-setTimeout((mes) => {
-  console.log(mes);
-}, 3000, 'finish'); // 3s -> 'finish'
+setTimeout(
+  (mes) => {
+    console.log(mes);
+  },
+  3000,
+  "finish"
+); // 3s -> 'finish'
 
-setTimeout((mes,mes2) => {
-  console.log(mes);
-  console.log(mes2);
-}, 3000, 'finish', "!!!"); // 3s -> 'finish' "!!!"
+setTimeout(
+  (mes, mes2) => {
+    console.log(mes);
+    console.log(mes2);
+  },
+  3000,
+  "finish",
+  "!!!"
+); // 3s -> 'finish' "!!!"
 
-const timer = setTimeout((mes, mes2) => {
-  console.log(mes);
-  console.log(mes2);
-}, 3000, 'finish', "!!!") //1 получили id таймера а потом отменили его
+const timer = setTimeout(
+  (mes, mes2) => {
+    console.log(mes);
+    console.log(mes2);
+  },
+  3000,
+  "finish",
+  "!!!"
+); //1 получили id таймера а потом отменили его
 
 //отменить таймер
-clearTimeout(timer)
+clearTimeout(timer);
 
 //---------------------
 //Таймеры и Event Loop
@@ -3596,11 +3612,11 @@ console.log(1);
 
 setTimeout(() => {
   console.log(2);
-}, 3000)
+}, 3000);
 
 console.log(3);
 
-//1 stack 
+//1 stack
 //console.log(1);
 
 //2 stack -> web API
@@ -3620,7 +3636,7 @@ console.log(3);
 
 //-----------------
 //Точность таймеров
-'use strict';
+("use strict");
 //не совсем точен в измерениях т.к. Event Loop надо время обхода и вот это дельта дает погрешность
 
 const mark1 = performance.now(); //число милисекунд с начало запуска приложения
@@ -3633,7 +3649,7 @@ setTimeout(() => {
 
 //-----------------
 //Работа с интервалами
-'use strict';
+("use strict");
 
 const interval = setInterval(() => {
   console.log(new Date());
@@ -3646,7 +3662,7 @@ const timer = setTimeout(() => {
 
 //индефикаторы не пересекаються
 
-console.log(interval); // Output: <intervalId> 5 
+console.log(interval); // Output: <intervalId> 5
 console.log(timer); // Output: <timerId> 6
 /* Wed Oct 11 2023 14:02:07 GMT+0300 (Москва, стандартное время)
 VM46:3 Wed Oct 11 2023 14:02:08 GMT+0300 (Москва, стандартное время)
@@ -3656,7 +3672,7 @@ VM46:3 Wed Oct 11 2023 14:02:11 GMT+0300 (Москва, стандартное �
 
 //---------------------
 //Упражнение - Таймер пиццы
-'use strict';
+("use strict");
 
 /* 
   Таймер пиццы
@@ -3674,9 +3690,9 @@ function pizzaTimer(ms) {
   const end = new Date().getTime() + ms;
   const interval = setInterval(() => {
     console.log(
-      new Intl.DateTimeFormat('ru-RU', {
-        minute: 'numeric',
-        second: 'numeric'
+      new Intl.DateTimeFormat("ru-RU", {
+        minute: "numeric",
+        second: "numeric",
         //убираем погрешность Event Loop (+100)
       }).format(end + 100 - new Date())
     );
@@ -3684,7 +3700,7 @@ function pizzaTimer(ms) {
 
   setTimeout(() => {
     clearInterval(interval);
-    console.log('🍕!!!');
+    console.log("🍕!!!");
   }, ms);
 }
 
@@ -3719,7 +3735,7 @@ pizzaTimer(5000);
 //С помощью наследования прототипов объекта
 //все наследованные объекты имеет доступ к прототипу, и не копирует все методы а использует прототип. Объект -> Прототип
 
-'use strict';
+("use strict");
 
 const a = [1];
 console.dir(a);
@@ -3727,25 +3743,25 @@ console.dir(a);
 
 //Прототипное наследование это основа благодоря чему мы можем создовать instances объекта
 
-//Существует 3 метода создание 
+//Существует 3 метода создание
 //-Constructor functions
 //-ES6 Classes
 //-Objects.create()
 
 //-----------------------
 //Оператор new
-'use strict';
+("use strict");
 
 //функция конструктор
 const User = function (email, password) {
   this.email = email;
-  this.password = password + '%%%';
+  this.password = password + "%%%";
 };
 
-const user1 = new User('a@a.ru', '123');
+const user1 = new User("a@a.ru", "123");
 console.log(user1); // Output: User { email: 'a@a.ru', password: '123%%%' }
 
-const user2 = new User('a2@a.ru', '1234');
+const user2 = new User("a2@a.ru", "1234");
 console.log(user2); // Output: User { email: 'a2@a.ru', password: '1234%%%' }
 
 console.log(user2 instanceof User); // Output: true
@@ -3759,7 +3775,7 @@ console.log(user2 instanceof User); // Output: true
 
 //----------------------
 //Prototype
-'use strict';
+("use strict");
 
 //функция конструктор
 const Book = function (title, author) {
@@ -3774,26 +3790,26 @@ Book.prototype.read = function () {
   this.isRead = true;
 };
 
-//и в дополнении мы говорим что не у книги самой будет этот prototypе а создаем для будущих instances которые будут созданы из нашей книги 
-Book.prototype.cover = 'Paper';
+//и в дополнении мы говорим что не у книги самой будет этот prototypе а создаем для будущих instances которые будут созданы из нашей книги
+Book.prototype.cover = "Paper";
 
-const lordOftheRing = new Book('Lord of the Rings', 'Tolkien');
+const lordOftheRing = new Book("Lord of the Rings", "Tolkien");
 lordOftheRing.read();
 
-console.log(lordOftheRing);//{author: 'Tolkien', title: 'Lord of the Rings', isRead: true}
-console.log(lordOftheRing.cover);//Paper
-console.log(lordOftheRing.hasOwnProperty('cover')); // Output: false
-console.log(lordOftheRing.hasOwnProperty('author')); // Output: true
+console.log(lordOftheRing); //{author: 'Tolkien', title: 'Lord of the Rings', isRead: true}
+console.log(lordOftheRing.cover); //Paper
+console.log(lordOftheRing.hasOwnProperty("cover")); // Output: false
+console.log(lordOftheRing.hasOwnProperty("author")); // Output: true
 
 //proto - увидеть что находиться в prototype
-console.log(lordOftheRing.__proto__);//{cover: 'Paper', read: ƒ, constructor: ƒ}
+console.log(lordOftheRing.__proto__); //{cover: 'Paper', read: ƒ, constructor: ƒ}
 
 console.log(lordOftheRing.__proto__ === Book.prototype); // Output: true
 //the same
 console.log(Book.prototype.isPrototypeOf(lordOftheRing)); // Output: true
 console.log(Book.prototype.isPrototypeOf(Book)); // Output: false
 
-//добавли метод в исходный конструктор 
+//добавли метод в исходный конструктор
 Array.prototype.first = function () {
   // Custom prototype method
 };
@@ -3822,36 +3838,36 @@ console.log(a.first); // Output: [Function: first]
   - Увеличить число товаров
   - Уменьшить число товаров (удалить если их 0)
 */
-const product = { id: 1, name: 'Bread', count: 1 };
+const product = { id: 1, name: "Bread", count: 1 };
 
 const Cart = function () {
   this.products = [];
-}
+};
 
 //Добавить товар
 Cart.prototype.addProduct = function (product) {
   //если вдруг есть такой же продукт о ничего добовляем
-  if (this.products.find(product => product.id === product.id)) {
+  if (this.products.find((product) => product.id === product.id)) {
     return;
   }
   this.products.push(product);
-}
+};
 
 //Увеличить число товаров
 Cart.prototype.increaseAmount = function (id) {
-  this.products = this.products.map(product => {
+  this.products = this.products.map((product) => {
     if (product.id == id) {
       product.count++;
       return product;
     }
     return product;
-  })
-}
+  });
+};
 
 //Уменьшить число товаров
 Cart.prototype.decreaseAmount = function (id) {
   this.products = this.products
-    .map(product => {
+    .map((product) => {
       if (product.id == id) {
         product.count--;
         return product;
@@ -3859,39 +3875,38 @@ Cart.prototype.decreaseAmount = function (id) {
       return product;
     })
     //убирем тем что стали 0
-    .filter(product => product.count > 0);
-}
+    .filter((product) => product.count > 0);
+};
 
 const cart = new Cart();
-cart.addProduct(product);//{id: 1, name: 'Bread', count: 1}
+cart.addProduct(product); //{id: 1, name: 'Bread', count: 1}
 cart.increaseAmount(1);
 cart.decreaseAmount(1);
 cart.decreaseAmount(1);
-console.log(cart)//{id: 1, name: 'Bread', count: 0}
+console.log(cart); //{id: 1, name: 'Bread', count: 0}
 
 const cart2 = new Cart();
 cart2.addProduct(product);
-console.log(cart2)//{id: 1, name: 'Bread', count: 1}
+console.log(cart2); //{id: 1, name: 'Bread', count: 1}
 
 //---------------------
 //Цепочки prototype
-'use strict';
+("use strict");
 
 const Book = function (title, author) {
   this.author = author;
   this.title = title;
-}
+};
 Book.prototype.isRead = false;
 
-const lordOfTheRings = new Book('1', '1');
+const lordOfTheRings = new Book("1", "1");
 
 //если что то не найдет в самой Book то он пойдет по цепочке дальше в поисках нужного свойства или метода по цепочке (hasOwnProperty метод objects)
-console.log(lordOfTheRings.hasOwnProperty('title'));//true
-
+console.log(lordOfTheRings.hasOwnProperty("title")); //true
 
 //Book.prototype есть прототип Objects , тоесть ссылка на исходный прототип нашей Book (new Objects)
 //Book (Book.prototype) <- __proto__ <-  Objects(Objects.prototype) <- null (последнее звено всегда null)
-console.log(Book.prototype.__proto__);//{constructor: ƒ, __defineGetter__: ƒ, __defineSetter__: ƒ, hasOwnProperty: ƒ, __lookupGetter__: ƒ, …} / методы объекта
+console.log(Book.prototype.__proto__); //{constructor: ƒ, __defineGetter__: ƒ, __defineSetter__: ƒ, hasOwnProperty: ƒ, __lookupGetter__: ƒ, …} / методы объекта
 
 //Это цепочка выше и есть prototype цепочка
 
@@ -3911,7 +3926,7 @@ const Book = function (title, author) {
   this.author = author;
   this.title = title;
   this.isRead = false;
-}
+};
 Book.prototype.read = function () {
   this.isRead = true;
 };
@@ -3933,21 +3948,21 @@ class BookClass {
   }
 }
 
-const lotr = new BookClass('lotr', 'Tolkien');
-console.log(lotr);//BookClass {isRead: false, author: 'Tolkien', title: 'lotr'}
-console.log(lotr instanceof BookClass);//true
-lotr.read();//BookClass {isRead: true, author: 'Tolkien', title: 'lotr'}
-console.log(lotr.__proto__);// constructor:class BookClass и функция read: ƒ read()
+const lotr = new BookClass("lotr", "Tolkien");
+console.log(lotr); //BookClass {isRead: false, author: 'Tolkien', title: 'lotr'}
+console.log(lotr instanceof BookClass); //true
+lotr.read(); //BookClass {isRead: true, author: 'Tolkien', title: 'lotr'}
+console.log(lotr.__proto__); // constructor:class BookClass и функция read: ƒ read()
 
 //----------------------
 //Setters и getters
 //возможность использовать методы как свойства
 
-'use strict';
+("use strict");
 
 const task = {
-  title: 'Task1',
-  dueTo: new Date('2023/01/01'),
+  title: "Task1",
+  dueTo: new Date("2023/01/01"),
 
   //получать значение
   get isOverdue() {
@@ -3959,14 +3974,13 @@ const task = {
     if (!isOverdueTask) {
       this.dueTo = new Date();
     }
-  }
+  },
 };
 
 //обращаемся как к свойсту
 console.log(task.isOverdue); // Output: true, since the current date is after the due date (2023/01/01)
 task.isOverdue = false; // This sets the task as not overdue, so it updates the dueTo date with the current date
 console.log(task); // Output: { title: 'Task1', dueTo: <current date> }
-
 
 class Task {
   constructor(title, dueDate) {
@@ -3986,19 +4000,19 @@ class Task {
   }
 }
 
-const newTask = new Task('Task2', new Date('2023/1/1'));
+const newTask = new Task("Task2", new Date("2023/1/1"));
 // console.log(newTask.dueDate = new Date('2024/1/1'));
-console.log(newTask._dueDate = new Date()); // Output: <current date>, since it sets the _dueDate property directly
+console.log((newTask._dueDate = new Date())); // Output: <current date>, since it sets the _dueDate property directly
 
 //----------------------
 //Static
 //объявление не на ptototype  а в самом классе. Они не находяться в prototype
-'use strict';
+("use strict");
 
 class Test {
   static a = 1;
   static hello() {
-    console.log('Hello');
+    console.log("Hello");
   }
 
   static {
@@ -4014,12 +4028,12 @@ console.log(Test.a); // Output: 5, as the static block in the class sets the val
 //Приватные методы и свойства
 //Приватные поля доступны только внутри
 
-'use strict';
+("use strict");
 
 class Car {
   #vin; // Private field
   speed; // Instance property
-  #test2; 
+  #test2;
 
   constructor() {
     //не можем сразу присвоить что то приватному методу нужно сначало объявить его в конструктора
@@ -4028,8 +4042,9 @@ class Car {
   }
 
   //доступен только при помощи публичного метода
-  #changeVin() { // Private method
-    console.log('changed');
+  #changeVin() {
+    // Private method
+    console.log("changed");
   }
 
   test() {
@@ -4040,7 +4055,8 @@ class Car {
   static #field = 3; // Private static field
 
   //можем изменить через метод неприватный
-  static { // Static block
+  static {
+    // Static block
     this.#field = 5; // Updating the private static field
   }
 }
@@ -4051,7 +4067,7 @@ car.test(); // Output: "changed", as the test() method calls the private method 
 
 //----------------------
 //Упражнение - класс пользователя
-'use strict';
+("use strict");
 /*
   Реализовать класс пользователя, со свойствами
   - логин
@@ -4075,12 +4091,12 @@ class User {
 
   //для изменения this.#passWord
   set #passWord(pass) {
-    this.#_passWord = pass.split('').reverse().join(''); // Reverse the password and store it
+    this.#_passWord = pass.split("").reverse().join(""); // Reverse the password and store it
   }
 
   //получить this.#passWord
   get #passWord() {
-    return this.#_passWord.split('').reverse().join(''); // Reverse the stored password and return it
+    return this.#_passWord.split("").reverse().join(""); // Reverse the stored password and return it
   }
 
   get login() {
@@ -4088,7 +4104,7 @@ class User {
   }
 
   checkPassword(pass) {
-    return this.#passWord === pass; 
+    return this.#passWord === pass;
   }
 
   changePassword(oldPass, newPass) {
@@ -4096,19 +4112,19 @@ class User {
       return false;
     }
     this.#passWord = newPass;
-    return true; 
+    return true;
   }
 }
 
-const user = new User('a@a.ru', '123'); // Create a new user instance
-console.log(user.checkPassword('234')); // Output: false, as the provided password doesn't match the stored password
-console.log(user.checkPassword('123')); // Output: true, as the provided password matches the stored password
-console.log(user.changePassword('123', '234')); // Output: true, as the old password matches and the password is successfully changed
+const user = new User("a@a.ru", "123"); // Create a new user instance
+console.log(user.checkPassword("234")); // Output: false, as the provided password doesn't match the stored password
+console.log(user.checkPassword("123")); // Output: true, as the provided password matches the stored password
+console.log(user.changePassword("123", "234")); // Output: true, as the old password matches and the password is successfully changed
 console.log(user); // Output: User object with login and password properties (password is reversed)
 
 //--------------------
 //Object.create
-'use strict';
+("use strict");
 
 const User = {
   init(email, password) {
@@ -4116,8 +4132,8 @@ const User = {
     this.password = password;
   },
   log() {
-    console.log('Log');
-  }
+    console.log("Log");
+  },
 };
 
 //фактический вручную создали цепочку прототипов
@@ -4126,7 +4142,7 @@ const user = Object.create(User);
 console.log(user.__proto__ === User); //true
 user.log(); //'Log'
 
-user.init('a@a.ru', '123');
+user.init("a@a.ru", "123");
 console.log(user);
 /*
 Output:
@@ -4147,12 +4163,12 @@ Output:
   password: '123'
 }
 */
-admin.log(); // Output: Log 
-console.log(admin.email); // Output: 'a@a.ru' 
+admin.log(); // Output: Log
+console.log(admin.email); // Output: 'a@a.ru'
 
 //----------------------
 //Абстракция и инкапсуляция
-'use strict';
+("use strict");
 /* Абстракция VS Инкапсуляция
   - Название
   - Режисёр
@@ -4191,28 +4207,28 @@ class Film {
   }
 }
 
-const film = new Film('Avatar', 'Cameron', 240)
-console.log(film);//{rating: undefined, #name: 'Avatar', #author: 'Cameron', #length: 240}
+const film = new Film("Avatar", "Cameron", 240);
+console.log(film); //{rating: undefined, #name: 'Avatar', #author: 'Cameron', #length: 240}
 
 //--------------------
 //Наследование
-'use strict';
+("use strict");
 //Objects (Objects.prototype) -> Book (Book.prototype) -> Audiobook (Audiobook.prototype)
 
 const Book = function (title, author) {
   this.title = title;
   this.author = author;
-}
+};
 
 Book.prototype.buy = function () {
-  console.log('Buy');
-}
+  console.log("Buy");
+};
 
 const AudioBook = function (title, author, lenMin) {
   //наследуем свойство с Book только передаем this AudioBook
   Book.call(this, title, author);
   this.lenMin = lenMin;
-}
+};
 
 //очередь важна - сначало связываем цепочку а далее указываем контруктор
 //связываем цепочку прототипов
@@ -4222,11 +4238,11 @@ AudioBook.prototype.constructor = AudioBook;
 
 AudioBook.prototype.log = function () {
   console.log(`${this.title} - ${this.lenMin}`);
-}
+};
 
-const book = new AudioBook('Lord Of The Rings', 'Tolkien', 20 * 60);
-book.log(); // Output: "Lord Of The Rings - 1200" 
-book.buy(); // Output: "Buy" - Logs "Buy" 
+const book = new AudioBook("Lord Of The Rings", "Tolkien", 20 * 60);
+book.log(); // Output: "Lord Of The Rings - 1200"
+book.buy(); // Output: "Buy" - Logs "Buy"
 console.log(book);
 /*
 Output:
@@ -4236,12 +4252,12 @@ Output:
   lenMin: 1200
 }
 */
-console.log(book instanceof AudioBook); // Output: true 
-console.log(book instanceof Book); // Output: true 
+console.log(book instanceof AudioBook); // Output: true
+console.log(book instanceof Book); // Output: true
 
 //----------------------
 //Наследование в ES6
-'use strict';
+("use strict");
 
 //Objects (Objects.prototype) -> Book (Book.prototype) -> Audiobook (Audiobook.prototype)
 
@@ -4253,7 +4269,7 @@ class Book {
   }
 
   buy() {
-    console.log('Buy');
+    console.log("Buy");
   }
 }
 
@@ -4268,14 +4284,14 @@ class AudioBook extends Book {
   }
 }
 
-const book = new AudioBook('Lord Of The Rings', 'Tolkien', 60 * 20);
-book.log(); // Output: "Lord Of The Rings - 1200" 
-book.buy(); // Output: "Buy" 
+const book = new AudioBook("Lord Of The Rings", "Tolkien", 60 * 20);
+book.log(); // Output: "Lord Of The Rings - 1200"
+book.buy(); // Output: "Buy"
 
 //-------------------------
 //Override методов
 
-'use strict';
+("use strict");
 class Book {
   constructor(title, author) {
     this.title = title;
@@ -4287,7 +4303,7 @@ class Book {
   }
 }
 
-const book1 = new Book('Lord Of The Rings', 'Tolkien');
+const book1 = new Book("Lord Of The Rings", "Tolkien");
 book1.info(); // Output: Lord Of The Rings - Tolkien
 
 class EBook extends Book {
@@ -4302,7 +4318,7 @@ class EBook extends Book {
   }
 }
 
-const book2 = new EBook('Lord Of The Rings', 'Tolkien', 100);
+const book2 = new EBook("Lord Of The Rings", "Tolkien", 100);
 book2.info(); // Output: Lord Of The Rings - Tolkien - 100
 
 //-----------------------------
@@ -4360,16 +4376,14 @@ sword.strike(enemy); // Orc's health: 1 (50% chance to receive damage)
 //------------------
 //Полиморфизм
 //Ad - hock  полиморфизм - возможность по разному исполнять функцию в зависемости от типов данных
-2 + 4 //6
-2 + "4" //6
+2 + 4; //6
+2 + "4"; //6
 //Параметрический полиморфизм - можем исполнять одну и ту же функцию только с разным типом аргументов
 console.log(1);
-console.log('1');
-//Полиморфизм подтипов (OOП) 
+console.log("1");
+//Полиморфизм подтипов (OOП)
 
-class Troll extends Enemy {
-
-}
+class Troll extends Enemy {}
 
 const enemy2 = new Troll(20);
 sword.strike(enemy); // Orc's health: 7
@@ -4382,7 +4396,7 @@ sword.strike(enemy2); // Troll's health: 11 (50% chance to receive damage)
 
 //---------------------
 //Паттерн Builder и chaining
-'use strict';
+("use strict");
 
 class Wallet {
   balance = 0;
@@ -4400,22 +4414,19 @@ class Wallet {
 }
 
 const wallet = new Wallet();
-const res = wallet
-  .add(100)
-  .remove(10)
-  .add(10);
+const res = wallet.add(100).remove(10).add(10);
 console.log(res.balance); // 100
 
 class Builder {
   house = {};
 
   addRoof() {
-    this.house.roof = 'Roof';
+    this.house.roof = "Roof";
     return this;
   }
 
   addFloor() {
-    this.house.floor = 'Floor';
+    this.house.floor = "Floor";
     return this;
   }
 
@@ -4427,4 +4438,678 @@ class Builder {
 const res2 = new Builder().addRoof().addFloor().execute();
 console.log(res2); // { roof: 'Roof', floor: 'Floor' }
 
+///---------------
+//Принцип едино ответствености
+//Не должен брать дополнительную ответственость то что ему не принадлежит
+
+//выполняет функции которые относиться конкретно ему
+class Character {
+  #inventory = [];
+  #health = 10;
+
+  pickItem(item) {
+    this.#inventory.push(item);
+  }
+
+  recieveDamage(damage) {
+    this.#health -= damage;
+  }
+}
+
+//работу с данными вынесены в отдельный класс
+class DB {
+  save(item) {
+    localStorage.setItem("char", item);
+  }
+
+  load() {
+    ///...
+  }
+}
+
+//-----------------------------
+//Принцип открытости и закрытости
+("use strict");
+
+class Treasure {
+  value = 0;
+}
+
+class Coin extends Treasure {
+  value = 1;
+}
+
+class Crystal extends Treasure {
+  value = 10;
+}
+
+class Brilliant extends Treasure {
+  value = 20;
+}
+
+//то есть в незаисемости сколько еще добавиться других классов с разными value  наш класс inventor подстоиться под это и не надо будет опять дописыфвать логику в Inventory , то есть модифицировать код уже не требуеться и поэтому мы соблюдаем правило открытости и закрытости
+class Inventory {
+  #score;
+  pick(treasure) {
+    this.#score += treasure.value;
+  }
+}
+
+//------------------------
+//Принцип подстановки Барбары Лисков
+//если сделать частный класс от общего то его безболезнено можно заменять общий класс на него
+class User {
+  #role = "user";
+
+  getRole() {
+    return this.#role;
+  }
+}
+
+//расширели функциональность
+class Admin extends User {
+  #role = ["user", "admin"];
+
+  //чтобы не нарушать этот принцип нам нужно преоброзовать массив чтобы его мог обработать logRole()
+  getRole() {
+    return this.#role.join(", ");
+  }
+}
+
+function logRole(user) {
+  console.log("Role: " + user.getRole().toUpperCase());
+}
+
+logRole(new User()); //Role: USER
+logRole(new Admin()); //Role: USER, ADMIN
+
+//-------------------------
+//Принцип разделения интерфейса
+//какой то класс не должен зависеть от методов которые на практике ем у не нужны
+
+class Weapon {
+  cost;
+
+  dealDamage() {}
+}
+
+//залажили только те методы которые действительны нужны нашем классам и будет использоваться , не нужна пихать в классы то что мы не используем
+
+class Rifle extends Weapon {
+  shoot() {
+    this.dealDamage();
+  }
+}
+
+class Sword extends Weapon {
+  strike() {
+    this.dealDamage();
+  }
+}
+
+//---------------------------
+//Принцип инверсии зависимостей
+//должны зависеть от обстракций а не от конкретных реализации, то есть одни модули которые высокоуровневые не должны зависеть от более низкоуровневых а должны зависеть только от интерфейсных абстракций и их реализации
+
+//база данных
+class DB {
+  save(items) {
+    console.log(`Saved: ${items}`);
+  }
+}
+
+class MongoDB extends DB {
+  save(items) {
+    console.log(`Saved to Mongo: ${items}`);
+  }
+}
+
+class ToDoList {
+  items = [1, 2, 3];
+  db;
+
+  //наш todolist должен принять некоторую базу данных а не конкретную , то есть не зависит о  конкретной реализации
+  constructor(db) {
+    this.db = db;
+  }
+
+  saveToDb() {
+    this.db.save(this.items);
+  }
+}
+
+const list1 = new ToDoList(new DB());
+list1.saveToDb(); //Saved: 1,2,3
+const list2 = new ToDoList(new MongoDB());
+list2.saveToDb(); //Saved: 1,2,3
+
+//----------------------
+//_____Асинхронный JavaScript_______
+//wep api обеспечивает нам асинхроность
+
+//конкурентность - определнные задачи за определенный промежуток времени
+//параллельность -выполняеться кем-то еще
+//мегапоточность -  способ конкурентного выполнения выделением рабочих потоков
+//асинхронная операция - передача операций для выполнения на стороне
+
+//ajax -  позволяет нам асинхронно взаимодействовать с удаленным сервером для получения или отправки данных. Клиент (браузер) -> запрос -> сервер. Далее ответ сервера JSON файл.
+
+//простая модель запроса без шифрование
+//'https://dummyjson.com/products' - > https: (протокол) , dummyjson.com (хост), products (путь).Но пока он не понимает куда пойти по каму адресу, по умолчанию неизвестно. Значет адреса DNS сервер , и прежде чем делать какой то запрос наш клиент обращаеться DNS серверу и по этому адресу что написали выше хотит заполучить информацию. И DNS сервер возврощает определенный api aдрес  ('18.159.80.129.443'). B поэтому адресу наш клиент устанавливает соединения с сервером (TCP/IP socket). И при положиетльном соединении клиент и сервер может ощаться. И далее клиент кидает запрос (https://dummyjson.com/products) на получения данных:
+/* 
+get(метод запроса) /product HTTP/2(стандарт - конвенция взаимодействия клиента и сервера) 
+Host: dummyjson.com (путь)
+user-agent:insomnia/2022.7.2 (набор дополнительных header)
+accept:* / *  
+body: (дополнительные данные для сервера)*/
+
+// Дальше сервер обробатывает и возврощает назад ответ:
+/* HTTP/2 200(код ответа) и разные другие парметры
+body:(тела ответа) */
+
+//Внутри при передаче данных TCP разбивает данные на некоторые маленькие пакеты и эти уже маленькие пакеты уже отпровляет по сети.TCP обеспечивает доставку и если пакет потерялся то он попробуем доставить этот пакет еще раз.
+
+//С шифрованием принцип работы более сложный
+
+//------------------------
+///Пример работы с Insomnia
+//типо postman
+//выбираем тела запроса (обычно JSON)  и header
+
+//----------------------
+//JSON
+//Формат описание объектов в js
+//ключ (строка): значения
+/* {
+  "squadName": "Super hero squad",
+  "homeTown": "Metro City",
+  "formed": 2016,
+  "secretBase": "Super tower",
+  "active": true
+} */
+
+//+ Хорошая читаемость кода
+//- не сжатый формат
+
+//----------------------
+//Получение данных
+function req(id) {
+  //старый способ
+  const request = new XMLHttpRequest();
+  //запрос
+  request.open("GET", "https://dummyjson.com/products/" + id);
+  //отпровляем
+  request.send();
+
+  //подписка когда он пришел
+  request.addEventListener("load", function () {
+    //this.responseText - ответ сервера
+    const data = JSON.parse(this.responseText);
+    console.log(data);
+  });
+}
+req(1);
+console.log("End");
+/* 
+  "End"
+  "products": [
+    {
+      "id": 1,
+      "title": "iPhone 9",
+      "description": "An apple mobile which is nothing like apple",
+      "price": 549,
+      "discountPercentage": 12.96,
+      "rating": 4.69,
+      "stock": 94,
+      "brand": "Apple",
+      "category": "smartphones",
+      "thumbnail": "...",
+      "images": ["...", "...", "..."]
+    },
+   . . .
+} */
+
+//------------------------
+//Упражнение - Получение каждого продукта
+/*
+  Получить среднюю цены товаров из API
+  https://dummyjson.com/products
+*/
+
+const request = new XMLHttpRequest();
+request.open("GET", "https://dummyjson.com/products");
+request.send();
+
+request.addEventListener("load", function () {
+  const { products } = JSON.parse(this.responseText);
+  const sum = products.reduce((acc, p) => (acc += p.price), 0);
+  console.log(sum / products.length);
+});
+//379
+
+//-------------------
+//Проблемы callback
+//callback Hell - неудобная поддержка кода, ухудшает читаемость
+
+const request = new XMLHttpRequest();
+request.open("GET", "https://dummyjson.com/products");
+request.send();
+
+request.addEventListener("load", function () {
+  const { products } = JSON.parse(this.responseText);
+  console.log(products);
+
+  //repeat
+  const request = new XMLHttpRequest();
+  request.open("GET", "https://dummyjson.com/products/" + products[0].id);
+  request.send();
+
+  request.addEventListener("load", function () {
+    const data = JSON.parse(this.responseText);
+    console.log(data);
+
+    //repeat
+    const request = new XMLHttpRequest();
+    request.open("GET", "https://dummyjson.com/products/" + products[1].id);
+    request.send();
+
+    request.addEventListener("load", function () {
+      const data = JSON.parse(this.responseText);
+      console.log(data);
+    });
+  });
+});
+
+//-------------------
+//_______Promises_________
+//Promises - контейнер для значений котрый вернеться в будущем
+//Не нужно использовать callback  и события
+//pending - в ожидании
+//settled (обработка) - (fullfield (+), rejected (-))
+
+const res = fetch("https://dummyjson.com/products/1");
+console.log(res); // Promise /"rejected" / TypeError: Failed to fetch at <anonymous>:1:13
+
+//--------------------
+//Обработка promises
+//then положительный результат
+//json также возврощает promise
+
+fetch("https://dummyjson.com/products/1")
+  .then((response) => response.json())
+  .then((data) => {
+    console.log(data);
+  });
+
+//------------------
+//Цепочка promise
+
+fetch("https://dummyjson.com/products")
+  .then((response) => response.json())
+  .then(({ products }) => {
+    return fetch("https://dummyjson.com/products/" + products[0].id);
+  })
+  .then((response) => response.json())
+  .then((data) => {
+    console.log(data);
+  });
+
+//--------------------
+//Обработка reject
+
+fetch("https://dummyjsons.com/productss")
+  .then((response) => {
+    console.log(response);
+    return response.json();
+    //обработка ошибки локально
+    //error => console.log(error)
+  })
+  .then(({ products }) => {
+    console.log(products);
+    return fetch("https://dummyjson.com/products/" + products[0].id);
+  })
+  .then((response) => response.json())
+  .then((data) => {
+    console.log(data);
+  })
+  //ловит ошибку выше по коду независемо на каком этапе она произошла
+  .catch((error) => console.log(error));
+
+//------------------
+//Finally
+//независимо от того запрос успешный или нет он все равно выполниться
+
+fetch("https://dummyjson.com/productss").then((response) => {
+  console.log(response);
+  fetch("https://dummyjsons.com/productss")
+    .then((data) => {
+      console.log(data);
+    })
+    .catch((error) => console.log(error))
+    .finally(() => {
+      console.log("Finally");
+    });
+});
+
+//------------------
+//Упражнение - Select выбора категорий
+/*
+  Сделать запрос на https://dummyjson.com/products/categories,
+  получить список категорий и отобразить <select> выбора категорий.
+*/
+
+function createSelect(array) {
+  const el = document.querySelector(".filter");
+  el.innerHTML = `<select>
+		${array.map((arrEl) => `<option value=${arrEl}>${arrEl}</option>`)}
+	</select>`;
+}
+
+function getCategories() {
+  fetch("https://dummyjson.com/products/categories")
+    .then((response) => response.json())
+    .then((data) => createSelect(data))
+    .catch((error) => console.error(`Ошибка: ${error}`));
+}
+getCategories();
+
+//-------------------
+//Ручная обработка ошибок
+
+fetch("https://dummyjson.com/productss")
+  .then((response) => {
+    //генерим ошибку если вернеться отрицательный результат
+    if (!response.ok) {
+      throw new Error(`Is error ${response.status}`);
+    }
+    return response.json();
+  })
+  .then(({ products }) => {
+    console.log(products);
+    return fetch("https://dummyjson.com/products/" + products[0].id);
+  })
+  .then((response) => {
+    if (!response.ok) {
+      throw new Error(`Is error ${response.status}`);
+    }
+    response.json();
+  })
+  .then((data) => {
+    console.log(data);
+  })
+  .catch((error) => {
+    const el = document.querySelector(".filter");
+    el.innerHTML = error.message;
+  });
+
+//--------------------------
+//Упражнение - Функция запросов
+/*
+  Сделать функцию, которая принимает строку и текст ошибки и
+  возвращает уже Promise с JSON из тела запроса
+*/
+
+function getData(url, errorMessage, method = "GET") {
+  return fetch(url, {
+    method,
+  }).then((response) => {
+    if (!response.ok) {
+      throw new Error(`${errorMessage} ${response.status}`);
+    }
+    return response.json();
+  });
+}
+
+getData("https://dummyjson.com/products", "Can not get products")
+  .then(({ products }) => {
+    console.log(products);
+    return getData(
+      "https://dummyjson.com/products/" + products[0].id,
+      "Can not get product"
+    );
+  })
+  .then((data) => {
+    console.log(data);
+  });
+
+//-----------------------
+//_______Event Loop_____
+//У нас ест ь движок js у которого есть call stack и heap.Сам движок являеться однопоточным
+//Чтобы асинхронные операции не заблокировали движок нужно их делегировать wep api / node api. Здесь благодоря им мы можем выполнять операции запросов,таймеры, взоимоействия с DOM,геолокация и т.д.
+//Результат асинхронных операций мы получаем через Callback Queue - последовательность callback которые выполняються по мере добовления асинхронных операций.
+//Менеджерит все Event Loop который с Callback Queue по мере исполнения основного стэка перебрасвает асинхронные функции.
+
+document.querySelector("btn").addEventListener("click", () => {
+  console.log("click");
+});
+
+setTimeout(() => {
+  console.log("time");
+}, 1000);
+
+fetch("https://dummyjson.com/productss").then((res) => console.log(res));
+
+console.log("end");
+
+//1) click -> wep api
+//2) setTimeout -> wep api
+//3) fetch -> wep api
+//4) console.log('end') выполнил
+
+//5) кликнули по кнопке click (wep api) -> Callback Queue
+//6) setTimeout (через 1с) (wep api) -> Callback Queue
+//7) Первый попал click в Callback Queue и Event Loop переместил задачу в stack ->  console.log('click') выполнил
+//8) далее после setTimeout -> console.log('time') выполнил
+
+//9)c fetch пришел запрос и он ложит ее в очередь Microtask Queue (очередь которая содержит сallback promise, приоритетней чем Callback Queue)
+//10) далее из Microtask Queue -> console.log(res) выполняеться
+
+//Microtask Queue приоритетней чем Callback Queue и сделаны чтобы не забивать Callback Queue если запрос долго приходит
+
+//-------------------
+//Пример работы Event Loop
+
+console.log(1);
+
+setTimeout(() => {
+  console.log(2);
+}, 0);
+
+Promise.resolve(3).then((res) => {
+  console.log(res);
+  for (let i = 0; i < 10000000000; i++) {}
+});
+
+console.log(4);
+
+//синхронная операция
+for (let i = 0; i < 10000000000; i++) {}
+
+//1 4 (через 10с ) 3 (через 10с ) 2
+
+//------------------------
+//Создание простого Promise
+//Promise -> resolve + / reject -
+
+const prom = new Promise((resolve, reject) => {
+  if (new Date() < new Date("01/01/2024")) {
+    reject(new Error("Error"));
+  }
+  resolve("Success");
+});
+
+//вызываем promise
+prom.then((data) => console.log(data)).catch((error) => console.log(error));
+
+function timeout(sec) {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve();
+    }, sec * 1000);
+  });
+}
+
+//цепочка вызовов
+timeout(1)
+  .then(() => {
+    console.log(1);
+    return timeout(1);
+  })
+  .then(() => {
+    console.log(1);
+    return timeout(1);
+  })
+  .then(() => {
+    console.log(1);
+    return timeout(1);
+  })
+  .then(() => {
+    console.log(1);
+  });
+
+//---------------------------
+//Статические методы Promise
+
+const prom = new Promise((resolve) => {
+  console.log("Constuctor");
+  setTimeout(() => {
+    resolve("Timer");
+  }, 1000);
+});
+prom.then((data) => console.log(data));
+
+////сразу возврощает reject
+Promise.reject(new Error("Error")).catch((error) => console.error(error));
+
+//сразу возврощает resolve
+Promise.resolve("Instant").then((data) => console.log(data));
+
+//-------------------------
+//Упражнение - создание fetch
+/*
+  Сделать функцию myFetch, которая выполняет внутри
+  XMLHttpRequest
+*/
+
+function myFetch(url) {
+  return new Promise((resolve, reject) => {
+    const request = new XMLHttpRequest();
+    request.open("GET", url);
+    request.send();
+
+    //успешная загрузка
+    request.addEventListener("load", function () {
+      if (this.status > 400) {
+        reject(new Error(this.status));
+      }
+      resolve(this.responseText);
+    });
+
+    //неуспешная загрузка
+    request.addEventListener("error", function () {
+      reject(new Error(this.status));
+    });
+
+    //если долго не отвечает
+    request.addEventListener("timeout", function () {
+      reject(new Error("Timeout"));
+    });
+  });
+}
+
+myFetch("https://dummyjson.com/productss")
+  .then((data) => console.log(data))
+  .catch((err) => console.error(err));
+
+//-------------------------
+//_____Современный Асинхронный JavaScript_____
+
+//------------------
+//Async await
+//пишем так как будто наш код синхронный
+
+//делаем функцию асинхронной -> async
+async function getProducts() {
+  // fetch('https://dummyjson.com/products')
+  // 	.then(response => response.json())
+  // 	.then(data => console.log(data))
+
+  //в асинхронный запрос добавить await
+  const productsResponse = await fetch("https://dummyjson.com/products");
+  const { products } = await productsResponse.json();
+  console.log(products);
+
+  const productResponse = await fetch(
+    "https://dummyjson.com/products/" + products[0].id
+  );
+  const product = await productResponse.json();
+  console.log(product);
+}
+
+//-------------------
+//Try catch
+//обработка ошибок
+
+async function getProducts() {
+  try {
+    const productsResponse = await fetch('https://dummyjson.com/products');
+    if (!productsResponse.ok) {
+      throw new Error(productsResponse.status);
+    }
+    const { products } = await productsResponse.json();
+    console.log(products);
+
+    const productResponse = await fetch('https://dummyjson.com/products/' + products[0].id);
+    const product = await productResponse.json();
+    console.log(product);
+  } catch (e) {
+    console.error(e);
+  } finally {
+    console.log('Finally')
+  }
+}
+getProducts();
+
+//------------------------
+//Упражнение - Мой город
+/*
+  Получить геолокацию пользователя через
+  Geolocation.getCurrentPosition() (WEB API)
+  и по координатам определить город, отправив запрос:
+  https://api.bigdatacloud.net/data/reverse-geocode-client?
+  latitude=00&longitude=00
+*/
+
+function getMyCoordinates() {
+  return new Promise((resolve, reject) => {
+    navigator.geolocation.getCurrentPosition(
+      ({ coords }) => {
+        resolve({
+          latitude: coords.latitude,
+          longitude: coords.longitude,
+        });
+      },
+      (err) => {
+        reject(err);
+      }
+    );
+  });
+}
+
+async function getMyCity() {
+  try {
+    const { latitude, longitude } = await getMyCoordinates();
+    const response = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}`);
+    if (!response.ok) {
+      throw new Error(response.status);
+    }
+    const data = await response.json();
+    console.log(data.city);
+  } catch (e) {
+    console.error(e);
+  }
+}
+getMyCity()
+
+//----------------------------
 //
