@@ -5052,20 +5052,22 @@ async function getProducts() {
 
 async function getProducts() {
   try {
-    const productsResponse = await fetch('https://dummyjson.com/products');
+    const productsResponse = await fetch("https://dummyjson.com/products");
     if (!productsResponse.ok) {
       throw new Error(productsResponse.status);
     }
     const { products } = await productsResponse.json();
     console.log(products);
 
-    const productResponse = await fetch('https://dummyjson.com/products/' + products[0].id);
+    const productResponse = await fetch(
+      "https://dummyjson.com/products/" + products[0].id
+    );
     const product = await productResponse.json();
     console.log(product);
   } catch (e) {
     console.error(e);
   } finally {
-    console.log('Finally')
+    console.log("Finally");
   }
 }
 getProducts();
@@ -5079,6 +5081,8 @@ getProducts();
   https://api.bigdatacloud.net/data/reverse-geocode-client?
   latitude=00&longitude=00
 */
+
+//navigator.geolocation.getCurrentPosition(success, error, options); - принимает в результате фунекцию при успехе или не успехе также принимает параметры
 
 function getMyCoordinates() {
   return new Promise((resolve, reject) => {
@@ -5099,7 +5103,9 @@ function getMyCoordinates() {
 async function getMyCity() {
   try {
     const { latitude, longitude } = await getMyCoordinates();
-    const response = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}`);
+    const response = await fetch(
+      `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}`
+    );
     if (!response.ok) {
       throw new Error(response.status);
     }
@@ -5109,7 +5115,187 @@ async function getMyCity() {
     console.error(e);
   }
 }
-getMyCity()
+getMyCity();
 
 //----------------------------
+//Асинхронные методы
+
+//в классе
+class ProductRepository {
+  async getProducts() {
+    const response = await fetch("https://dummyjson.com/products");
+    console.log(await response.json());
+  }
+}
+const repo = new ProductRepository();
+repo.getProducts();
+
+//асинхронные стрелочные функции
+const asyncArrow = async () => {
+  const response = await fetch("https://dummyjson.com/products");
+  console.log(await response.json());
+};
+asyncArrow();
+
+//--------------------------
+//Последовательность выполнения
+
+//мы внутри уже обрабатываем ошибки
+const asyncArrow = async () => {
+  try {
+    const response = await fetch("https://dummyjson.com/products");
+    const data = await response.json();
+    return data;
+  } catch (e) {
+    console.error(e);
+
+    //перебрасываем ошибку чтобы не было выше undefined
+    throw e;
+  }
+};
+
+//не делать так т.к. миксуем async с then
+// console.log('1');
+// asyncArrow()
+// 	.then(data => {
+// 		console.log(data)
+// 	})
+// 	.catch(e => console.error(e))
+// 	.finally(() => console.log('2'));
+
+//т.к. уже ошибку перебросили выше а до этого обработали то просто отображаем как обычный код
+//функция которую мы мгновенно вызываем
+(async () => {
+  console.log("1");
+  const res = await asyncArrow();
+  console.log(res);
+  console.log("2");
+})();
+
+//-------------------
+//Параллельное выполнение
+
+async function gatAllProducts() {
+  const response = await fetch("https://dummyjson.com/products");
+  return response.json();
+}
+
+async function getProduct(id) {
+  const response = await fetch("https://dummyjson.com/products/" + id);
+  return response.json();
+}
+
+async function getProductError(id) {
+  const response = await fetch("https://dummyjsons.com/products/" + id);
+  return response.json();
+}
+
+async function main() {
+  const { products } = await gatAllProducts();
+
+  //Promise.all принимает массив Promise который мы хотим запустить паралельно, если все запросы успешны
+  /*getProduct(1)  */
+  /*getProduct(2)  */
+  /*getProduct(3)  */
+  const res = await Promise.all(
+    products.map((product) => getProduct(product.id))
+  );
+  console.log(res);
+
+  //не паралельно а последовательно
+  // for (const product of products) {
+  // 	const res = await getProduct(product.id);
+  // 	console.log(res);
+  // }
+}
+main();
+
+//------------------------
+//Другие комбинации Promise
+
+async function getProduct(id) {
+  const response = await fetch("https://dummyjson.com/products/" + id);
+  return response.json();
+
+  async function getProductError(id) {}
+
+  async function main() {
+    //если все запросы успешный
+    const res1 = await Promise.all([getProduct(1), getProduct(2)]);
+    console.log(res1);
+
+    //возврощает массив со статусом resolve и reject  и со значением
+    const res2 = await Promise.allSettled([getProduct(1), getProductError(2)]);
+    console.log(res2);
+
+    //самый быстрый promise
+    const res3 = await Promise.race([getProduct(1), getProductError(2)]);
+    console.log(res3);
+  }
+}
+main();
+
+//----------------------
+//Все возможности fetch
+
+async function main() {
+  const res = await fetch("https://dummyjson.com/auth/login", {
+    method: "POST",
+    //в заголовке передаем разные опции, в этом случае задаем тип контента
+    headers: {
+      "Content-Type": "application/json",
+    },
+    //тело запроса что передаем в post
+    body: JSON.stringify({
+      username: "kminchelle",
+      password: "0lelplR",
+    }),
+  });
+  const data = await res.json();
+  console.log(data);
+}
+main();
+
+//--------------------------
+//Упражнение - Генератор активностей
+/*
+  Сделать генератор 3х идей от скуки
+  https://www.boredapi.com/api/activity
+  с отображением на странице
+*/
+
+/*  
+<div class="wrapper"></div>
+<button class="button" onclick="generate()">Generate</button> */
+
+const wrapper = document.querySelector(".wrapper");
+
+async function getActivity() {
+  const res = await fetch("https://www.boredapi.com/api/activity");
+
+  return res.json();
+}
+
+async function generate() {
+  try {
+    wrapper.innerHTML = "";
+
+    const data = await Promise.all([
+      getActivity(),
+      getActivity(),
+      getActivity(),
+    ]);
+    console.log(data);
+
+    for (const el of data) {
+      const element = document.createElement("div");
+      element.innerHTML = `${el.activity}`;
+      wrapper.appendChild(element);
+    }
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+//------------------------
 //
