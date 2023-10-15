@@ -5298,4 +5298,300 @@ async function generate() {
 }
 
 //------------------------
-//
+//______Продвинутый DOM и Events_______
+
+//----------------
+//Как работает DOM
+
+//Объект для управления HTML элементами, соединяющий мост между js  и browser. Это часть WEP API который доступен только в браузере
+
+//Представления DOM -> Document -> HTML -> Head (meta : (htttp , name, charset ... )) | Body (img, p ,div ..._)
+
+//Как все работает? 
+//объект с цепочками наследовании который позволяет нам нам от элемента дойти до самой Node
+//1) EventTarget(елементы обработчика событий) -> Node | Window
+//2) Node являеться всем чем угодна элемент нашего дерева (cloneNode(), parentNode(), childNode(),textContent()... ) , есть элемент подклассов которые extends Node ->  Element (append(), innerHtml(), classList()...) | Text | Comment | Document (guerySelector() ...)
+//3)Element еще дальше детализируються -> HTMLElement -> HTMLDivElement | HTMLInputElement | ...
+
+//----------------------
+//Работа с элементами
+
+console.log(document); //корневую Node документа
+console.log(document.documentElement); //Element
+console.log(document.head);//head
+console.log(document.body);//body
+
+const el = document.querySelector('.wrapper'); //добавить элемент
+const el2 = document.querySelectorAll('meta');//несколько элементов / массив NodeList
+const el3 = document.getElementsByClassName('wrapper');//по классу
+const el4 = document.getElementsByTagName('meta');//по тэгу / колекци html элементов
+
+//работа с класами
+el.classList.add
+
+const button = document.createElement('button');
+button.innerHTML = 'тест';
+
+const button2 = document.createElement('button');
+button2.innerHTML = 'тест2';
+
+//добавить елемент на страницу
+el.append(button);//в конец
+// el.prepend(button2);//в начало
+// el.before(button2); //перед элементам
+el.after(button2); // после элементма
+
+function generate() {
+  console.log(el.parentNode);
+  el.remove();//удаление элемента
+}
+
+//-------------------------
+//Визуальное положение элементов
+
+function generate(event) {
+
+  //выводит параметры нажатого элемента , высота, ширина, относительно нашего положения
+  console.log(event.target.getBoundingClientRect());
+
+  //где находиться пользователь, отступы на странице
+  console.log(`X offset: ${window.pageXOffset}`);//X offset: 0 / X offset: 0
+  console.log(`Y offset: ${window.pageYOffset}`);//Y offset: 0 / Y offset: 168
+
+  //ширина окна клиента 
+  console.log(`clientWidth: ${document.documentElement.clientWidth}`);//clientWidth:710 
+  console.log(`clientHeight: ${document.documentElement.clientHeight}`);//clientHeight:340
+
+  //также можно получить параметры (высота, ширина, относительно нашего положения) непосредственно выбрав элемент
+  const el = document.querySelector('.down');
+  const rect = el.getBoundingClientRect();
+
+  //скролл до определенного места на странице
+  window.scrollTo({
+    left: window.pageXOffset + rect.left,
+    top: window.pageYOffset + rect.top,
+    behavior: 'smooth'
+  });
+}
+
+//---------------------------
+//Типы событий и обработчики
+
+//ограниченное число событий можем добавить
+//<button class="button" onClick ='eventHandler()'>Generate</button >
+const button = document.querySelector('.button');
+const eventHandler = function (event) {
+  console.log('Event 1');
+}
+
+//при использовании addEventListener можем добовлять неограниченное число событий
+button.addEventListener('mouseover', eventHandler);
+button.addEventListener('click', (event) => {
+  console.log('Event 2');
+
+  //удалить отписку у event
+  button.removeEventListener('click', eventHandler);
+});
+
+//существует множество событий на формы на жесты и т.д.
+
+//----------------------------
+//Всплытие событий
+
+{/* 
+<body style="background-color: #1c1b21; text-align: center">
+  <img src="./logo.svg" alt="" />
+  <div class="wrapper"></div>
+  <div class="test">
+    <p>
+      Нажмите на кнопку
+      <button class="button">Generate</button>
+    </p>
+  </div>
+</body> 
+*/}
+
+//когда мы нажимаем на кнопку у нас генериться event, но оно генериться не на кнопке сразу а сначало вверху документа (Document) далее опускаеться по дерееву к тому элементу на котором события произошло - захват события.
+
+//событие после того как произошло начинает идти вверх по дереву до самого вверха и затрагивает все элементы которые он прошел - всплытие события
+// !!! и если на родительских элементах также присутвует обработчики он также будет их тригерить при всплытии
+//Всплытием можем управлять.
+
+//По умолчанию обработчики реагируют только на всплытие элементов
+
+//-----------------------
+//Пример всплытия событий
+
+{/* <body style="background-color: #1c1b21; text-align: center">
+  <img src="./logo.svg" alt="" />
+  <div class="wrapper">
+    <div class="inner">
+      <button class="button">Generate</button>
+    </div>
+  </div>
+</body> */}
+
+const button = document.querySelector('.button');
+const inner = document.querySelector('.inner');
+const wrapper = document.querySelector('.wrapper');
+
+button.addEventListener('click', function (event) {
+  console.log('button');
+  console.log(event.target);
+  console.log(event.currentTarget);
+  this.style.backgroundColor = 'purple';
+});
+
+inner.addEventListener('click', function (event) {
+  console.log('inner');
+  console.log(event.target);
+  console.log(event.currentTarget);
+  this.style.backgroundColor = 'blue';
+
+  //можем остановить всплытие
+  // event.stopPropagation();
+});
+
+wrapper.addEventListener('click', function (event) {
+  console.log('wrapper');
+  console.log(event.target);
+  console.log(event.currentTarget);
+  this.style.backgroundColor = 'green';
+  
+  //поймали событие до того как оно погрузилось на фазе захвата
+}, true);
+
+//Демонтрация всплытие 
+//1) button , 2) inner, 3)wrapper
+
+//Event target (на какой элемент произошло нажатие)
+//1) button (button), inner (button) , wrapper (button)
+
+//currentTarget
+//1)button (button), inner (inner) , wrapper (wrapper)
+
+//-------------------------
+//Делегирование событий
+
+const wrapper = document.querySelector('.wrapper');
+
+for (let i = 0; i < 100; i++) {
+  const el = document.createElement('div');
+  el.innerHTML = `User id ${i}`;
+  el.setAttribute('data-id', i);
+
+  //добовлять к каждому элементу свой обработчик событий нерационально 
+  // el.addEventListener('click', () => {
+  // 	console.log(`Deleted user ${i}`);
+  // })
+
+  wrapper.append(el);
+}
+
+//С помощью делегирование обращаемся к родительскому элементу и через него стучимся к нужному элементу
+wrapper.addEventListener('click', (e) => {
+  const i = e.target.getAttribute('data-id');
+  console.log(`Deleted user ${i}`);
+})
+
+//------------------------
+//Перемещение по DOM
+
+//querySelector ищет вниз по дереву от document  
+const wrapper = document.querySelector('.wrapper')
+const inner = wrapper.querySelector('.inner');
+const button = inner.querySelector('.button');
+
+console.log(inner.childNodes);//возврощает все дочерние элементы Node
+console.log(inner.children);//возврощает все элементы типа Element / обычно используем его
+
+console.log(inner.parentElement);//получить родителя
+console.log(inner.parentNode);
+
+//ищет только вверх по дерееву
+console.log(button.closest('.wrapper'));//найти определенный элемент от button у которой ближайщий родитель с классом wrapper - > <div class="wrapper">...
+
+//блищайщий элемент впереди
+console.log(button.previousElementSibling)
+console.log(button.previousSibling)
+
+//блищайщий элемент сзади
+console.log(button.nextElementSibling)
+console.log(button.nextSibling)
+
+//получить все элементы button - сначало пощли вверх к родителю а далее у родителя получили колекцию всех элементов
+console.log(button.parentElement.children)
+
+//--------------------
+//Жизненный цикл событий DOM
+
+//DOMContentLoaded -> DOM element загрузился, DOM распарсился и построил дом дерево
+document.addEventListener('DOMContentLoaded', function (e) {
+  console.log('DOMContentLoaded');
+  console.log(e);
+});
+
+//load -> Когда загрузился весь документ
+window.addEventListener('load', function (e) {
+  console.log('load');
+  console.log(e);
+});
+
+//модальное окно при закрытии страницы
+// window.addEventListener('beforeunload', function(e) {
+// 	e.preventDefault();
+// 	e.returnValue = '';
+// });
+
+//----------------------
+//Упражнение - Поиск по в списку
+
+/* 
+  Динамически создать N элементов с текстом и поле
+  для поиска. При вводе в поле, выделять элементы,
+  которые содержат введённый текст
+*/
+
+{/* 
+<input type="text" onchange="search(event)" />
+<div class="wrapper"></div> 
+*/}
+
+const wrapper = document.querySelector('.wrapper');
+for (let i = 0; i < 100; i++) {
+  const el = document.createElement('div');
+  el.innerHTML = i;
+  wrapper.append(el);
+}
+
+function search(event) {
+  const inputValue = event.target.value;
+  for (const el of [...wrapper.children]) {
+    if (el.innerHTML.includes(inputValue)) {
+      el.classList.add('yellow');
+      continue;
+    }
+    el.classList.remove('yellow');
+  }
+}
+
+//-------------------------
+//Загрузка скриптов defer и async
+
+//Загрузка страницы - по умолчанию
+//парсинг HTML
+//Выполнения JS -> стоять в конце html файла, т.к. сначало должны отрисоваться html элементы чтобы мы могли с ними работать
+//<script src="./calc.js" ></script>
+
+//Загрузка async - как только встретили код загружйте его, асинхронно загружаеться и парсинг html продолжаеться но как только загрузились сразу исполнили и во время исполнения парсинг html прерветься. Пишем в head
+//<script src="./calc.js" async ></script>
+//Минус если загрузка HTML занимает больше врмени чем js то можем получить ошибку
+
+//Загрузка defer -  почти то же самое что и с async но исполни только после того как загрузиться весь html.
+//Используем Defer !!!
+//<script src="./calc.js" defer></script>
+
+//----------------------------
+//Модули в JavaScript
+
+
