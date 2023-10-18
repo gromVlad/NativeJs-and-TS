@@ -6180,7 +6180,6 @@ export class MainView extends AbstractView {
   //...
 }
 
-
 //card-list.js
 import { DivComponent } from '../../common/div-component';
 import './card-list.css';
@@ -6206,9 +6205,9 @@ export class CardList extends DivComponent {
 }
 
 //----------------
-//
+//Карточка
 
-//src/components/card/card.js
+////card-list.js
 import { DivComponent } from '../../common/div-component';
 import './card-list.css';
 import { Card } from '../card/card';
@@ -6273,4 +6272,104 @@ class Card extends DivComponent {
 }
 
 //--------------------------
-//
+//Добавление в избранное
+
+export class MainView extends AbstractView {
+  state = {
+    list: [],
+    numFound: 0,
+    loading: false,
+    searchQuery: undefined,
+    offset: 0
+  };
+
+  constructor(appState) {
+    super();
+    this.appState = appState;
+    this.appState = onChange(this.appState, this.appStateHook.bind(this));
+    this.state = onChange(this.state, this.stateHook.bind(this));
+    this.setTitle('Поиск книг');
+  }
+
+  appStateHook(path) {
+    if (path === 'favorites') {
+      this.render();
+    }
+  }
+
+  //......
+}
+
+//card.js
+class Card extends DivComponent {
+  //....
+
+  #addToFavorites() {
+    this.appState.favorites.push(this.cardState);
+  }
+
+  #deleteFromFavorites() {
+    this.appState.favorites = this.appState.favorites.filter(
+      b => b.key !== this.cardState.key
+    );
+  }
+
+  render() {
+    //...
+    if (existInFavorites) {
+      this.el
+        .querySelector('button')
+        .addEventListener('click', this.#deleteFromFavorites.bind(this));
+    } else {
+      this.el
+        .querySelector('button')
+        .addEventListener('click', this.#addToFavorites.bind(this));
+    }
+    return this.el;
+  }
+}
+
+//----------------------
+//Избранное
+
+//favorites.js
+import { AbstractView } from '../../common/view.js';
+import onChange from 'on-change';
+import { Header } from '../../components/header/header.js';
+import { CardList } from '../../components/card-list/card-list.js';
+
+export class FavoritesView extends AbstractView {
+  constructor(appState) {
+    super();
+    this.appState = appState;
+    this.appState = onChange(this.appState, this.appStateHook.bind(this));
+    this.setTitle('Мои книги');
+  }
+
+  destroy() {
+    //отписка от слежение
+    onChange.unsubscribe(this.appState);
+  }
+
+  appStateHook(path) {
+    if (path === 'favorites') {
+      this.render();
+    }
+  }
+
+  render() {
+    const main = document.createElement('div');
+    main.innerHTML = `
+			<h1>Избранное</h1>
+		`
+    main.append(new CardList(this.appState, { list: this.appState.favorites }).render());
+    this.app.innerHTML = '';
+    this.app.append(main);
+    this.renderHeader();
+  }
+
+  renderHeader() {
+    const header = new Header(this.appState).render();
+    this.app.prepend(header);
+  }
+}
