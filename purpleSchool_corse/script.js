@@ -6373,3 +6373,4 @@ export class FavoritesView extends AbstractView {
     this.app.prepend(header);
   }
 }
+

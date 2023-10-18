@@ -4,12 +4,12 @@
 //------------------
 //Использование типов
 Вся валидация происходит на уровне typescript */
-let revenue:number = 1000
-let bonus:number= 500
-let bool:boolean = true
- 
-let res:number = revenue + bonus
-console.log(res)
+let revenue: number = 1000;
+let bonus: number = 500;
+let bool: boolean = true;
+
+let res: number = revenue + bonus;
+console.log(res);
 
 //---------------------
 //Типы в функциях
@@ -20,22 +20,22 @@ function getFullName(first: string, surname: string): string {
 
 const getFullNameArrow = (first: string, surname: string): string => {
   return `${first} ${surname}`;
-}
+};
 
 //--------------------
 //Объекты
 //не использовать any
-function getFullName(anyObj:{name:string,surname:string}) {
+function getFullName(anyObj: { name: string; surname: string }) {
   return `${anyObj.name} ${anyObj.surname}`;
 }
 
- const оbjects = {
-  name:'Vlad',
-  surname:"bodnar",
-  city:'Minsk'
- }
+const оbjects = {
+  name: "Vlad",
+  surname: "bodnar",
+  city: "Minsk",
+};
 
-getFullName(оbjects);//Vlad bodnar
+getFullName(оbjects); //Vlad bodnar
 
 //-------------------------------
 //Массивы
@@ -44,7 +44,7 @@ for (const skill of skills) {
   console.log(skill.toLowerCase());
 }
 const res = skills
-  .filter((s:string) => s !== "DevOps")
+  .filter((s: string) => s !== "DevOps")
   .map((s) => s + "! ")
   .reduce((a, b) => a + b);
 
@@ -74,7 +74,7 @@ enum StatusCode {
 
 const res = {
   message: "Платёж успешен",
-  statusCode: StatusCode.SUCCESS,
+  statusCode: StatusCode,
 };
 
 // 1 - успех
@@ -85,7 +85,7 @@ if (res.statusCode === StatusCode.SUCCESS) {
   //--------
 }
 
-//но надо использовать осторожно обычно просто используем объект с типизацией т.к enum вызывает некоторые неочевидные ошибки в приложении  
+//но надо использовать осторожно обычно просто используем объект с типизацией т.к enum вызывает некоторые неочевидные ошибки в приложении
 const enum Roles {
   ADMIN = 1,
   USER = 2,
@@ -116,27 +116,29 @@ const res2 = Roles.ADMIN;
 // ]
 
 enum QuestionStatus {
-  Published = 'published',
-  Draft = 'draft',
-  Deleted = 'deleted'
+  Published = "published",
+  Draft = "draft",
+  Deleted = "deleted",
 }
 
-async function getFags(req:{
-  topicId:number,
-  status:QuestionStatus
-}) :Promise<{
-  question:string,
-  answer:string,
-  tags:string[],
-  likes:number,
-  status:QuestionStatus
-}[]>{
-  const res = await fetch('/fags',{
-    method:"POST",
-    body:JSON.stringify(req)
-  })
-  const data = await res.json()
-  return data
+async function getFags(req: {
+  topicId: number;
+  status: QuestionStatus;
+}): Promise<
+  {
+    question: string;
+    answer: string;
+    tags: string[];
+    likes: number;
+    status: QuestionStatus;
+  }[]
+> {
+  const res = await fetch("/fags", {
+    method: "POST",
+    body: JSON.stringify(req),
+  });
+  const data = await res.json();
+  return data;
 }
 
 //------------------------
@@ -145,9 +147,9 @@ async function getFags(req:{
 //или |
 function logId(id: string | number | boolean) {
   //сужения типов
-  if (typeof id === 'string') {
+  if (typeof id === "string") {
     console.log(id);
-  } else if (typeof id === 'number') {
+  } else if (typeof id === "number") {
     console.log(id);
   } else {
     console.log(id);
@@ -182,15 +184,16 @@ function logMultipleIds(a: string | number, b: string | boolean) {
 //---------------------
 //Literal Types
 //Literal Types - method: 'post' | 'get' либо тот либо другой
-function fetchWithAuth2(url: string, method: 'post' | 'get'): 1 | -1 {
-  return 1;}
+function fetchWithAuth2(url: string, method: "post" | "get"): 1 | -1 {
+  return 1;
+}
 
 fetchWithAuth("s", "post");
 
-let method = "post";//string - тут просто string
+let method = "post"; //string - тут просто string
 //также можно использовать константу const  method = "post" тогда as можно не использовать
 //привели к методу post
-fetchWithAuth("s", method as 'post');
+fetchWithAuth("s", method as "post");
 
 //-----------------------------
 //Type Aliases
@@ -205,7 +208,7 @@ type Role = {
   id: number;
 };
 
-type UserWithRole = User | Role
+type UserWithRole = User | Role;
 
 let user: UserWithRole = {
   name: "asd",
@@ -309,7 +312,7 @@ function multiply(first: number, second?: number): number {
   }
   return first * second;
 }
-multiply(5);//25
+multiply(5); //25
 
 //также есть ! это типо когда мы говорим что точно что-то будет аналог as
 
@@ -340,45 +343,43 @@ multiply(5);//25
 // }
 
 interface Payment {
-  sum:string;
-  from:number;
-  to:number
+  sum: string;
+  from: number;
+  to: number;
 }
 
 enum PaymentStatus {
-  Success = 'success',
-  Failed = 'failed'
+  Success = "success",
+  Failed = "failed",
 }
 
 //оставили так чтобы можно было потом расширять при необходимости
-interface inPaymentReq extends Payment{
-}
+interface inPaymentReq extends Payment {}
 
 interface IdataSuccess extends Payment {
-  databaseId: number
-  
+  databaseId: number;
 }
 
 interface IdataFailed {
-  errorMessage: string
-  errorCode: number
+  errorMessage: string;
+  errorCode: number;
 }
 
 //union по дате
 interface IResponse {
-  status:PaymentStatus;
-  data: IdataSuccess | IdataFailed
+  status: PaymentStatus;
+  data: IdataSuccess | IdataFailed;
 }
 
 //воторой вариант - сделали union по ответу а не по дате это более правильно
 interface IResponseSuccess {
-  status:PaymentStatus.Success
-  data: IdataSuccess 
+  status: PaymentStatus.Success;
+  data: IdataSuccess;
 }
 
 interface IResponseFailed {
-  status:PaymentStatus.Failed
-  data: IdataSuccess 
+  status: PaymentStatus.Failed;
+  data: IdataSuccess;
 }
 
 //------------------------
@@ -387,9 +388,9 @@ interface IResponseFailed {
 function logId(id: string | number): void {
   console.log(id);
 }
-const a = logId(1);//void
+const a = logId(1); //void
 
-function multiply(f: number, s?: number):number | undefined {
+function multiply(f: number, s?: number): number | undefined {
   if (!s) {
     return f * f;
   }
@@ -400,7 +401,7 @@ const f1: voidFunc = () => {};
 const f2: voidFunc = () => {
   return true;
 };
-const b = f2();//чтобы мы не вернули мы получим void / будет игнорироваться что мы возврощаем
+const b = f2(); //чтобы мы не вернули мы получим void / будет игнорироваться что мы возврощаем
 
 const skills = ["Dev", "DevOps"];
 const user = {
@@ -410,7 +411,7 @@ skills.forEach((skill) => user.s.push(skill));
 
 //-------------------------------
 //Unknown(что-то придет но не занем что именно)
-//unknown - что-то придет но не занем что именно, можем только помещать в unknown либо any 
+//unknown - что-то придет но не занем что именно, можем только помещать в unknown либо any
 let input: unknown;
 
 input = 3;
@@ -447,7 +448,7 @@ async function getDataForce() {
   }
 }
 
-type U1 = unknown | number;//тут береться сами широкий тип unknown
+type U1 = unknown | number; //тут береться сами широкий тип unknown
 type I1 = unknown & string; // тут т.к. string может содержаться в unknown то string
 
 //------------------------
@@ -526,7 +527,7 @@ function getUser() {
   }
 }
 
-const user = getUser();//null
+const user = getUser(); //null
 if (user) {
   const n55 = user.name;
 }
@@ -537,7 +538,7 @@ if (user) {
 //Приведение типов
 let a = 5;
 let b: string = a.toString();
-let e: string = new String(a).valueOf();//new String это объект поэтому преобразовываем с помощью valueOf() в значения
+let e: string = new String(a).valueOf(); //new String это объект поэтому преобразовываем с помощью valueOf() в значения
 let f: boolean = new Boolean(a).valueOf();
 
 let c = "sdfs";
@@ -602,11 +603,11 @@ function logId(id: string | number) {
 
 // _ is _ возврощает если проверка true
 function isString(x: string | number): x is string {
-  return typeof x === 'string';
+  return typeof x === "string";
 }
 
 function isAdmin(user: User | Admin): user is Admin {
-  return 'role' in user;
+  return "role" in user;
 }
 
 function isAdminAlternative(user: User | Admin): user is Admin {
@@ -617,7 +618,7 @@ function setRoleZero(user: User | Admin) {
   if (isAdmin(user)) {
     user.role = 0;
   } else {
-    throw new Error('Пользователь не админ');
+    throw new Error("Пользователь не админ");
   }
 }
 
@@ -658,18 +659,638 @@ interface IResponseFailed {
 type resType = IResponseSuccess | IResponseFailed;
 
 //typeguard - но обычно это излишний код и логика проверки пишеться в основной ветке
-function isSuccess(res: resType):res is IResponseSuccess {
+function isSuccess(res: resType): res is IResponseSuccess {
   if (res.status === PaymentStatus.Success) {
-    return  true 
+    return true;
   } else {
-    return false
+    return false;
   }
 }
 
-function ifResult (res:resType): number {
-  if (isSuccess(res)){
-    return res.data.databaseId
+function ifResult(res: resType): number {
+  if (isSuccess(res)) {
+    return res.data.databaseId;
   } else {
     throw new Error("error");
   }
 }
+
+//------------------------------
+//__________Классы_________
+
+//------------------
+//Создание класса
+class User {
+  name: string;
+
+  constructor(name: string) {
+    this.name = name;
+  }
+}
+
+const user = new User("Вася");
+console.log(user);
+user.name = "Петя";
+console.log(user);
+
+class Admin {
+  role: number;
+}
+const admin = new Admin();
+admin.role = 1;
+
+//----------------
+//Конструктор
+//constructor(age: number): _ - нельзя инецилизировать что возврощает конструктор и использовать джинерики
+
+class User {
+  name: string;
+  age: number;
+
+  constructor();
+  constructor(name: string);
+  constructor(age: number);
+  constructor(name: string, age: number);
+  //это импеминтация должна покрывать все констукторы выше (его типизацию)
+  constructor(ageOrName?: string | number, age?: number) {
+    if (typeof ageOrName === "string") {
+      this.name = ageOrName;
+    } else if (typeof ageOrName === "number") {
+      this.age = ageOrName;
+    }
+    if (typeof age === "number") {
+      this.age = age;
+    }
+  }
+}
+
+const user = new User("Вася");
+const user2 = new User();
+const user3 = new User(33);
+const user4 = new User("Вася", 33);
+
+//-------------------
+//Методы
+
+enum PaymentStatus {
+  Holded,
+  Processed,
+  Reversed,
+}
+
+class Payment {
+  id: number;
+  status: PaymentStatus = PaymentStatus.Holded;
+  createdAt: Date = new Date();
+  updatedAt: Date;
+
+  constructor(id: number) {
+    this.id = id;
+  }
+
+  getPaymentLifeTime(): number {
+    return new Date().getTime() - this.createdAt.getTime();
+  }
+
+  unholdPayment(): void {
+    if (this.status == PaymentStatus.Processed) {
+      throw new Error("Платёж не может быть возвращен!");
+    }
+    this.status = PaymentStatus.Reversed;
+    this.updatedAt = new Date();
+  }
+}
+
+const payment = new Payment(1);
+payment.unholdPayment();
+console.log(payment);
+/* Payment: {
+  "status": 2,
+  "createdAt": "2023-10-18T14:59:51.420Z",
+  "id": 1,
+  "updatedAt": "2023-10-18T14:59:51.420Z"
+}  
+5*/
+const time = payment.getPaymentLifeTime();
+console.log(time); //5
+
+//-----------------
+//Упражнение - Перегрузка методов
+class User {
+  skills: string[];
+
+  addSkill(skilL: string): void;
+  addSkill(skilL: string[]): void;
+  addSkill(skiLL: string | string[]): void {
+    if (typeof skiLL === "string") {
+      this.skills.push(skiLL);
+    } else {
+      this.skills.concat(skiLL);
+    }
+  }
+}
+
+function run(distanse: number): number;
+function run(distanse: string): string;
+function run(distanse: number | string): number | string {
+  if (typeof distanse === "number") {
+    return 1;
+  } else {
+    return "hello";
+  }
+}
+
+//-----------------------
+//Getter и setter
+//они полезны когда мы деалем что то не асинхронное
+//инкапсулируют внутрение свойство чтобы они были закрыты извне
+
+class User {
+  _login: string;
+  _password: string;
+  createdAt: Date;
+
+  set login(l: string | number) {
+    this._login = "user-" + l;
+    this.createdAt = new Date();
+  }
+
+  get login() {
+    return this._login;
+  }
+
+  async getPassword(p: string) {}
+
+  // set password(p: string) {
+  // 	// sync
+  // }
+}
+
+const user = new User();
+user.login = "myLogin"; //setter
+console.log(user);
+/* User: {
+  "_login": "user-myLogin",
+  "createdAt": "2023-10-18T15:28:58.999Z"
+}  */
+console.log(user.login); // user-myLogin / Getter
+
+//----------------------
+//Implements
+
+interface ILogger {
+  log(...args): void;
+  error(...args): void;
+}
+
+class Looger implements ILogger {
+  log(...args: any[]): void {
+    console.log(...args);
+  }
+  async error(...args: any[]): Promise<void> {
+    // Кинуть во внешнюю систему
+    console.log(...args);
+  }
+}
+
+interface IPayable {
+  pay(paymentId: number): void;
+  price?: number;
+}
+
+//можно не целиком использовать имплементацию т.к. price необязательный параметр
+class User implements IPayable {
+  pay(paymentId: number | string): void {
+    ///
+  }
+}
+
+//-----------------------
+//Extends (расширить)
+
+type PaymentStatus = "new" | "paid";
+
+class Payment {
+  id: number;
+  status: PaymentStatus = "new";
+
+  constructor(id: number) {
+    this.id = id;
+  }
+
+  pay() {
+    this.status = "paid";
+  }
+}
+
+//PersistedPaymen уже имеет свойства Payment т.к наследуеться от него
+class PersistedPayment extends Payment {
+  databaseId: number;
+  paidAt: Date;
+
+  //если конструктор переопределяеться то обязательно super() указывать
+  constructor() {
+    const id = Math.random();
+    super(id);
+  }
+
+  save() {
+    // Сохраняет в базу
+  }
+
+  //также с помощью метода super()  можно расширять и свойства , такие свойства называються override (при новом синтаксисе добовляем override)
+  override pay(date?: Date) {
+    super.pay();
+    if (date) {
+      this.paidAt = date;
+    }
+  }
+}
+
+new PersistedPayment();
+
+//--------------------
+//Особенности наследования
+
+class User {
+  name: string = "user";
+
+  constructor() {
+    console.log(this.name);
+  }
+}
+
+class Admin extends User {
+  name: string = "admin";
+
+  constructor() {
+    super();
+    console.log(this.name);
+  }
+}
+
+new Admin(); // user / admin
+
+// new Error('');
+
+//кастомный класс ошибки который базируеться на базовом классе
+class HttpError extends Error {
+  code: number;
+
+  constructor(message: string, code?: number) {
+    super(message);
+    this.code = code ?? 500;
+  }
+}
+
+//---------------------
+//Композиция против наследования
+
+class User {
+  name: string;
+
+  constructor(name: string) {
+    this.name = name;
+  }
+}
+
+//наследование
+class Users extends Array<User> {
+  searchByName(name: string) {
+    return this.filter((u) => u.name === name);
+  }
+
+  override toString(): string {
+    return this.map((u) => u.name).join(", ");
+  }
+}
+
+const users = new Users();
+users.push(new User("Вася"));
+users.push(new User("Петя"));
+console.log(users.toString());
+
+//композиция, такой более приоритетней использовать
+class UserList {
+  users: User[];
+
+  push(u: User) {
+    this.users.push(u);
+  }
+}
+
+//наследование
+class Payment {
+  date: Date;
+}
+
+//жесткая связь при наследовании при которой нам придеться всюду тащить с собой
+class UserWithPayment extends Payment {
+  name: string;
+}
+
+//композиция - благодоря композиции не нарушаем объект пользователя и Payment , у каждого своя доменая область
+class UserWithPayment2 {
+  user: User;
+  payment: Payment;
+
+  constructor(user: User, payment: Payment) {
+    this.payment = payment;
+    this.user = user;
+  }
+}
+
+//Наследование лучше использовать когда мы работаем в рамках одной доменной области , не добовляем ничего лишнего а просто расширяем класс
+//Композиция когда используем несколько доменных областей которые никак не связаны между собой
+
+//------------------------
+//Видимость свойств
+class Vehicle {
+  public make: string;
+  //private - доступно исключительно внутри (в ts)
+  private damages: string[];
+  private _model: string;
+  //protected - то же самое что и private но доступно наследникам
+  protected run: number;
+  //# приватное свойство (в js)
+  #price: number;
+
+  set model(m: string) {
+    this._model = m;
+    this.#price = 100;
+  }
+
+  get model() {
+    return this._model;
+  }
+
+  addDamage(damage: string) {
+    this.damages.push(damage);
+  }
+
+  //обратились к внешнему объекту приватному и сравнили с приватным внутреннем свойствам это возможно
+  isPrice(v: any) {
+    this.#price === v.#price;
+  }
+}
+
+//приватные свойства недоступны наследникам
+class EuroTruck extends Vehicle {
+  setRun(km: number) {
+    this.run = km / 0.62;
+    // this.damages - error
+  }
+}
+
+new Vehicle();
+new EuroTruck();
+
+//при работе на бэк - работает с приватными свойствами ts на фронте js
+
+//--------------------
+//Упражнение - Делаем корзину товаров
+/* Необходимо сделать корзину (Cart) на сайте,
+которая имееет список продуктов (Product), добавленных в корзину
+и переметры доставки (Delivery). Для Cart реализовать методы:
+- Добавить продукт в корзину
+- Удалить продукт из корзины по ID
+- Посчитать стоимость товаров в корзине
+- Задать доставку
+- Checkout - вернуть что всё ок, если есть продукты и параметры доставки
+Product: id, название и цена
+Delivery: может быть как до дома (дата и адрес) или до пункта выдачи (дата = Сегодня и Id магазина) */
+
+class Product {
+  constructor(public id: number, public title: string,  public price:number) {}
+}
+
+class Delivery {
+  constructor(public date: Date) {}
+}
+
+class HomeDelivery extends Delivery {
+  constructor(date:Date,public address:string) {
+    super(date);
+  }
+}
+
+class ShopDelivery extends Delivery {
+  constructor(public shopId:number) {
+    super(new Date);
+  }
+}
+
+type DeliveryOptions = HomeDelivery | ShopDelivery;
+
+class Cart {
+  private products: Product[] = [];
+  private delivery: DeliveryOptions;
+
+  public addProduct(product: Product) {
+    this.products.push(product);
+  }
+
+  public deleteProduct(id: number) {
+    this.products = this.products.filter((el: Product) => el.id !== id);
+  }
+
+  public getSum(): number {
+    return this.products
+      .map((el: Product) => el.price)
+      .reduce((p1: number, p2: number) => p1 + p2);
+  }
+
+  public setDelivery(delivery: DeliveryOptions): void {
+    this.delivery = delivery;
+  }
+
+  public chekout (){
+    if (this.products.length == 0){
+      throw new Error("Нет продуктов");
+    }
+    if (!this.delivery) {
+      throw new Error("Не указан способ доставки");
+    }
+    return true
+  }
+}
+
+const cart = new Cart()
+cart.addProduct(new Product(1,'банан',10))
+cart.addProduct(new Product(2,'торт',30))
+cart.addProduct(new Product(3,'пиво',15))
+cart.deleteProduct(3)
+console.log(cart);
+/* Cart: {
+  "products": [
+    {
+      "id": 1,
+      "title": "банан",
+      "price": 10
+    },
+    {
+      "id": 2,
+      "title": "торт",
+      "price": 30
+    }
+  ]
+}  */
+cart.setDelivery(new HomeDelivery(new Date,'независемости 33') )
+console.log(cart.getSum());//40
+
+//----------------------
+//Статические свойства
+//асинхронные функции не можем использовать, можем сразу обращаться к этим методам без new как к объектам можно к ним достучаться через обычные методы наследование
+
+class UserService {
+  // static name: string = 'sdf';
+  private static db: any;
+
+  static getUser(id: number) {
+    return UserService.db.findById(id);
+  }
+
+  constructor(id: number) {}
+
+  create() {
+    UserService.db;
+  }
+
+  //при инициализации сразу сработает
+  static {
+    UserService.db = "sdf";
+  }
+}
+
+UserService.getUser(1);
+const inst = new UserService(1);
+//через метод посредника можно достучаться до static метода
+inst.create();
+
+//---------------------
+//Работа с this
+
+class Payment {
+  private date: Date = new Date();
+
+  //в ts при this в параметрах метода он подсказывет при что надо передать контекст
+  getDate(this: Payment) {
+    return this.date;
+  }
+
+  //чтобы не терять контекст можно использовать стрелочную функцию
+  getDateArrow = () => {
+    return this.date;
+  };
+}
+
+const p = new Payment();
+
+const user = {
+  id: 1,
+  //чтобы не потерять контекст нужно его сохранить с помощью bind
+  paymentDate: p.getDate.bind(p),
+  paymentDateArrow: p.getDateArrow,
+};
+
+// console.log(p.getDate());
+// console.log(user.paymentDate());
+// console.log(user.paymentDateArrow());
+
+class PaymentPersistent extends Payment {
+  save() {
+    //return super.getDateArrow(); - не работает со стрелочной функцией т.к. в prototype Payment не будет стрелочной функции и мы не можем получить из исходного объекта а втекущей функции есть
+    return this.getDateArrow();
+  }
+}
+
+console.log(new PaymentPersistent().save());
+
+//-----------------------
+//Типизация this
+
+class UserBuilder {
+  name: string;
+
+  //когда мы возврощаем этот же объект и не возникало колизии мы используем this,помогает сослаться на возвращаемый тип
+  setName(name: string): this {
+    this.name = name;
+    return this;
+  }
+
+  //__is__ Typegard
+  isAdmin(): this is AdminBuilder {
+    return this instanceof AdminBuilder;
+  }
+}
+
+class AdminBuilder extends UserBuilder {
+  roles: string[];
+}
+
+const res = new UserBuilder().setName("Вася");
+const res2 = new AdminBuilder().setName("Вася");
+
+//проверка на исходный объект или тот кто его наследует
+let user: UserBuilder | AdminBuilder = new UserBuilder();
+
+if (user.isAdmin()) {
+  console.log(user);
+} else {
+  console.log(user);
+}
+
+//если наследники одинаковые Typegard будет работать некректно т.к. в run time будет считать что это тот же объект
+
+//---------------------
+//Абстрактные классы
+//мы не можем сделать new __()
+//extends можно
+//abstract классы могут включать методы которые мы можем использовать у наследников
+//Некоторая база на которой можно наслаивать некторую реализацию
+
+abstract class Contoller {
+  abstract handle(req: any): void;
+
+  handleWithLogs(req: any) {
+    console.log("Start");
+    this.handle(req);
+    console.log("End");
+  }
+}
+
+class UserController extends Contoller {
+  handle(req: any): void {
+    console.log(req);
+  }
+}
+
+// new Contoller() - error
+const c = new UserController();
+c.handleWithLogs("Request");
+
+//----------------------
+//Делаем абстрактный logger
+/* Необходимо реализовать абстрактный класс Logger с 2-мя методами
+абстрактным - log(message): void
+printDate - выводящий в log дату
+К нему необходимо сделать реальный класс, который бы имел метод: logWithDate,
+выводящий сначала дату, а потом заданное сообщение */
+
+abstract class Logger {
+  abstract log(message:any): void;
+
+  printDate(date:Date){
+    this.log(date.toString());
+  }
+}
+class RealLogger extends Logger {
+  log(message: any): void {
+    console.log(message);
+  }
+
+  logWithDate(mes:string){
+    this.printDate(new Date())
+    this.log(mes)
+  }
+} 
