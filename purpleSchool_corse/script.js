@@ -5823,5 +5823,454 @@ export const res = await getProducts();
 //npm i -D
 
 
+//-----------------------
+//_______Проект - Библиотека книг_____
+
+//-----------------
+//View страниц и роутинг
+
+//app.js
+import { MainView } from './views/main/main';
+
+class App {
+  routes = [
+    { path: "", view: MainView }
+  ];
+
+  constructor() {
+    window.addEventListener('hashchange', this.route.bind(this));
+    this.route();
+  }
+
+  route() {
+    if (this.currentView) {
+      this.currentView.destroy();
+    }
+    const view = this.routes.find(r => r.path == location.hash).view;
+    this.currentView = new view();
+    this.currentView.render();
+  }
+}
+
+new App();
+
+//view.js
+class AbstractView {
+  constructor() {
+    this.app = document.getElementById('root');
+  }
+
+  setTitle(title) {
+    document.title = title;
+  }
+
+  render() {
+    return;
+  }
+
+  destroy() {
+    return;
+  }
+}
+
+//main.js
+import { AbstractView } from '../../common/view.js';
+
+class MainView extends AbstractView {
+  constructor() {
+    super();
+    this.setTitle('Поиск книг');
+  }
+
+  render() {
+    const main = document.createElement('div');
+    main.innerHTML = 'Тест';
+    this.app.innerHTML = '';
+    this.app.append(main);
+  }
+}
+
+//----------------
+//State и реактивности
+
+//app.js
+
+class App {
+  //. . .
+  appState = {
+    favorites: []
+  };
+
+  //...
+  //this.currentView = new view(this.appState);
+}
+new App();
+
+//main.js
+import onChange from 'on-change'; // use onChange 
+
+export class MainView extends AbstractView {
+  state = {
+    list: [],
+    loading: false,
+    searchQuery: undefined,
+    offset: 0
+  };
+
+  constructor(appState) {
+    super();
+    this.appState = appState;
+    this.appState = onChange(this.appState, this.appStateHook.bind(this))
+    this.setTitle('Поиск книг');
+  }
+
+  appStateHook(path) {
+    if (path === 'favorites') {
+      console.log(path);
+    }
+  }
+
+  render() {
+    const main = document.createElement('div');
+    main.innerHTML = `Число книг: ${this.appState.favorites.length}`;
+    this.app.innerHTML = '';
+    this.app.append(main);
+    this.appState.favorites.push('d');
+  }
+}
+
+//--------------------
+//Первый компонент
+
+//main.js
+class MainView extends AbstractView {
+  //. . .
+  render() {
+    const main = document.createElement('div');
+    this.app.innerHTML = '';
+    this.app.append(main);
+    this.renderHeader();
+  }
+
+  renderHeader() {
+    const header = new Header(this.appState).render();
+    this.app.prepend(header);
+  }
+}
+
+//div-component.js
+export class DivComponent {
+  constructor() {
+    this.el = document.createElement('div');
+  }
+
+  render() {
+    this.el;
+  }
+}
+
+//header.js
+import { DivComponent } from '../../common/div-component';
+
+export class Header extends DivComponent {
+  constructor(appState) {
+    super();
+    this.appState = appState;
+  }
+
+  render() {
+    this.el.innerHTML = '';
+    this.el.classList.add('header');
+    this.el.innerHTML = `
+			<div>
+				<img src="/static/logo.svg" alt="Логотип" />
+			</div>
+		`;
+    return this.el;
+  }
+}
+
+//------------------------
+//Вёрстка шапки ...
+
+export class Header extends DivComponent {
+  //...
+
+  render() {
+    this.el.innerHTML = '';
+    this.el.classList.add('header');
+    this.el.innerHTML = `
+			<div>
+				<img src="/static/logo.svg" alt="Логотип" />
+			</div>
+      <div class="menu">
+				<a class="menu__item" href="#">
+					<img src="/static/search.svg" alt="Поиск иконка" />
+					Поиск книг
+				</a>
+				<a class="menu__item" href="#favorites">
+					<img src="/static/favorites.svg" alt="Избранное иконка" />
+					Избранное
+					<div class="menu__counter">
+						${this.appState.favorites.length}
+					</div>
+				</a>
+			</div>
+		`;
+    return this.el;
+  }
+}
+
+//---------------------
+//Компонент поиска
+
+//main.js
+class MainView extends AbstractView {
+  //. . .
+
+  render() {
+    const main = document.createElement('div');
+    this.app.innerHTML = '';
+    main.append(new Search(this.state).render());
+    this.app.append(main);
+    this.renderHeader();
+  }
+
+  //...
+}
+
+//search.css
+class Search extends DivComponent {
+  constructor(state) {
+    super();
+    this.state = state;
+  }
+
+  render() {
+    this.el.classList.add('search');
+    this.el.innerHTML = `
+			<div class="search__wrapper">
+				<input
+					type="text"
+					placeholder="Найти книгу или автора...."
+					class="search__input"
+					value="${this.state.searchQuery ? this.state.searchQuery : ''}"
+				/>
+				<img src="/static/search.svg" alt="Иконка поиска" />
+			</div>
+			<button aria-label="Искать"><img src="/static/search-white.svg" alt="Иконка поиска" /></button>
+		`;
+    return this.el;
+  }
+}
+
+//-----------------
+//Поиск книг
+
+//main.js
+export class MainView extends AbstractView {
+  state = {
+    list: [],
+    loading: false,
+    searchQuery: undefined,
+    offset: 0
+  };
+
+  constructor(appState) {
+    super();
+    this.appState = appState;
+    this.appState = onChange(this.appState, this.appStateHook.bind(this));
+    this.state = onChange(this.state, this.stateHook.bind(this));
+    this.setTitle('Поиск книг');
+  }
+
+  async stateHook(path) {
+    if (path === 'searchQuery') {
+      this.state.loading = true;
+      const data = await this.loadList(this.state.searchQuery, this.state.offset);
+      this.state.loading = false;
+      this.state.list = data.docs
+    }
+  }
+
+  async loadList(q, offset) {
+    const res = await fetch(`https://openlibrary.org/search.json?q=${q}&offset=${offset}`);
+    return res.json();
+  }
+
+  //...
+}
+
+//search.js
+export class Search extends DivComponent {
+  constructor(state) {
+    super();
+    this.state = state;
+  }
+
+  search() {
+    const value = this.el.querySelector('input').value;
+    this.state.searchQuery = value;
+  }
+
+  render() {
+    this.el.classList.add('search');
+    this.el.innerHTML = `
+			<div class="search__wrapper">
+				<input
+					type="text"
+					placeholder="Найти книгу или автора...."
+					class="search__input"
+					value="${this.state.searchQuery ? this.state.searchQuery : ''}"
+				/>
+				<img src="/static/search.svg" alt="Иконка поиска" />
+			</div>
+			<button aria-label="Искать"><img src="/static/search-white.svg" alt="Иконка поиска" /></button>
+		`;
+    this.el.querySelector('button').addEventListener('click', this.search.bind(this));
+    this.el.querySelector('input').addEventListener('keydown', (event) => {
+      if (event.code === 'Enter') {
+        this.search()
+      }
+    })
+    return this.el;
+  }
+}
+
+//---------------
+//Состояние загрузки 
+
+//main.js
+export class MainView extends AbstractView {
+  state = {
+    list: [],
+    loading: false,
+    searchQuery: undefined,
+    offset: 0
+  };
+
+    //....
+
+  async stateHook(path) {
+    if (path === 'searchQuery') {
+      this.state.loading = true;
+      const data = await this.loadList(this.state.searchQuery, this.state.offset);
+      this.state.loading = false;
+      this.state.list = data.docs
+    }
+    if (path === 'list' || path === 'loading') {
+      this.render();
+    }
+  }
+
+  async loadList(q, offset) {
+    const res = await fetch(`https://openlibrary.org/search.json?q=${q}&offset=${offset}`);
+    return res.json();
+  }
+
+  render() {
+    const main = document.createElement('div');
+    main.append(new Search(this.state).render());
+    main.append(new CardList(this.appState, this.state).render());
+    this.app.innerHTML = '';
+    this.app.append(main);
+    this.renderHeader();
+  }
+
+  //...
+}
 
 
+//card-list.js
+import { DivComponent } from '../../common/div-component';
+import './card-list.css';
+
+export class CardList extends DivComponent {
+  constructor(appState, parentState) {
+    super();
+    this.appState = appState;
+    this.parentState = parentState;
+  }
+
+  render() {
+    if (this.parentState.loading) {
+      this.el.innerHTML = `<div class="card_list__loader">Загрузка...</div>`;
+      return this.el;
+    }
+    this.el.classList.add('card_list');
+    this.el.innerHTML = `
+			<h1>Найдено книг – ${this.parentState.list.length}</h1>
+		`
+    return this.el;
+  }
+}
+
+//----------------
+//
+
+//src/components/card/card.js
+import { DivComponent } from '../../common/div-component';
+import './card-list.css';
+import { Card } from '../card/card';
+
+export class CardList extends DivComponent {
+  // . . .
+  render() {
+    if (this.parentState.loading) {
+      this.el.innerHTML = `<div class="card_list__loader">Загрузка...</div>`;
+      return this.el;
+    }
+    this.el.classList.add('card_list');
+    this.el.innerHTML = `
+			<h1>Найдено книг – ${this.parentState.list.length}</h1>
+		`
+    for (const card of this.parentState.list) {
+      this.el.append(new Card(this.appState, card).render());
+    }
+    return this.el;
+  }
+}
+
+//card.js
+class Card extends DivComponent {
+  constructor(appState, cardState) {
+    super();
+    this.appState = appState;
+    this.cardState = cardState;
+  }
+
+  render() {
+    this.el.classList.add('card');
+    const existInFavorites = this.appState.favorites.find(
+      b => b.key == this.cardState.key
+    );
+    this.el.innerHTML = `
+			<div class="card__image">
+				<img src="https://covers.openlibrary.org/b/olid/${this.cardState.cover_edition_key}-M.jpg" alt="Обложка" />
+			</div>
+			<div class="card__info">
+				<div class="card__tag">
+					${this.cardState.subject ? this.cardState.subject[0] : 'Не задано'}
+				</div>
+				<div class="card__name">
+					${this.cardState.title}
+				</div>
+				<div class="card__author">
+					${this.cardState.author_name ? this.cardState.author_name[0] : 'Не задано'}
+				</div>
+				<div class="card__footer">
+					<button class="button__add ${existInFavorites ? 'button__active' : ''}">
+						${existInFavorites
+        ? '<img src="/static/favorites.svg" />'
+        : '<img src="/static/favorites-white.svg" />'
+      }
+					</button>
+				</div>
+			</div>
+		`;
+    return this.el;
+  }
+}
+
+//--------------------------
+//
