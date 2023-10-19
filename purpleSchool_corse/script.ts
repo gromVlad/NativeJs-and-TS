@@ -1294,3 +1294,105 @@ class RealLogger extends Logger {
     this.log(mes)
   }
 } 
+
+//------------------------
+//______Компилятор TypeScript_____
+//Есть core typescript compiler (основные библиотеки которые позволяют компилировать)
+//Над ним есть TSC (standolone compiler) - файл и настройки
+//Language Service - валидация 
+//Над ним IDE
+
+//------------------------
+//Включение и исключение файлов
+//в ts config указываем так же файлы подключить "file":['app.js']
+//"includes":["app*"] - то же самое но подерживает патерны
+//'excludes':[] - исключает файлы
+//"extends" : './' - базовый путь к конфигу
+//конфигурация чтобы работать в старом проекте на js  и потихоньку переводить его в ts "allowJS", "checksJs"
+
+// "allowJs": true, 
+// "checkJs": true, 
+// "include": [
+// 		"app*"
+// 	],
+// 	"exclude": [
+// 		"app.ts"
+// 	]
+
+//------------------------
+//Вывод компиляции
+// "outDir": "./build/", -указываем куда будет билдиться проект
+// "removeComments": true, - позволяет удалять коментарии если они были
+// "noEmit": true - не имитит файлы не куда
+// "noEmitOnError": true, - если будет ошибка ничего не соберет
+// "sourceMap": true, - показывает связь js и ts удобно при отладке ошибки
+// "inlineSourceMap": true, - как sourceMap только не создает отдельный файл с путями а добовляет просто пути в виде коментария
+// "declaration": true, - описание кода для ts
+
+//-------------------------
+//Язык и окружение
+//"target": "ES2016" - версия 
+//"lib": [
+		// 	"DOM",
+		// 	"ES2016"
+		// ], - добовляем библиотеки которые должны быть включены
+// "jsx": "", - компиляция в jsx используем в react
+
+//----------------------
+//Модули
+
+//"module": "commonjs",  - добовления модулей
+//"rootDir": "./src",  - папка корневая 
+
+//использовать базовые alias пути
+// "baseUrl": "./", /* Specify the base directory to resolve non-relative module names. */
+		// "paths": {
+		// 	"@lib": ["./lib/my-lib"]
+		// }, 
+
+//------------------
+//Strict режим
+//на true 
+
+// "noImplicitAny": false  -неявное задание any
+// "strictNullChecks": false, - жесткая проверка на null
+// "strictFunctionTypes": false, - проверка на тип
+// "strictBindCallApply": false - проверяет соответсвие сигнатуры функции и что мы в нее передаем
+//"strictPropertyInitialization": false, - использовать классы в качестве интерфейсов на false
+// "noImplicitThis": false, - коректно видим this в контейнере
+//"useUnknownInCatchVariables": false, - вклчючения unknown
+// "alwaysStrict": true, - strict режим для js
+
+//---------------------
+//Проверка кода
+
+//"noUnusedLocals": true, - подчеркивает неиспользованные переменные
+//"noUnusedParameters": true,- подчеркивает неиспользованные параметры
+//"exactOptionalPropertyTypes": true, - явно проверяет значения которое присутствует в вариантах типизации а не рандомное
+//"noFallthroughCasesInSwitch": true,- нет проваливание на следующий элемент внутри switch
+//"allowUnreachableCode": true, - показывает недостижимый код
+//"noUncheckedIndexedAccess": true, - если что то нечетко заданно то возврощает undefined т.к. такого значения не задано явно
+//"noImplicitOverride": true, - включать Override при измнении наследованого метода обязательно
+
+//----------------------
+//_____Generics______
+//Помогает писать легко переиспользованный код
+
+//------------------------
+//Пример встроенных generic
+
+//описали массив внутри которого передали тип number
+const num: Array<number> = [1, 2, 3];
+
+async function test() {
+  //Promise то же можно передать generic
+  const a = await new Promise<number>((resolve, reject) => {
+    resolve(1);
+  });
+}
+
+const check: Record<string, boolean> = {
+  drive: true,
+  kpp: false,
+};
+
