@@ -1061,7 +1061,7 @@ Product: id, название и цена
 Delivery: может быть как до дома (дата и адрес) или до пункта выдачи (дата = Сегодня и Id магазина) */
 
 class Product {
-  constructor(public id: number, public title: string,  public price:number) {}
+  constructor(public id: number, public title: string, public price: number) {}
 }
 
 class Delivery {
@@ -1069,14 +1069,14 @@ class Delivery {
 }
 
 class HomeDelivery extends Delivery {
-  constructor(date:Date,public address:string) {
+  constructor(date: Date, public address: string) {
     super(date);
   }
 }
 
 class ShopDelivery extends Delivery {
-  constructor(public shopId:number) {
-    super(new Date);
+  constructor(public shopId: number) {
+    super(new Date());
   }
 }
 
@@ -1104,22 +1104,22 @@ class Cart {
     this.delivery = delivery;
   }
 
-  public chekout (){
-    if (this.products.length == 0){
+  public chekout() {
+    if (this.products.length == 0) {
       throw new Error("Нет продуктов");
     }
     if (!this.delivery) {
       throw new Error("Не указан способ доставки");
     }
-    return true
+    return true;
   }
 }
 
-const cart = new Cart()
-cart.addProduct(new Product(1,'банан',10))
-cart.addProduct(new Product(2,'торт',30))
-cart.addProduct(new Product(3,'пиво',15))
-cart.deleteProduct(3)
+const cart = new Cart();
+cart.addProduct(new Product(1, "банан", 10));
+cart.addProduct(new Product(2, "торт", 30));
+cart.addProduct(new Product(3, "пиво", 15));
+cart.deleteProduct(3);
 console.log(cart);
 /* Cart: {
   "products": [
@@ -1135,8 +1135,8 @@ console.log(cart);
     }
   ]
 }  */
-cart.setDelivery(new HomeDelivery(new Date,'независемости 33') )
-console.log(cart.getSum());//40
+cart.setDelivery(new HomeDelivery(new Date(), "независемости 33"));
+console.log(cart.getSum()); //40
 
 //----------------------
 //Статические свойства
@@ -1278,9 +1278,9 @@ printDate - выводящий в log дату
 выводящий сначала дату, а потом заданное сообщение */
 
 abstract class Logger {
-  abstract log(message:any): void;
+  abstract log(message: any): void;
 
-  printDate(date:Date){
+  printDate(date: Date) {
     this.log(date.toString());
   }
 }
@@ -1289,17 +1289,17 @@ class RealLogger extends Logger {
     console.log(message);
   }
 
-  logWithDate(mes:string){
-    this.printDate(new Date())
-    this.log(mes)
+  logWithDate(mes: string) {
+    this.printDate(new Date());
+    this.log(mes);
   }
-} 
+}
 
 //------------------------
 //______Компилятор TypeScript_____
 //Есть core typescript compiler (основные библиотеки которые позволяют компилировать)
 //Над ним есть TSC (standolone compiler) - файл и настройки
-//Language Service - валидация 
+//Language Service - валидация
 //Над ним IDE
 
 //------------------------
@@ -1310,8 +1310,8 @@ class RealLogger extends Logger {
 //"extends" : './' - базовый путь к конфигу
 //конфигурация чтобы работать в старом проекте на js  и потихоньку переводить его в ts "allowJS", "checksJs"
 
-// "allowJs": true, 
-// "checkJs": true, 
+// "allowJs": true,
+// "checkJs": true,
 // "include": [
 // 		"app*"
 // 	],
@@ -1331,28 +1331,28 @@ class RealLogger extends Logger {
 
 //-------------------------
 //Язык и окружение
-//"target": "ES2016" - версия 
+//"target": "ES2016" - версия
 //"lib": [
-		// 	"DOM",
-		// 	"ES2016"
-		// ], - добовляем библиотеки которые должны быть включены
+// 	"DOM",
+// 	"ES2016"
+// ], - добовляем библиотеки которые должны быть включены
 // "jsx": "", - компиляция в jsx используем в react
 
 //----------------------
 //Модули
 
 //"module": "commonjs",  - добовления модулей
-//"rootDir": "./src",  - папка корневая 
+//"rootDir": "./src",  - папка корневая
 
 //использовать базовые alias пути
 // "baseUrl": "./", /* Specify the base directory to resolve non-relative module names. */
-		// "paths": {
-		// 	"@lib": ["./lib/my-lib"]
-		// }, 
+// "paths": {
+// 	"@lib": ["./lib/my-lib"]
+// },
 
 //------------------
 //Strict режим
-//на true 
+//на true
 
 // "noImplicitAny": false  -неявное задание any
 // "strictNullChecks": false, - жесткая проверка на null
@@ -1421,21 +1421,21 @@ getSplitedHalf<number>([1, 3, 4]);
 /* Необходимо написать функцию toString которая принимает любой тип и вовзрощает его строковое преобразование, если не может то возврощаеет undefined */
 
 function toString<T>(params: T): string | undefined {
-  if (Array.isArray(params)){
-    return params.toString()
+  if (Array.isArray(params)) {
+    return params.toString();
   }
   switch (typeof params) {
-    case 'string':
-        return params
-    case 'number':
-    case 'symbol':
-    case 'bigint':
-    case 'boolean':
-        return params.toString()
-    case 'object':
-        return JSON.stringify(params)
+    case "string":
+      return params;
+    case "number":
+    case "symbol":
+    case "bigint":
+    case "boolean":
+      return params.toString();
+    case "object":
+      return JSON.stringify(params);
     default:
-      return undefined
+      return undefined;
   }
 }
 
@@ -1497,7 +1497,7 @@ interface LCV extends Vehicle {
 
 // const vehicle = kmToMiles(new Vehicle());
 // const lcv = kmToMiles(new LCV());
-//kmToMiles({ run: 1 }); также можно использовать подобный объект Vehicle 
+//kmToMiles({ run: 1 }); также можно использовать подобный объект Vehicle
 
 //также можно сделать extends примитивных типов
 function logId<T extends string | number, Y>(
@@ -1516,13 +1516,13 @@ function logId<T extends string | number, Y>(
 
 ``` js*/
 const data = [
-	{ id: 2, name: 'Петя' },
-	{ id: 1, name: 'Вася' },
-	{ id: 3, name: 'Надя' },
-]; 
+  { id: 2, name: "Петя" },
+  { id: 1, name: "Вася" },
+  { id: 3, name: "Надя" },
+];
 
 interface SortType {
-  id:number
+  id: number;
 }
 
 function sort<T extends SortType[]>(
@@ -1539,7 +1539,7 @@ function sort<T extends SortType[]>(
   });
 }
 
-sort(data,'asc')
+sort(data, "asc");
 /* [{
   "id": 1,
   "name": "Вася"
@@ -1628,7 +1628,6 @@ console.log(res.first());
 //______Продвинутый TS______
 //______Манипуляция с типами____
 
-
 //------------------
 //Keyof
 //позволяет вытащить ключи и присвоить его
@@ -1642,7 +1641,7 @@ type KeysOfUser = keyof IUser;
 
 const key: KeysOfUser = "age";
 
-//чтобы присвоить ключ от нашего 
+//чтобы присвоить ключ от нашего
 function getValue<T, K extends keyof T>(obj: T, key: K) {
   return obj[key];
 }
@@ -1654,3 +1653,407 @@ const user: IUser = {
 
 const userName = getValue(user, "name");
 
+//-----------------------
+//Упражнение - Пишем функцию группировки
+/* Необходимо написать функцию групировки котопая принимает массив объектов и его ключ, производит групировку по указанному ключу и возврощает групированный объект */
+interface Data {
+  group: number;
+  name: string;
+}
+
+const data: Data[] = [
+  { group: 1, name: "a" },
+  { group: 2, name: "b" },
+  { group: 1, name: "c" },
+];
+
+type key = string | number | symbol;
+
+interface Group<T> {
+  [key: string]: T[];
+}
+
+function grouping<T extends Record<key, any>>(
+  item: T[],
+  key: keyof T
+): Group<T> {
+  return item.reduce<Group<T>>((acc: Group<T>, el) => {
+    const keyItems = el[key];
+    let currentElement = acc[keyItems];
+    if (Array.isArray(currentElement)) {
+      currentElement.push(el);
+    } else {
+      currentElement = [el];
+    }
+    acc[keyItems] = currentElement;
+    return acc;
+  }, {});
+}
+
+//---------------------
+//Typeof
+
+let strOrNum: string | number;
+
+if (Math.random() > 0.5) {
+  strOrNum = 5;
+} else {
+  strOrNum = "str";
+}
+
+//js typeof
+if (typeof strOrNum === "string") {
+  console.log(strOrNum);
+} else {
+  console.log(strOrNum);
+}
+
+//возьми тип который был у strOrNum , для переиспользование
+let str2: typeof strOrNum;
+
+const user = {
+  name: "vlad",
+};
+
+//берем ключи от типа user
+type KeyUser = keyof typeof user;
+
+//также работает и на enum
+enum Direction {
+  Up,
+  Down,
+}
+type d = keyof typeof Direction;
+
+//---------------------
+//Indexed Access Types
+
+interface Role {
+  name: string;
+}
+
+interface Permission {
+  endDate: Date;
+}
+
+interface User {
+  name: string;
+  roles: Role[];
+  permission: Permission;
+}
+
+const user: User = {
+  name: "Вася",
+  roles: [],
+  permission: {
+    endDate: new Date(),
+  },
+};
+
+const nameUser = user["name"];
+let roleNames: "roles" = "roles";
+
+//и в типах можно получить типизацию конкретную по ключу, нужно помнить что мы должны работать с типами
+type rolesType = User["roles"];
+type rolesType2 = User[typeof roleNames];
+
+type roleType = User["roles"][number];
+//можно проходиться по уровнем в глубь
+type dateType = User["permission"]["endDate"];
+
+//преобразовали в строковый тип
+const roles = ["admin", "user", "super-user"] as const;
+type roleTypes = (typeof roles)[number];
+
+//-----------------------
+//Conditional Types
+
+const a1: number = Math.random() > 0.5 ? 1 : 0;
+
+interface HTTPResponse<T extends "success" | "failed"> {
+  code: number;
+  //с  onditional
+  data: T extends "success" ? string : Error;
+}
+
+const suc: HTTPResponse<"success"> = {
+  code: 200,
+  data: "done",
+};
+
+const err: HTTPResponse<"failed"> = {
+  code: 200,
+  data: new Error(),
+};
+
+class User {
+  id: number;
+  name: string;
+}
+
+class UserPersistend extends User {
+  dbId: string;
+}
+
+function getUser(id: number): User;
+function getUser(dbId: string): UserPersistend;
+function getUser(dbIdOrId: string | number): User | UserPersistend {
+  if (typeof dbIdOrId === "number") {
+    return new User();
+  } else {
+    return new UserPersistend();
+  }
+}
+
+type UserOrUserPersistend<T extends string | number> = T extends number
+  ? User
+  : UserPersistend;
+
+function getUser2<T extends string | number>(id: T): UserOrUserPersistend<T> {
+  if (typeof id === "number") {
+    return new User() as UserOrUserPersistend<T>;
+  } else {
+    return new UserPersistend() as UserOrUserPersistend<T>;
+  }
+}
+
+const res = getUser2(1);
+const res2 = getUser2("sdfsfd");
+
+//--------------------
+//Infer
+
+function runTransaction(transaction: { fromTo: [string, string] }) {
+  console.log(transaction);
+}
+
+const transaction: GetFirstArg<typeof runTransaction> = {
+  fromTo: ["1", "2"],
+};
+
+runTransaction(transaction);
+
+//infer вытаскивает любое первое зачения тип First и использует дальше по коду в .. ? First
+type GetFirstArg<T> = T extends (first: infer First, ...args: any[]) => any
+  ? First
+  : never;
+
+//-------------------
+//Mapped Types
+
+type Modifier = "read" | "update" | "create";
+
+type UserRoles = {
+  customers?: Modifier;
+  projects?: Modifier;
+  adminPanel?: Modifier;
+};
+
+//проходиться по ключам и значения должно меняем на boolean
+type ModifierToAccess2<Type> = {
+  [Property in keyof Type]: boolean;
+};
+type UserAccess3 = ModifierToAccess2<UserRoles>;
+
+type ModifierToAccess<Type> = {
+  //+readonly преобразовали и добавили, также -? все значения обязательны указали
+  //`canAccess${string & Property}` - изменить ключи
+  //Exclude -исключить какое то свойство
+  +readonly [Property in keyof Type as Exclude<
+    `canAccess${string & Property}`,
+    "canAccessadminPanel"
+  >]-?: boolean;
+};
+
+type UserAccess2 = ModifierToAccess<UserRoles>;
+
+type UserAccess1 = {
+  customers?: boolean;
+  projects?: boolean;
+  adminPanel?: boolean;
+};
+
+//------------------
+//Упражнение - Валидация форм
+/* Необхдимо сделать тип для результата валидации формы основываясь на типе формы */
+interface Form {
+  name:string,
+  password:string
+}
+
+const form:Form = {
+  name:'Vlad',
+  password:'123'
+}
+
+const formValid = {
+  name:{isvalid:true},
+  password:{isvalid:false, errorMes:'не длинее 5 символов'}
+}
+
+//
+type Valid<T> = {
+  [k in keyof T]:{
+    isvalid:true
+  }  | {
+    isvalid:false,
+    errorMes:string
+  }
+}
+
+type formValidType = Valid<Form>
+
+//--------------------
+//Template Literal Types
+//преобразование типов с помощью шаблонных строк
+//также есть типо методы которые изменяют капитализацию и т.д. типо Capitaliz
+//можно совмешать получиться Union типы
+
+type ReadOrWrite = "read" | "write";
+
+type Access = `can${Capitalize<ReadOrWrite>}`;
+//сanread | canwrite
+
+//наооборот с помощью infer убрали приставку can, infer достало значения и вернуло
+type ReadOrWriteBulk<T> = T extends `can${infer R}` ? R : never;
+
+type T = ReadOrWriteBulk<Access>;
+
+type ErrorOrSuccess = "error" | "success";
+
+type ResponseT = {
+  result: `http${Capitalize<ErrorOrSuccess>}`;
+};
+
+const a2: ResponseT = {
+  result: "httpSuccess",
+};
+
+//---------------------
+//_____Служебные типы______
+
+//-----------------
+//Partial, Required, Readonly
+
+interface User {
+  name: string;
+  age?: number;
+  email: string;
+}
+
+//Partial - делаем все поля необязательными
+type patrial = Partial<User>;
+const p: patrial = {};//пустой объект лучше не использовать
+
+//Required - все обязательные
+type required = Required<User>;
+//Readonly - все редонли
+type readonly = Readonly<User>;
+type requiredAndReadonly = Required<Readonly<User>>;
+
+//--------------------
+//Pick, Omit, Extract, Exclude
+
+interface PaymentPersistent {
+  id: number;
+  sum: number;
+  from: string;
+  to: string;
+}
+
+//Omit - исключения (2 параметр что будем исключать)
+type Payment = Omit<PaymentPersistent, "id">;
+//Pick - берет то что необходимо
+type PaymentRequisits = Pick<PaymentPersistent, "from" | "to">;
+
+//из данного типа "from" | "to" | Payment вытащить те которые являються string
+type ExtractEx = Extract<"from" | "to" | Payment, string>;
+
+//исключает из from" | "to" | Payment все string
+type ExcludeEx = Exclude<"from" | "to" | Payment, string>;
+
+//-------------------
+//ReturnType, Parameters, ConstructorParameters
+
+class User {
+  constructor(public id: number, public name: string) {}
+}
+
+function getData(id: number): User {
+  return new User(id, "Вася");
+}
+
+//ReturnType - получили то что функция возврощает
+type RT = ReturnType<typeof getData>;
+type RT2 = ReturnType<() => void>;//void
+type RT3 = ReturnType<<T>() => T>;//unknown - заранее не знаем что вернеться
+type RT4 = ReturnType<<T extends string>() => T>;//string
+
+//Parameters - позволяет вытащить тип параметра функции (кортеж)
+type PT = Parameters<typeof getData>[0];
+
+//ConstructorParameters - параметры конструктора класса также в виде кортежа
+type CP = ConstructorParameters<typeof User>;
+type IT = InstanceType<typeof User>;
+
+//----------------------
+//Awaited
+//Передаем Promise и ожидает что вернет ...
+
+type A = Awaited<Promise<string>>;
+type A2 = Awaited<Promise<Promise<string>>>;
+
+interface IMenu {
+  name: string;
+  url: string;
+}
+
+async function getMenu(): Promise<IMenu[]> {
+  return [{ name: "Аналитика", url: "analytics" }];
+}
+
+//можно получить то что возврощает getMenu()
+type R = Awaited<ReturnType<typeof getMenu>>;
+
+async function getArray<T>(x: T): Promise<Awaited<T>[]> {
+  return [await x];
+}
+
+async function getArray2<T>(x: T): Promise<T[]> {
+  return [await x];
+}
+
+//------------------------
+//_______Декораторы_______
+//просто функция
+
+//------------------
+//Декоратор класса
+
+interface IUserService {
+  users: number;
+  getUsersInDatabase(): number;
+}
+
+
+class UserService implements IUserService {
+  users: number = 1000;
+
+  getUsersInDatabase(): number {
+    return this.users;
+  }
+}
+
+function nullUser(target: Function) {
+  target.prototype.users = 0;
+}
+
+function threeUserAdvanced<T extends { new (...args: any[]): {} }>(
+  constructor: T
+) {
+  return class extends constructor {
+    users = 3;
+  };
+}
+
+console.log(new UserService().getUsersInDatabase());
