@@ -1385,14 +1385,272 @@ class RealLogger extends Logger {
 const num: Array<number> = [1, 2, 3];
 
 async function test() {
-  //Promise то же можно передать generic
+  //Promise то же можно передать generic (передаем дополнительную информацию)
   const a = await new Promise<number>((resolve, reject) => {
     resolve(1);
   });
 }
 
+//Record - типизация неограниченного числа строк
 const check: Record<string, boolean> = {
   drive: true,
   kpp: false,
 };
+
+//-----------------
+//Пишем функцию с generic
+
+//обобщенная универсальная функция с любым типом массива
+function logMiddleware<T>(data: T): T {
+  console.log(data);
+  return data;
+}
+
+//можем указывать или не указывать типизацию передаваемого значения
+const res = logMiddleware<number>(10);
+
+function getSplitedHalf<T>(data: Array<T>): Array<T> {
+  const l = data.length / 2;
+  return data.splice(0, l);
+}
+
+getSplitedHalf<number>([1, 3, 4]);
+
+//--------------------
+//Упражнение - Функция преобразования в строку
+/* Необходимо написать функцию toString которая принимает любой тип и вовзрощает его строковое преобразование, если не может то возврощаеет undefined */
+
+function toString<T>(params: T): string | undefined {
+  if (Array.isArray(params)){
+    return params.toString()
+  }
+  switch (typeof params) {
+    case 'string':
+        return params
+    case 'number':
+    case 'symbol':
+    case 'bigint':
+    case 'boolean':
+        return params.toString()
+    case 'object':
+        return JSON.stringify(params)
+    default:
+      return undefined
+  }
+}
+
+//---------------------
+//Использование в типах
+
+function logMiddleware<T>(data: T): T {
+  console.log(data);
+  return data;
+}
+
+const res = logMiddleware<number>(10);
+
+function getSplitedHalf<T>(data: Array<T>): Array<T> {
+  const l = data.length / 2;
+  return data.splice(0, l);
+}
+
+getSplitedHalf<number>([1, 3, 4]);
+
+//можно использовать generic для описание функции
+const split: <T>(data: Array<T>) => Array<T> = getSplitedHalf;
+const split2: <Y>(data: Array<Y>) => Array<Y> = getSplitedHalf;
+
+//можно использовать generic для описание объектов
+interface ILogLine<T> {
+  timeStamp: Date;
+  data: T;
+}
+
+type LogLineType<T> = {
+  timeStamp: Date;
+  data: T;
+};
+
+const logLine: ILogLine<{ a: number }> = {
+  timeStamp: new Date(),
+  data: {
+    a: 1,
+  },
+};
+
+//------------------------
+//Ограничение generic
+
+interface Vehicle {
+  run: number;
+}
+
+//ограничивает что можем использовать только Vehicle
+function kmToMiles<T extends Vehicle>(vehicle: T): T {
+  vehicle.run = vehicle.run / 0.62;
+  return vehicle;
+}
+
+interface LCV extends Vehicle {
+  capacity: number;
+}
+
+// const vehicle = kmToMiles(new Vehicle());
+// const lcv = kmToMiles(new LCV());
+//kmToMiles({ run: 1 }); также можно использовать подобный объект Vehicle 
+
+//также можно сделать extends примитивных типов
+function logId<T extends string | number, Y>(
+  id: T,
+  additionalData: Y
+): { id: T; data: Y } {
+  console.log(id);
+  console.log(additionalData);
+  return { id, data: additionalData };
+}
+
+//--------------------
+//Упражнение - Функция сортировки id
+/* Необходимо написать функцию сортировки любых
+объектов, которые имеют id по убыванию и по возрастанию
+
+``` js*/
+const data = [
+	{ id: 2, name: 'Петя' },
+	{ id: 1, name: 'Вася' },
+	{ id: 3, name: 'Надя' },
+]; 
+
+interface SortType {
+  id:number
+}
+
+function sort<T extends SortType[]>(
+  params: T,
+  type: "asc" | "desc" = "asc"
+): T {
+  return params.sort((a, b) => {
+    switch (type) {
+      case "asc":
+        return a.id - b.id;
+      case "desc":
+        return b.id - a.id;
+    }
+  });
+}
+
+sort(data,'asc')
+/* [{
+  "id": 1,
+  "name": "Вася"
+}, {
+  "id": 2,
+  "name": "Петя"
+}, {
+  "id": 3,
+  "name": "Надя"
+}]  */
+
+//----------------------
+//Generic классы
+//можно использовать generic в классах, полезны когда есть универсальные значения в классе
+
+class Resp<D, E> {
+  data?: D;
+  error?: E;
+
+  constructor(data?: D, error?: E) {
+    if (data) {
+      this.data = data;
+    }
+    if (error) {
+      this.error = error;
+    }
+  }
+}
+
+const res = new Resp<string, number>("data");
+
+class HTTPResp<F> extends Resp<string, number> {
+  code: F;
+
+  setCode(code: F) {
+    this.code = code;
+  }
+}
+
+const res2 = new HTTPResp();
+
+//--------------------
+//Mixins
+
+type Constructor = new (...args: any[]) => {};
+type GConstructor<T = {}> = new (...args: any[]) => T;
+
+class List {
+  constructor(public items: string[]) {}
+}
+
+class Accordion {
+  isOpened: boolean;
+}
+
+type ListType = GConstructor<List>;
+type AccordionType = GConstructor<Accordion>;
+
+//просто наследование
+class ExtendedListClass extends List {
+  first() {
+    return this.items[0];
+  }
+}
+
+//то же самое но используем миксин
+//миксин - функция / динамический можем подстовлять объект который удоволетвояет нашей типизации в функции / возврощает класс который extends переданный класс
+function ExtendedList<TBase extends ListType & AccordionType>(Base: TBase) {
+  return class ExtendedList extends Base {
+    first() {
+      return this.items[0];
+    }
+  };
+}
+
+class AccordionList {
+  isOpened: boolean;
+  constructor(public items: string[]) {}
+}
+
+const list = ExtendedList(AccordionList);
+const res = new list(["first", "second"]);
+console.log(res.first());
+
+//------------------------
+//______Продвинутый TS______
+//______Манипуляция с типами____
+
+
+//------------------
+//Keyof
+//позволяет вытащить ключи и присвоить его
+
+interface IUser {
+  name: string;
+  age: number;
+}
+
+type KeysOfUser = keyof IUser;
+
+const key: KeysOfUser = "age";
+
+//чтобы присвоить ключ от нашего 
+function getValue<T, K extends keyof T>(obj: T, key: K) {
+  return obj[key];
+}
+
+const user: IUser = {
+  name: "Вася",
+  age: 30,
+};
+
+const userName = getValue(user, "name");
 
