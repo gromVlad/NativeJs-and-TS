@@ -2027,15 +2027,91 @@ async function getArray2<T>(x: T): Promise<T[]> {
 //_______Декораторы_______
 //просто функция
 
-//------------------
-//Декоратор класса
+//--------------------------
+//Патерн декоратора
 
 interface IUserService {
   users: number;
   getUsersInDatabase(): number;
 }
 
+class UserService implements IUserService {
+  users: number = 1000;
 
+  getUsersInDatabase(): number {
+    return this.users;
+  }
+}
+
+//декоратор принимает класс и модифицирует его
+function nullUser(obj: IUserService) {
+  obj.users = 0;
+  return obj;
+}
+
+//2 декоратор
+function logUsers(obj: IUserService) {
+  console.log("Users: " + obj.users);
+  return obj;
+}
+
+console.log(new UserService().getUsersInDatabase());
+console.log(nullUser(new UserService()).getUsersInDatabase());
+//оборачиваем один декоратор в другой декоратор последовательность применения влияет на результат
+console.log(logUsers(nullUser(new UserService())).getUsersInDatabase());
+
+//------------------
+//Декоратор класса 
+//Разрешение использование декораторов
+
+interface IUserService {
+  users: number;
+  getUsersInDatabase(): number;
+}
+
+//разрешение использование декораторов поменять разрешение на true в конфиге
+
+//применили декоратор
+@threeUserAdvance
+class UserService implements IUserService {
+  users: number = 1000;
+
+  getUsersInDatabase(): number {
+    return this.users;
+  }
+}
+
+//обычно переименовывают параметр в target
+//При таком использовании все равно в UserService элемент присваивание и поэтому функция nullUser вернет 0 а потом вернеться в сам класс и вернет 1000, работает некоректно
+function nullUser(target: Function) {
+  target.prototype.users = 0;
+}
+
+//другой способ работы с который работает правильно, независимо эта функция вызываеться после и переприсваивает 
+function threeUserAdvanced<T extends { new (...args: any[]): {} }>(
+  constructor: T
+) {
+  return class extends constructor {
+    users = 3;
+  };
+}
+
+console.log(new UserService().getUsersInDatabase());//3
+
+//-----------------------
+//Фабрика декораторов
+
+interface IUserService {
+  users: number;
+  getUsersInDatabase(): number;
+}
+
+//фабрика декораторов возникает последовательно одно зависит от другого, порядок важен
+// @nullUser
+@log()
+@setUsers(2)
+// @threeUserAdvanced
+// @setUserAdvanced(4)
 class UserService implements IUserService {
   users: number = 1000;
 
@@ -2048,6 +2124,23 @@ function nullUser(target: Function) {
   target.prototype.users = 0;
 }
 
+//дальше идет и использует nullUser у себя
+function setUsers(users: number) {
+  console.log("setUsers init");
+  return (target: Function) => {
+    console.log("setUsers run");
+    target.prototype.users = users;
+  };
+}
+
+function log() {
+  console.log("log init");
+  return (target: Function) => {
+    console.log("log run");
+    console.log(target);
+  };
+}
+
 function threeUserAdvanced<T extends { new (...args: any[]): {} }>(
   constructor: T
 ) {
@@ -2056,4 +2149,380 @@ function threeUserAdvanced<T extends { new (...args: any[]): {} }>(
   };
 }
 
-console.log(new UserService().getUsersInDatabase());
+//функция которая возврощает threeUserAdvanced только присваивает ей значения
+function setUserAdvanced(users: number) {
+  return <T extends { new (...args: any[]): {} }>(constructor: T) => {
+    return class extends constructor {
+      users = users;
+    };
+  };
+}
+
+console.log(new UserService().getUsersInDatabase());//2
+
+//-----------------------
+//Упражнение -  Декоратор CreatedAt
+
+interface IUserService {
+  users: number;
+  getUsersInDatabase(): number;
+}
+
+@CreatedAt
+class UserService implements IUserService {
+  users: number = 1000;
+
+  getUsersInDatabase(): number {
+    return this.users;
+  }
+}
+
+//лучше декораторы объявлять с большой буквы
+function CreatedAt<T extends {new(...args:any[]):{}}>(constructor:T) {
+  return class extends constructor {
+    createdAt  = new Date()
+  };
+}
+
+//обратиться к методу CreatedA не можем т.к. создано анонимно
+new UserService() 
+
+//чтобы появилось
+type CreatedAt = {
+  createdAt:Date
+};
+
+//теперь будет метод
+(new UserService() as CreatedAt & IUserService).createdAt()
+
+//--------------------
+//Декоратор метода
+//позволяет изменять методы
+
+interface IUserService {
+  users: number;
+  getUsersInDatabase(): number;
+}
+
+class UserService implements IUserService {
+  users: number = 1000;
+
+  @Log()
+  getUsersInDatabase(): number {
+    throw new Error("Ошибка");
+  }
+}
+
+//target - цель на метод , propertyKey - название метода, descriptor - джинерик который описывает нашу функцию
+function Log() {
+  return (
+    target: Object,
+    propertyKey: string | symbol,
+    descriptor: TypedPropertyDescriptor<(...args: any[]) => any>
+  ): TypedPropertyDescriptor<(...args: any[]) => any> | void => {
+    console.log(target);//{}
+    console.log(propertyKey);//getUsersInDatabase
+    console.log(descriptor);//value: fun, writable:true. enumerable:  false, configurable:true
+    descriptor.value = () => {
+      console.log("no error");
+    };
+  };
+}
+
+console.log(new UserService().getUsersInDatabase());//no error
+
+//---------------------
+//Упражнение - Декоратор перехвата ошибок
+
+interface IUserService {
+  users: number;
+  getUsersInDatabase(): number;
+}
+
+class UserService implements IUserService {
+  users: number = 1000;
+
+  @Catch()
+  getUsersInDatabase(): number {
+    throw new Error("Ошибка");
+  }
+}
+
+function Catch(rethrow:boolean = false) {
+  return (
+    target: Object,
+    propertyKey: string | symbol,
+    descriptor: TypedPropertyDescriptor<(...args: any[]) => any>
+  ): TypedPropertyDescriptor<(...args: any[]) => any> | void => {
+    const method = descriptor.value 
+
+    descriptor.value = async (...args: any[]) => {
+      try {
+        const res = await method?.apply(target, args);
+        return res;
+      } catch (e) {
+        if (e instanceof Error) {
+           console.log(e.message);
+          if (rethrow) {
+            throw e
+          }
+        }
+      }
+    };
+  };
+}
+
+//-----------------------
+//Декоратор свойства
+// на этапе присвоение ао умолчанию свойств декораторы сразу начианют работать
+
+interface IUserService {
+  users: number;
+  getUsersInDatabase(): number;
+}
+
+class UserService implements IUserService {
+  @Max(100)
+  users: number;
+
+  getUsersInDatabase(): number {
+    throw new Error("Ошибка");
+  }
+}
+
+//target - цель на метод , propertyKey - название метода,set ,get
+function Max(max: number) {
+  return (target: Object, propertyKey: string | symbol) => {
+    let value: number;
+    const setter = function (newValue: number) {
+      if (newValue > max) {
+        console.log(`Нельзя установить значение больше ${max}`);
+      } else {
+        value = newValue;
+      }
+    };
+
+    const getter = function () {
+      return value;
+    };
+
+    //переопределяет объекты
+    //Object.defineProperty - принимает объект и ключ, параметры
+    Object.defineProperty(target, propertyKey, {
+      set: setter,
+      get: getter,
+    });
+  };
+}
+const userService = new UserService();
+userService.users = 1;
+console.log(userService.users);//1
+userService.users = 1000;
+console.log(userService.users);//Нельзя установить значение больше
+
+//--------------------
+//Декоратор accessor
+//декораторы на getter и setter
+
+interface IUserService {
+  getUsersInDatabase(): number;
+}
+
+class UserService implements IUserService {
+  private _users: number;
+
+  @Log()
+  set users(num: number) {
+    this._users = num;
+  }
+
+  get users() {
+    return this._users;
+  }
+
+  getUsersInDatabase(): number {
+    throw new Error("Ошибка");
+  }
+}
+
+//target - цель на метод , propertyKey - название метода,descriptor - информацию для методов
+function Log() {
+  return (
+    target: Object,
+    propertyKey: string | symbol,
+    descriptor: PropertyDescriptor
+  ) => {
+    const set = descriptor.set;
+    descriptor.set = (...args: any) => {
+      console.log(args);
+      set?.apply(target, args);
+    };
+  };
+}
+
+const userService = new UserService();
+userService.users = 1;
+console.log(userService.users);
+
+//------------------------
+//Декоратор параметра
+
+interface IUserService {
+  getUsersInDatabase(): number;
+}
+
+class UserService implements IUserService {
+  private _users: number;
+
+  getUsersInDatabase(): number {
+    return this._users;
+  }
+
+  setUsersInDatabase(@Positive() num: number, @Positive() _: number): void {
+    this._users = num;
+  }
+}
+
+//target - цель на метод , propertyKey - название метода,parameterIndex - позиция параметра
+function Positive() {
+  return (
+    target: Object,
+    propertyKey: string | symbol,
+    parameterIndex: number
+  ) => {
+    console.log(target); //{}
+    console.log(propertyKey); //setUsersInDatabase
+    console.log(parameterIndex); //0
+  };
+}
+
+const userService = new UserService();
+
+//польза параметров декоратора будет видна в методанных
+
+//------------------------
+//Метаданные
+//некоторый объекты с разными методами
+
+//использовать библиотеку
+import "reflect-metadata";
+
+const POSITIVE_METADATA_KEY = Symbol("POSITIVE_METADATA_KEY");
+
+interface IUserService {
+  getUsersInDatabase(): number;
+}
+
+class UserService implements IUserService {
+  private _users: number;
+
+  getUsersInDatabase(): number {
+    return this._users;
+  }
+
+  @Validate()
+  setUsersInDatabase(@Positive() num: number): void {
+    this._users = num;
+  }
+}
+
+function Positive() {
+  return (
+    target: Object,
+    propertyKey: string | symbol,
+    parameterIndex: number
+  ) => {
+
+    //получили типизацию и можем на основе ее делать валидацию параметров (ключ из библиотеки,....)
+    console.log(Reflect.getOwnMetadata("design:type", target, propertyKey));//function:function
+    console.log(
+      Reflect.getOwnMetadata("design:paramtypes", target, propertyKey)
+    );//[[function:Number]]
+    console.log(
+      Reflect.getOwnMetadata("design:returntype", target, propertyKey)
+    );//undefined
+
+    //делаем свои параметры, свои ключи делаем
+    let existParams: number[] =
+      Reflect.getOwnMetadata(POSITIVE_METADATA_KEY, target, propertyKey) || [];
+    
+    //доволяем свой параметр из декоратора
+    existParams.push(parameterIndex);
+
+    //определяем новые методанные по ключу , что хотим положить
+    Reflect.defineMetadata(
+      POSITIVE_METADATA_KEY,
+      existParams,
+      target,
+      propertyKey
+    );
+  };
+}
+
+function Validate() {
+  return (
+    target: Object,
+    propertyKey: string | symbol,
+    descriptor: TypedPropertyDescriptor<(...args: any[]) => any>
+  ) => {
+    let method = descriptor.value;
+    descriptor.value = function (...args: any) {
+      
+      //получи список парметров из декоратора
+      let positiveParams: number[] = Reflect.getOwnMetadata(
+        POSITIVE_METADATA_KEY,
+        target,
+        propertyKey
+      );
+
+      if (positiveParams) {
+        for (let index of positiveParams) {
+          if (args[index] < 0) {
+            throw new Error("Число должно быть больше нуля");
+          }
+        }
+      }
+      return method?.apply(this, args);
+    };
+  };
+}
+
+const userService = new UserService();
+console.log(userService.setUsersInDatabase(10));
+console.log(userService.setUsersInDatabase(-1));//"Число должно быть больше нуля"
+
+
+//сделали валидацию передоваемых параметров в run time 
+
+//---------------------
+//Порядок декораторов
+
+function Uni(name: string): any {
+  console.log(`Инициализация: ${name}`);
+  return function () {
+    console.log(`Вызов: ${name}`);
+  };
+}
+
+@Uni("Класс1")
+@Uni("Класс2")
+class MyClass {
+  @Uni("Метод")
+  method(@Uni("Параметр метода") _: any) {}
+
+  constructor(@Uni("Параметр конструктора") _: any) {}
+
+  @Uni("Свойство 3")
+  props3?: any;
+
+  @Uni("Свойство 1")
+  props?: any;
+
+  @Uni("Свойство static")
+  static prop2?: any;
+
+  @Uni("Метод static")
+  static method2(@Uni("Параметр метода static") _: any) {}
+}
+
+//сначало иницилизируеться статические декораторы а потом статические,класс , далее конструктор, порядки влияют только на однинаковые уровни инициализации
