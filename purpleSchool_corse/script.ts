@@ -2526,3 +2526,231 @@ class MyClass {
 }
 
 //сначало иницилизируеться статические декораторы а потом статические,класс , далее конструктор, порядки влияют только на однинаковые уровни инициализации
+
+//------------------------
+//Namespaces и reference
+
+//в один объект помещаем все что хотим импортировать
+namespace A {
+  export const a = 5;
+
+  export interface B {
+    c: number;
+  }
+}
+
+//использование
+/// <reference path="./module/app2.ts" />
+console.log(A.a);
+
+//-------------------
+//Модульность на backend
+export const a = 5;
+
+export interface B {
+  c: number;
+}
+
+import { a } from "./module/app2.js";
+
+console.log(a);
+
+//----------------
+//Модульность на frontend
+
+//Добавить type="module" 
+// <script src="./build/app.js" type="module"></script>;
+
+export const a = 5;
+
+export interface B {
+  c: number;
+}
+
+import { a } from "./module/app2.js";
+
+console.log(a);
+
+//----------------
+//Import и export
+//можно импортировать и переменные и типы
+
+//app2.ts
+export const a = 5;
+
+export class Test {}
+
+export const Obj = {};
+
+export default function run() {
+  console.log("run");
+}
+
+export interface B {
+  c: number;
+}
+
+export type MyType = string | number;
+export type MyType2 = string | number;
+
+//app.ts;
+//default import, и конкретные объекты
+import run, { a, type MyType2 } from "./module/app2";
+//default import
+import running from "./module/app2";
+//все + default import
+import * as all from "./module/app2";
+//переименовываем
+import { Test as Cl } from "./module/app2";
+//будет импортировать только тип
+import { type MyType } from "./module/app2";
+
+running();
+run();
+new Cl();
+console.log(a);
+console.log(all.a);
+
+//---------------------
+//Типизация сторонних библиотек
+
+import { toJson } from "really-relaxed-json";
+const rjson = "[ one two three {foo:bar} ]";
+const json = toJson(rjson);
+console.log(json);
+
+//типизация дополнительная
+//src/types.d.ts
+declare module "really-relaxed-json" {
+  export function toJson(rjsonString: string, compact?: boolean): string;
+}
+
+//------------------
+//_____Порождающие паттерны_______
+//пораждают новые объекты
+
+//-------------------
+//Фабрика
+//Создает что-то без самоповторения
+//Есть универсальный тип (интерфейс) один на все далее идет реализация интерфейсов, создаеться общий абстактный класс, далее на основе этого абстрактного класса мы создаем фабрики в которых заключены реализации интрефейсов и использование универсального типа 
+
+//универсальный интерфейс который будет использоваться везде 
+interface IInsurance {
+  id: number;
+  status: string;
+  setVehicle(vehicle: any): void;
+  submit(): Promise<boolean>;
+}
+
+//реализация интерфейса 
+class TFInsurance implements IInsurance {
+  id: number;
+  status: string;
+  private vehicle: any;
+
+  setVehicle(vehicle: any): void {
+    this.vehicle = vehicle;
+  }
+
+  async submit(): Promise<boolean> {
+    const res = await fetch("", {
+      method: "POST",
+      body: JSON.stringify({ vehicle: this.vehicle }),
+    });
+    const data = await res.json();
+    return data.isSuccess;
+  }
+}
+
+//реализация интерфейса 
+class ABInsurance implements IInsurance {
+  id: number;
+  status: string;
+  private vehicle: any;
+
+  setVehicle(vehicle: any): void {
+    this.vehicle = vehicle;
+  }
+
+  async submit(): Promise<boolean> {
+    const res = await fetch("ab", {
+      method: "POST",
+      body: JSON.stringify({ vehicle: this.vehicle }),
+    });
+    const data = await res.json();
+    return data.yes;
+  }
+}
+
+//абстрактный класс фабрики
+abstract class InsuranceFactory {
+  db: any;
+
+  abstract createInsurance(): IInsurance;
+
+  saveHistory(ins: IInsurance) {
+    this.db.save(ins.id, ins.status);
+  }
+}
+
+//фабрика
+class TFInsuranceFactory extends InsuranceFactory {
+  createInsurance(): IInsurance {
+    return new TFInsurance();
+  }
+}
+
+//фабрика
+class ABInsuranceFactory extends InsuranceFactory {
+  createInsurance(): IInsurance {
+    return new ABInsurance();
+  }
+}
+
+const tfInsuranceFactory = new TFInsuranceFactory();
+const ins = tfInsuranceFactory.createInsurance();
+tfInsuranceFactory.saveHistory(ins);
+
+//----------------------
+//Singleton
+
+class MyMap {
+  private static instance: MyMap;
+
+  map: Map<number, string> = new Map();
+
+  private constructor() {}
+
+  clean() {
+    this.map = new Map();
+  }
+
+  public static get(): MyMap {
+    if (!MyMap.instance) {
+      MyMap.instance = new MyMap();
+    }
+    return MyMap.instance;
+  }
+}
+
+class Service1 {
+  addMap(key: number, value: string) {
+    const myMap = MyMap.get();
+    myMap.map.set(key, value);
+  }
+}
+
+class Service2 {
+  getKeys(key: number) {
+    const myMap = MyMap.get();
+    console.log(myMap.map.get(key));
+    myMap.clean();
+    console.log(myMap.map.get(key));
+  }
+}
+
+new Service1().addMap(1, "Работает!");
+new Service2().getKeys(1);
+
+//-----------------------
+//
