@@ -3135,12 +3135,14 @@ console.log(shop.getPrice());
 
 //---------------------
 //Chain of Command
+//промежуточные обработчики которые далее передают запрос типо Middleware
 
 interface IMiddleware {
   next(mid: IMiddleware): IMiddleware;
   handle(request: any): any;
 }
 
+//Middleware
 abstract class AbstractMiddleware implements IMiddleware {
   private nextMiddleware: IMiddleware;
 
@@ -3197,6 +3199,471 @@ console.log(
   })
 );
 
+//-----------------
+//Mediator
+//решает проблему связанности все проходит через Mediator 
 
+interface Mediator {
+  notify(sender: string, event: string): void;
+}
 
+abstract class Mediated {
+  mediator: Mediator;
+  setMediator(mediator: Mediator) {
+    this.mediator = mediator;
+  }
+}
 
+class Notifications {
+  send() {
+    console.log("Отправляю уведомление");
+  }
+}
+
+class Log {
+  log(message: string) {
+    console.log(message);
+  }
+}
+
+class EventHandler extends Mediated {
+  myEvent() {
+    this.mediator.notify("EventHandler", "myEvent");
+  }
+}
+
+class NotificationMediator implements Mediator {
+  constructor(
+    public notificaitons: Notifications,
+    public logger: Log,
+    public handler: EventHandler
+  ) {}
+
+  notify(_: string, event: string): void {
+    switch (event) {
+      case "myEvent":
+        this.notificaitons.send();
+        this.logger.log("Отправлено");
+        break;
+    }
+  }
+}
+
+const handler = new EventHandler();
+const logger = new Log();
+const notificaions = new Notifications();
+
+const m = new NotificationMediator(notificaions, logger, handler);
+handler.setMediator(m);
+handler.myEvent(); 
+
+//----------------------
+//Command
+// 
+
+class User {
+  constructor(public userId: number) {}
+}
+
+class CommandHistory {
+  public commands: Command[] = [];
+  push(command: Command) {
+    this.commands.push(command);
+  }
+  remove(command: Command) {
+    this.commands = this.commands.filter(
+      (c) => c.commandId !== command.commandId
+    );
+  }
+}
+
+//абстрактная команда
+abstract class Command {
+  public commandId: number;
+
+  abstract execute(): void;
+
+  constructor(public history: CommandHistory) {
+    this.commandId = Math.random();
+  }
+}
+
+//реализация команды
+class AddUserCommand extends Command {
+  constructor(
+    private user: User,
+    private receiver: UserService,
+    history: CommandHistory
+  ) {
+    super(history);
+  }
+
+  execute(): void {
+    this.receiver.saveUser(this.user);
+    this.history.push(this);
+  }
+
+  undo() {
+    this.receiver.deleteUser(this.user.userId);
+    this.history.remove(this);
+  }
+}
+
+class UserService {
+  saveUser(user: User) {
+    console.log(`Сохраняю пользователя с id ${user.userId}`);
+  }
+  deleteUser(userId: number) {
+    console.log(`Удаляем пользователя с id ${userId}`);
+  }
+}
+
+class Controller {
+  reveiver: UserService;
+  history: CommandHistory = new CommandHistory();
+
+  addReceiver(receiver: UserService) {
+    this.reveiver = receiver;
+  }
+
+  run() {
+    const addUserCommand = new AddUserCommand(
+      new User(1),
+      this.reveiver,
+      this.history
+    );
+    addUserCommand.execute();
+    console.log(addUserCommand.history);
+    addUserCommand.undo();
+    console.log(addUserCommand.history);
+  }
+}
+
+const controller = new Controller();
+controller.addReceiver(new UserService());
+controller.run();
+
+//-------------------
+//State
+//промежуточное состояние
+
+class DocumentItem {
+  public text: string;
+  private state: DocumentItemState;
+
+  constructor() {
+    this.setState(new DraftDocumentItemState());
+  }
+
+  getState() {
+    return this.state;
+  }
+
+  setState(state: DocumentItemState) {
+    this.state = state;
+    this.state.setContext(this);
+  }
+
+  publishDoc() {
+    this.state.publish();
+  }
+
+  deleteDoc() {
+    this.state.delete();
+  }
+}
+
+//состояние
+abstract class DocumentItemState {
+  public name: string;
+  public item: DocumentItem;
+
+  public setContext(item: DocumentItem) {
+    this.item = item;
+  }
+
+  public abstract publish(): void;
+  public abstract delete(): void;
+}
+
+class DraftDocumentItemState extends DocumentItemState {
+  constructor() {
+    super();
+    this.name = "DraftDocument";
+  }
+  public publish(): void {
+    console.log(`На сайт отправлен текст ${this.item.text}`);
+    this.item.setState(new PublishDocumentItemState());
+  }
+  public delete(): void {
+    console.log("Документ удалён");
+  }
+}
+
+class PublishDocumentItemState extends DocumentItemState {
+  constructor() {
+    super();
+    this.name = "PublishDocument";
+  }
+  public publish(): void {
+    console.log("Нельзя опубликовать опубликованный документ");
+  }
+  public delete(): void {
+    console.log("Снято с публикации");
+    this.item.setState(new DraftDocumentItemState());
+  }
+}
+
+const item = new DocumentItem();
+item.text = "Мой пост!";
+console.log(item.getState());
+item.publishDoc();
+console.log(item.getState());
+item.publishDoc();
+item.deleteDoc();
+console.log(item.getState());
+
+//----------------------
+//Strategy
+
+class User {
+  guthubToken: string;
+  jwtToken: string;
+}
+
+interface AuthStratagy {
+  auth(user: User): boolean;
+}
+
+class Auth {
+  constructor(private strategy: AuthStratagy) {}
+
+  setStategy(strategy: AuthStratagy) {
+    this.strategy = strategy;
+  }
+
+  public authUser(user: User): boolean {
+    return this.strategy.auth(user);
+  }
+}
+
+class JWTStrategy implements AuthStratagy {
+  auth(user: User): boolean {
+    if (user.jwtToken) {
+      return true;
+    }
+    return false;
+  }
+}
+
+class GithubStrategy implements AuthStratagy {
+  auth(user: User): boolean {
+    if (user.guthubToken) {
+      // Идём в API
+      return true;
+    }
+    return false;
+  }
+}
+
+const user = new User();
+user.jwtToken = "token";
+const auth = new Auth(new JWTStrategy());
+console.log(auth.authUser(user));
+auth.setStategy(new GithubStrategy());
+console.log(auth.authUser(user));
+
+//----------------------
+//iterator
+
+class Task {
+  constructor(public priority: number) {}
+}
+
+class TaskList {
+  private tasks: Task[] = [];
+
+  public sortByPriority() {
+    this.tasks = this.tasks.sort((a, b) => {
+      if (a.priority > b.priority) {
+        return 1;
+      } else if (a.priority == b.priority) {
+        return 0;
+      } else {
+        return -1;
+      }
+    });
+  }
+
+  public addTask(task: Task) {
+    this.tasks.push(task);
+  }
+
+  public getTasks() {
+    return this.tasks;
+  }
+
+  public count() {
+    return this.tasks.length;
+  }
+
+  public getIterator() {
+    return new PriorityTaskItearator(this);
+  }
+}
+
+interface IIterator<T> {
+  current(): T | undefined;
+  next(): T | undefined;
+  prev(): T | undefined;
+  index(): number;
+}
+
+class PriorityTaskItearator implements IIterator<Task> {
+  private position: number = 0;
+  private taskList: TaskList;
+
+  constructor(taskList: TaskList) {
+    taskList.sortByPriority();
+    this.taskList = taskList;
+  }
+
+  current(): Task | undefined {
+    return this.taskList.getTasks()[this.position];
+  }
+  next(): Task | undefined {
+    this.position += 1;
+    return this.taskList.getTasks()[this.position];
+  }
+  prev(): Task | undefined {
+    this.position -= 1;
+    return this.taskList.getTasks()[this.position];
+  }
+  index(): number {
+    return this.position;
+  }
+}
+
+const taskList = new TaskList();
+taskList.addTask(new Task(8));
+taskList.addTask(new Task(1));
+taskList.addTask(new Task(3));
+const iterator = taskList.getIterator();
+console.log(iterator.current());
+console.log(iterator.next());
+console.log(iterator.next());
+console.log(iterator.prev());
+console.log(iterator.index());
+
+//--------------------
+//Template method
+
+class Form {
+  constructor(public name: string) {}
+}
+
+abstract class SaveForm<T> {
+  public save(form: Form) {
+    const res = this.fill(form);
+    this.log(res);
+    this.send(res);
+  }
+
+  protected abstract fill(form: Form): T;
+  protected log(data: T): void {
+    console.log(data);
+  }
+  protected abstract send(data: T): void;
+}
+
+class FirstAPI extends SaveForm<string> {
+  protected fill(form: Form): string {
+    return form.name;
+  }
+  protected send(data: string): void {
+    console.log(`Отправляю ${data}`);
+  }
+}
+
+class SecondAPI extends SaveForm<{ fio: string }> {
+  protected fill(form: Form): { fio: string } {
+    return { fio: form.name };
+  }
+  protected send(data: { fio: string }): void {
+    console.log(`Отправляю ${data}`);
+  }
+}
+
+const form1 = new FirstAPI();
+form1.save(new Form("Вася"));
+
+const form2 = new SecondAPI();
+form2.save(new Form("Вася"));
+
+//---------------------
+//Observer
+
+interface Observer {
+  update(subject: Subject): void;
+}
+
+interface Subject {
+  attach(observer: Observer): void;
+  detach(observer: Observer): void;
+  notify(): void;
+}
+
+class Lead {
+  constructor(public name: string, public phone: string) {}
+}
+
+class NewLead implements Subject {
+  private observers: Observer[] = [];
+  public state: Lead;
+
+  attach(observer: Observer): void {
+    if (this.observers.includes(observer)) {
+      return;
+    }
+    this.observers.push(observer);
+  }
+  detach(observer: Observer): void {
+    const observerIndex = this.observers.indexOf(observer);
+    if (observerIndex == -1) {
+      return;
+    }
+    this.observers.splice(observerIndex, 1);
+  }
+
+  notify(): void {
+    for (const observer of this.observers) {
+      observer.update(this);
+    }
+  }
+}
+
+class NotificationService implements Observer {
+  update(subject: Subject): void {
+    console.log(`NotificationService получил уведомление`);
+    console.log(subject);
+  }
+}
+
+class LeadService implements Observer {
+  update(subject: Subject): void {
+    console.log(`LeadService получил уведомление`);
+    console.log(subject);
+  }
+}
+
+const subject = new NewLead();
+subject.state = new Lead("Антон", "00000");
+const s1 = new NotificationService();
+const s2 = new LeadService();
+
+subject.attach(s1);
+subject.attach(s2);
+subject.notify();
+subject.detach(s1);
+subject.detach(s2);
+subject.notify();
