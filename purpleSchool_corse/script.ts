@@ -2713,12 +2713,16 @@ tfInsuranceFactory.saveHistory(ins);
 
 //----------------------
 //Singleton
+//одиночка
+//будем работать всегда с одним объектом (один раз созданным) и уже все следующие наследники будут работать только с ним одним, не создавая множество других объектов
 
+//Singleton
 class MyMap {
   private static instance: MyMap;
 
   map: Map<number, string> = new Map();
 
+  //конструктор в ts может быть приватным
   private constructor() {}
 
   clean() {
@@ -2753,4 +2757,446 @@ new Service1().addMap(1, "Работает!");
 new Service2().getKeys(1);
 
 //-----------------------
-//
+//Прототип
+//клонирование объекта с помощью метода
+
+interface Prototype<T> {
+  clone(): T;
+}
+
+class UserHistory implements Prototype<UserHistory> {
+  createdAt: Date;
+
+  constructor(public email: string, public name: string) {
+    this.createdAt = new Date();
+  }
+
+  clone(): UserHistory {
+    let target = new UserHistory(this.email, this.name);
+    target.createdAt = this.createdAt;
+    return target;
+  }
+}
+
+let user = new UserHistory("a@a.ru", "Антон");
+console.log(user);
+
+//клонируем оьъект , они полностью равны но он являеться клонам (разные объекты)
+let user2 = user.clone();
+user2.email = "b@b.ru";
+console.log(user2);
+console.log(user);
+
+//--------------------
+//Builder
+//строительный патерн - вынести логику в рамках класса builder (строит, устанавливает что-то)
+
+enum ImageFormat {
+  Png = "png",
+  Jpeg = "jpeg",
+}
+
+interface IResolution {
+  width: number;
+  height: number;
+}
+
+interface IImageConversion extends IResolution {
+  format: ImageFormat;
+}
+
+//Builder
+class ImageBuilder {
+  private formats: ImageFormat[] = [];
+  private resolutions: IResolution[] = [];
+
+  addPng() {
+    if (this.formats.includes(ImageFormat.Png)) {
+      return this;
+    }
+    this.formats.push(ImageFormat.Png);
+    return this;
+  }
+
+  addJpeg() {
+    if (this.formats.includes(ImageFormat.Jpeg)) {
+      return this;
+    }
+    this.formats.push(ImageFormat.Jpeg);
+    return this;
+  }
+
+  addResolution(width: number, height: number) {
+    this.resolutions.push({ width, height });
+    return this;
+  }
+
+  build(): IImageConversion[] {
+    const res: IImageConversion[] = [];
+    for (const r of this.resolutions) {
+      for (const f of this.formats) {
+        res.push({
+          format: f,
+          width: r.width,
+          height: r.height,
+        });
+      }
+    }
+    return res;
+  }
+}
+
+console.log(
+  new ImageBuilder()
+    .addJpeg()
+    .addPng()
+    .addResolution(100, 50)
+    .addResolution(200, 100)
+    .build()
+);
+/* [{
+  "format": "jpeg",
+  "width": 100,
+  "height": 50
+}, {
+  "format": "png",
+  "width": 100,
+  "height": 50
+}, {
+  "format": "jpeg",
+  "width": 200,
+  "height": 100
+}, {
+  "format": "png",
+  "width": 200,
+  "height": 100
+}] */
+
+//-----------------------
+//_____Структурные паттерны______
+//Иерархия класса
+
+//----------------------
+//Мост
+//есть некоторый управляющий класс который взаимодействует через interface с определенным провайдером
+
+//interface
+interface IProvider {
+  sendMessage(message: string): void;
+  connect(config: unknown): void;
+  disconnect(): void;
+}
+
+//провайдер 1 
+class TelegramProvider implements IProvider {
+  sendMessage(message: string): void {
+    console.log(message);
+  }
+  connect(config: string): void {
+    console.log(config);
+  }
+  disconnect(): void {
+    console.log("Disconnected TG");
+  }
+}
+
+//провайдер 1 
+class WhatsUpProvider implements IProvider {
+  sendMessage(message: string): void {
+    console.log(message);
+  }
+  connect(config: string): void {
+    console.log(config);
+  }
+  disconnect(): void {
+    console.log("Disconnected WU");
+  }
+}
+
+//управляющий класс
+class NotificationSender {
+  constructor(private provider: IProvider) {}
+
+  send() {
+    this.provider.connect("connect");
+    this.provider.sendMessage("message");
+    this.provider.disconnect();
+  }
+}
+
+class DelayNotificationSender extends NotificationSender {
+  constructor(provider: IProvider) {
+    super(provider);
+  }
+  sendDelayed() {}
+}
+
+const sender = new NotificationSender(new TelegramProvider());
+sender.send();
+
+const sender2 = new NotificationSender(new WhatsUpProvider());
+sender2.send();
+
+//-------------------
+//Фасад
+//скрыть всю внутреннию реализацию за простым API
+
+class Notify {
+  send(template: string, to: string) {
+    console.log(`Отправляю ${template}: ${to}`);
+  }
+}
+
+class Log {
+  log(message: string) {
+    console.log(message);
+  }
+}
+
+class Tempate {
+  private templates = [{ name: "other", template: "<h1>Шаблон!</h1>" }];
+
+  getByName(name: string) {
+    return this.templates.find((t) => t.name === name);
+  }
+}
+
+//Фасад
+class NotificationFacade {
+  //private- внешнему пользователю не обязательно знать про них
+  private notify: Notify;
+  private logger: Log;
+  private template: Tempate;
+
+  constructor() {
+    this.notify = new Notify();
+    this.template = new Tempate();
+    this.logger = new Log();
+  }
+
+  send(to: string, templateName: string) {
+    const data = this.template.getByName(templateName);
+    if (!data) {
+      this.logger.log("Не найден шаблон");
+      return;
+    }
+    this.notify.send(data.template, to);
+    this.logger.log("Шаблон отправлен");
+  }
+}
+
+const s = new NotificationFacade();
+s.send("a@a.ru", "other");
+
+//-----------------------
+//Адаптер
+//Позволяет недопходящий с ходу объект использовать в данной среде
+
+class KVDatabase {
+  private db: Map<string, string> = new Map();
+  save(key: string, value: string) {
+    this.db.set(key, value);
+  }
+}
+
+class PersistentDB {
+  savePersistent(data: Object) {
+    console.log(data);
+  }
+}
+
+//Адаптер
+class PersistentDBAdaper extends KVDatabase {
+  constructor(public database: PersistentDB) {
+    super();
+  }
+
+  override save(key: string, value: string): void {
+    this.database.savePersistent({ key, value });
+  }
+}
+
+function run(base: KVDatabase) {
+  base.save("key", "myValue");
+}
+
+run(new PersistentDBAdaper(new PersistentDB()));
+
+//------------------------
+//Proxy
+//Добовляет дополнительный слой (с дополнительной логикой)
+
+interface IPaymentAPI {
+  getPaymentDetail(id: number): IPaymentDetail | undefined;
+}
+
+interface IPaymentDetail {
+  id: number;
+  sum: number;
+}
+
+class PaymentAPI implements IPaymentAPI {
+  private data = [{ id: 1, sum: 10000 }];
+  getPaymentDetail(id: number): IPaymentDetail | undefined {
+    return this.data.find((d) => d.id === id);
+  }
+}
+
+//Proxy
+//типо реализовали безопаность доступа к PaymentAPI
+class PaymentAccessProxy implements IPaymentAPI {
+  constructor(private api: PaymentAPI, private userId: number) {}
+
+  getPaymentDetail(id: number): IPaymentDetail | undefined {
+    if (this.userId === 1) {
+      return this.api.getPaymentDetail(id);
+    }
+    console.log("Попытка получить данные платежа!");
+    return undefined;
+  }
+}
+
+const proxy = new PaymentAccessProxy(new PaymentAPI(), 1);
+console.log(proxy.getPaymentDetail(1));
+/* {
+  "id": 1,
+  "sum": 10000
+}  */
+
+const proxy2 = new PaymentAccessProxy(new PaymentAPI(), 2);
+console.log(proxy2.getPaymentDetail(1));
+//"Попытка получить данные платежа!" 
+
+//---------------
+//Composite
+//Упрощает древовидные структуры приложения
+//Некий абстрактный класс или interface, есть набор items, и просто дергая метод абстрактного класса она будет расчитывать стоимость и т.д. в наследниках.
+
+//abstract класс
+abstract class DeliveryItem {
+  items: DeliveryItem[] = [];
+
+  addItem(item: DeliveryItem) {
+    this.items.push(item);
+  }
+
+  getItemPrices(): number {
+    return this.items.reduce(
+      (acc: number, i: DeliveryItem) => (acc += i.getPrice()),
+      0
+    );
+  }
+
+  abstract getPrice(): number;
+}
+
+export class DeliveryShop extends DeliveryItem {
+  constructor(private deliveryFee: number) {
+    super();
+  }
+
+  getPrice(): number {
+    return this.getItemPrices() + this.deliveryFee;
+  }
+}
+
+export class Package extends DeliveryItem {
+  getPrice(): number {
+    return this.getItemPrices();
+  }
+}
+
+export class Product extends DeliveryItem {
+  constructor(private price: number) {
+    super();
+  }
+  getPrice(): number {
+    return this.price;
+  }
+}
+
+const shop = new DeliveryShop(100);
+shop.addItem(new Product(1000));
+
+const pack1 = new Package();
+pack1.addItem(new Product(200));
+pack1.addItem(new Product(300));
+shop.addItem(pack1);
+
+const pack2 = new Package();
+pack2.addItem(new Product(30));
+shop.addItem(pack2);
+
+console.log(shop.getPrice());
+
+//-----------------------
+//____14 Поведенческие паттерны____
+//Эффективное взимодейтсвия, легко расширяемая и подерживаемая 
+
+//---------------------
+//Chain of Command
+
+interface IMiddleware {
+  next(mid: IMiddleware): IMiddleware;
+  handle(request: any): any;
+}
+
+abstract class AbstractMiddleware implements IMiddleware {
+  private nextMiddleware: IMiddleware;
+
+  next(mid: IMiddleware): IMiddleware {
+    this.nextMiddleware = mid;
+    return mid;
+  }
+
+  handle(request: any) {
+    if (this.nextMiddleware) {
+      return this.nextMiddleware.handle(request);
+    }
+    return;
+  }
+}
+
+class AuthMiddleware extends AbstractMiddleware {
+  override handle(request: any) {
+    console.log("AuthMiddleware");
+    if (request.userId === 1) {
+      return super.handle(request);
+    }
+    return { error: "Вы не авторизованы" };
+  }
+}
+
+class ValidateMiddleware extends AbstractMiddleware {
+  override handle(request: any) {
+    console.log("ValidateMiddleware");
+    if (request.body) {
+      return super.handle(request);
+    }
+    return { error: "Нет body" };
+  }
+}
+
+class Controller extends AbstractMiddleware {
+  override handle(request: any) {
+    console.log("Controller");
+    return { success: request };
+  }
+}
+
+const controller = new Controller();
+const validate = new ValidateMiddleware();
+const auth = new AuthMiddleware();
+
+auth.next(validate).next(controller);
+
+console.log(
+  auth.handle({
+    userId: 1,
+    body: "I am OK!",
+  })
+);
+
+
+
+
