@@ -115,6 +115,8 @@ function bigO(a,b) {
 //!если ищем по значению то это O(n).
 //!если ищем по индексу то это O(1)
 
+//push - O(1) / pop - O(1) / shift - O(n) / unshift - O(n) / insert - O(n) / delete - O(n) / look index - O(1) / look value - O(n)
+
 //-------------------
 //Сравнение одно и другой операции
 //если n = 100 
@@ -162,3 +164,210 @@ let obj1 = {
   value:11
 }
 let obj2 = obj1
+
+//---------------------
+//___Связанные списки (linked lists)______
+//11(push) -> 3 -> 23 -> 7(tail) -> null
+//первый элемент head, последний элемент tail - далее выход null
+
+//добавить в конец списка O(1) , tail = новый элемент
+//удалить последний O(n) т.к мы не можем возвращаться в связанном списке назад и поэтому нужно пройтись по нем опять
+//добовление в начале O(1) , push = новый элемент
+//удаления начального элемента  O(1) т.к. просто передвигаем на позицию выше и удаляем старый элемент
+//4 - добавить в середину элемент, пройтись до нужного и вставить элемент 11-> 3 -> 23 -> 4 -> 7 -> null / O(n)
+//удаления элемента в середине то же O(n) т.к. нужно пройтись до нужного и удалить
+//поиск элемента O(n)
+
+//linked Lists
+//push - O(n) / pop - O(n) / shift - O(1) / unshift - O(1) / insert - O(n) / delete - O(n) / look index - O(n) / look value - O(n)
+
+//-------------------------
+//связанный список под копотом
+//4 -> 7 ...
+// head :{
+//   value:4,
+//   next: {
+//     value:7,
+//     next: {
+//       value:... , 
+//       next (tail): null
+//     }
+//   }
+// }
+
+//------------------------
+//Конструктор для связанного списка
+class Node {
+  constructor(value) {
+    this.value = value
+    this.next = null
+  }
+}
+
+class LinkedList {
+  constructor(value) {
+    const newNode = new Node(value)
+    this.head = newNode
+    this.tail = this.head
+    this.length = 1
+  }
+
+  push(value) {
+    const newNode = new Node(value)
+    if (!this.head) {
+      this.head = newNode
+      this.tail = newNode
+    } else {
+      this.tail.next = newNode
+      this.tail = newNode
+    }
+    this.length++
+    return this
+  }
+
+  pop() {
+    //not element
+    if (!this.head) return undefined
+
+    let temp = this.head
+    let pre = this.head
+    while (temp.next) {
+
+      //остановиться на предпоследнем элементе а дальше не пойдет
+      pre = temp
+      temp = temp.next
+    }
+    this.tail = pre
+    this.tail.next = null
+    this.length--
+
+    //else not elements
+    if (this.length === 0) {
+      this.head = null
+      this.tail = null
+    }
+    return temp
+  }
+
+  unshift(value) {
+    const newNode = new Node(value)
+    if (!this.head) {
+      this.head = newNode
+      this.tail = newNode
+    } else {
+      newNode.next = this.head
+      this.head = newNode
+    }
+    this.length++
+    return this
+  }
+
+  shift() {
+    if (!this.head) return undefined
+    let temp = this.head
+    this.head = this.head.next
+    this.length--
+    if (this.length === 0) {
+      this.tail = null
+    }
+
+    //обязательно нужно удалить тот элемент который был первый а иначе старый элемент так же вернеться
+    temp.next = null
+    return temp
+  }
+
+  //get on index
+  get(index) {
+    if (index < 0 || index >= this.length) return undefined
+
+    //указывает на первый элмент
+    let temp = this.head
+    for (let i = 0; i < index; i++) {
+
+      //перезаписывает temp
+      temp = temp.next
+    }
+    return temp
+  }
+
+  set(index, value) {
+    let temp = this.get(index)
+    if (temp) {
+      temp.value = value
+      return true
+    }
+    return false
+  }
+
+  //вставить нужный элемент до определенного значения
+  insert(index, value) {
+    if (index < 0 || index > this.length) return false
+    if (index === this.length) return this.push(value)
+    if (index === 0) return this.unshift(value)
+
+    const newNode = new Node(value)
+    const temp = this.get(index - 1)
+    newNode.next = temp.next
+    temp.next = newNode
+    this.length++
+    return true
+  }
+
+  remove(index) {
+    if (index < 0 || index >= this.length) return undefined
+    if (index === 0) return this.shift()
+    if (index === this.length - 1) return this.pop()
+
+    const before = this.get(index - 1)
+    const temp = before.next
+
+    before.next = temp.next
+    temp.next = null
+    this.length--
+    return temp
+  }
+
+  reverse() {
+    let temp = this.head
+    this.head = this.tail
+    this.tail = temp
+    let next = temp.next
+    let prev = null
+    for (let i = 0; i < this.length; i++) {
+      next = temp.next
+      temp.next = prev
+      prev = temp
+      temp = next
+    }
+    return this
+  }
+}
+
+let myLinkedList = new LinkedList(4)
+console.log(myLinkedList);//LinkedList {head: Node, tail: Node, length: 1}
+myLinkedList.push(5)
+console.log(myLinkedList);
+// head: Node { value: 4, next: Node }
+// length:2
+// tail:Node {next: null , value:5}
+myLinkedList.pop()
+console.log(myLinkedList);//LinkedList {head: Node, tail: Node, length: 1}
+myLinkedList.unshift(8)
+// head: Node { value: 8, next: Node }
+// length:2
+// tail: Node { value: 4, next: null }
+myLinkedList.shift()
+//LinkedList {head: Node, tail: Node, length: 1}
+myLinkedList.push(5)
+myLinkedList.push(8)
+myLinkedList.get(1)//Node {value: 5, next: Node}
+myLinkedList.set(1, 13)//true
+myLinkedList.get(2,48)//true
+myLinkedList.remove(3)
+myLinkedList.reverse()
+console.log(myLinkedList);
+ 
+//------------------------
+//
+
+ 
