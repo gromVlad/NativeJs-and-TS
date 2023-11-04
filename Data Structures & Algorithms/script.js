@@ -587,7 +587,7 @@ myStack.push(23)
 myStack.push(24)
 myStack.pop()
 console.log(myStack);
-//Node { value: 23, next: Node }
+//Node { val ue: 23, next: Node }
 //Node {value: 7, next: null}
 //value:23
 //{value: 7, next: null}
@@ -597,6 +597,380 @@ console.log(myStack);
 //Первый зашел первый вышел
 // Array - зашел unshift() O(n), вышел pop() O(1)
 //Связанный список - зашел unshift() O(1), вышел pop() O(n)
+class Node {
+  constructor(value) {
+    this.value = value
+    this.next = null
+  }
+}
+
+class Queue {
+  constructor(value) {
+    const newNode = new Node(value)
+    this.first = newNode
+    this.last = newNode
+    this.length = 1
+  }
+
+  enqueue(value) {
+    const newNode = new Node(value)
+    if (this.length === 0) {
+      this.first = newNode
+      this.last = newNode
+    } else {
+      this.last.next = newNode
+      this.last = newNode
+    }
+    this.length++
+    return this
+  }
+
+  dequeue() {
+    if (this.length === 0) return undefined
+    let temp = this.first
+    if (this.length === 1) {
+      this.last = null
+    } else {
+      this.first = this.first.next
+      temp.next = null
+    }
+    this.length--
+    return temp
+  }
+}
+
+let myQueue = new Queue(11)
+myQueue.enqueue(3)
+myQueue.enqueue(23)
+myQueue.enqueue(7)
+
+//---------------------
+//______Деревья_____
+
+//двоичное дерево 
+//Идеальное дерево - это когда в каждой строке есть элемент а не например только справо или слева
+//Узел у которого нет дочерних элентов называеться листом
+// {
+//   value:4,
+//   left:null,
+//   right:null
+// }
+
+//бинарное дерево поиска - в нем элементы которые меньше родительского идут направо и больше налево, и такое ветвление к каждому узлу
+//47 -> 21 | 76 -> 21 -> 12 | 27 || 76 -> 52 | 82
+
+//big O для бинарных деревьев поиска
+//O (log n) т.к. если дерево их 3 уровней чтобы удалить , добавить и найти потребуеться 3 операции поэтому 2(3 степени), такой поиск эффективен.
+
+//если у нас есть дубликаты в бинарном дереве поиска то тогда просто добовляем в элемент count с количеством дублей этого элемента
+
+//бинарное дерево поиска
+class Node {
+  constructor(value) {
+    this.value = value
+    this.left = null
+    this.right = null
+  }
+}
+
+class BST {
+  constructor() {
+    this.root = null
+  }
+
+  //добавим элемент
+  insert(value) {
+    const newNode = new Node(value)
+
+    //если дерево пустое то добавим новый элемент
+    if (this.root === null) {
+      this.root = newNode
+      return this
+    }
+    //если нет то по умолсанию текущий элемент temp равен root первому элементу
+    let temp = this.root
+
+    //цикл будет идти пока не вернем что-то (return)
+    while (true) {
+
+      //если есть такое значения то возврощаем undefined
+      if (newNode.value === temp.value) return undefined
+
+      //если меньше идем вправо
+      if (newNode.value < temp.value) {
+
+        //пошли влево и если нету детей то добовляем наш newNode
+        if (temp.left === null) {
+          temp.left = newNode
+          return this
+        }
+
+        //если еще ниже есть ребенок то текущий элемент передвигаем на этого ребенка и повторяем цикл пока не найдем пустое место в дереве
+        temp = temp.left
+
+      //больше идем влево
+      } else {
+
+        //--//--//--
+        if (temp.right === null) {
+          temp.right = newNode
+          return this
+        }
+        temp = temp.right
+      }
+    }
+  }
+
+  //поиск
+  contains(value) {
+    if (this.root === null) return false
+
+    //временная переменная
+    let temp = this.root
+
+    //пока temp не равно null 
+    while (temp) {
+      if (value < temp.value) {
+        temp = temp.left
+      } else if (value > temp.value) {
+        temp = temp.right
+      } else {
+        //если равно value вернем  true
+        return true
+      }
+    }
+    return false
+  }
+}
+let myTree = new BST()
+myTree.insert(47)
+myTree.insert(21)
+myTree.contains(47)//true
+
+//------------------------
+//______Хэш-таблицы_____
+//Объект  ["any_key": 128863] : 2 (ячейка где храниться объект)
+//Работают в одну сторону, они детерминированы
+//также когда одни объекты идут в ячейку в которой уже что-то храниться это называеться столкновением
+//Чтобы исключть столкновения используют зондирование тоесть если элемент есть в ячейки то посмотри если соседняя ячейка пуста то добавь сюда , также можно превратить в связанный список и просто добовлять новый элемент в уже имеюшийся
+
+class HashTable {
+
+  //по умолчанию 7 если не определено
+  constructor(size = 7) {
+    this.dataMap = new Array(size)
+  }
+
+  //приватное свойство определения в какую ячейку запишиться данные
+  _hash(key) {
+    let hash = 0
+    for (let i = 0; i < key.length; i++) {
+      hash = (hash + key.charCodeAt(i) * 23) % this.dataMap.length
+    }
+    return hash
+  }
+
+  set(key, value) {
+    //получили адрес ячейки куда будем ложить объекты
+    let index = this._hash(key)
+
+    //если маасив не существует в этой ячейки то его создадим
+    if (!this.dataMap[index]) this.dataMap[index] = []
+
+    //после создание добовляем наш объект
+    this.dataMap[index].push([key, value])
+    return this
+  }
+
+  //получить значения по ключу
+  get(key) {
+    let index = this._hash(key)
+
+    //если есть значения по индексу
+    if (this.dataMap[index]) {
+
+      //пройдемся по индексу и найдем нужное значения
+      for (let i = 0; i < this.dataMap[index].length; i++) {
+
+        //если нашли значения ключа
+        if (this.dataMap[index][i][0] === key) {
+          return this.dataMap[index][i][1]
+        }
+      }
+    }
+    return undefined
+  }
+
+  //получить все ключи 
+  keys() {
+    let allKeys = []
+
+    //проходимся по циклу
+    for (let i = 0; i < this.dataMap.length; i++) {
+
+      //если что-то есть в индексе
+      if (this.dataMap[i]) {
+
+        //проходимся по индексу и достаем ключи
+        for (let j = 0; j < this.dataMap[i].length; j++) {
+
+          //пушим в allKeys
+          allKeys.push(this.dataMap[i][j][0])
+        }
+      }
+    }
+    return allKeys
+  }
+}
+
+let myHashTable = new HashTable()
+myHashTable.set('bolts', 1400)
+myHashTable.set('washers', 50)
+
+//поиск в хэш таблице из=за того что данные распределены по ячейкам  то обычно используем одну операцию поэтому O(1)
+
+//Interview Question
+//если есть хоть одно одинаковое значения то равно true по умолчанию даны 2 массива
+function itemInCommon(arr1, arr2) {
+  for (let i = 0; i < arr1.length; i++) {
+    for (let j = 0; j < arr2.length; j++) {
+      if (arr1[i] === arr2[j]) return true
+    }
+  }
+  return false
+}
+let array1 = [1, 3, 5]
+let array2 = [2, 4, 5]
+itemInCommon(array1, array2)//true
+//неэффективный код (0 n2)
+
+function itemInCommon(arr1, arr2) {
+
+  //создаем объект со значением
+  //{1:true, 3:true ...}
+  let obj = {}
+  for (let i = 0; i < arr1.length; i++) {
+    obj[arr1[i]] = true
+  }
+
+  //если есть ключ такого объекта то возврощаем true
+  for (let j = 0; j < arr2.length; j++) {
+    if (obj[arr2[j]]) return true
+  }
+  return false
+}
+let array1 = [1, 3, 5]
+let array2 = [2, 4, 5]
+itemInCommon(array1, array2)
+//O(2n) -> O(n)
+
+//---------------------------
+//________Граффы________
+//Граффы (вершина узла)
+//Между собой соединяються, могут подключены к обеим вершинам, нет ограничений сколько вершин будет подлючено. По графам мы ходим, они предостовляют выбор маршрутов перехода, используеться в картах геолокации и т.д.
+//если есть двунапрвленноые ребра то они обозначаються без стрелок (двунаправленые тоесть например я дружу с петей а петя дружит со мной , двунаправленная связь)
+//также есть одноноправленые то есть типо подписка на знаменитость и т.д.
+//сзвязанный список и бинарные деревья являються графамми
+
+//Матрицы смежности. На основании связи строиться матрица связей и если данные по диагонали семетричны то и матрица семетрична
+//A -> B -> C -> D -> E -> опять A получили робм
+//матрица
+// _ A B C D E
+// A 0 1 0 0 1
+// B 1 0 1 0 0
+// C 0 1 0 1 0
+// D 0 0 1 0 1
+// E 1 0 0 1 0
+//Где они соединяються там 1 где нет то, видим что идет полоса по диагонали симитрична
+//При однонапрвленной связи в некторый участакх было бы по другому - т.к. связь работала только в одну сторону
+
+//Список смежности. В виде объектов
+//A -> B -> C -> D -> E -> опять A получили робм
+//Вершина ключ а ее ребра это массив
+//{ A:["B","E"] , B:["A","C"]...}
+
+//Big O в граффах. 
+//Матрица смежности неэффективна с точки зрения пространственной сложности O(|V|2), временная сложность  O(|V|2, добавить новую связь 0(1), удаление O(1) т.к просто удалим 1 и впишем 0
+//Список смежности O (|V| + |E|),временная сложность О(1),добавить новую связь 0(1),удаление O(|E|) т.к. надо пройтись по объекту и в нужный местах удалить вершины
+//По факту все таки список смежности более эффективен т.к. матрица хранитт очень много 0 и 1 что при масштабировании неприемлемо с точки зрения эффективности
+
+//
+class Graph {
+  constructor() {
+    this.adjacencyList = {}
+  }
+
+
+  //создаем вершины
+  addVertex(vertex) {
+
+    //если нет то создаем
+    if (!this.adjacencyList[vertex]) {
+      this.adjacencyList[vertex] = []
+      return true
+    }
+    return false
+  }
+
+  //добовляем связи
+  addEdge(vertex1, vertex2) {
+
+    //проверяем что вершины существуют
+    if (this.adjacencyList[vertex1] && this.adjacencyList[vertex2]) {
+
+      //добовлем из в ребра
+      this.adjacencyList[vertex1].push(vertex2)
+      this.adjacencyList[vertex2].push(vertex1)
+      return true
+    }
+    return false
+  }
+
+  removeEdge(vertex1, vertex2) {
+
+    //проверяем что вершины существуют
+    if (this.adjacencyList[vertex1] && this.adjacencyList[vertex2]) {
+
+      //фильтруем их чтобы удалить необходимые ребра из массива
+      this.adjacencyList[vertex1] = this.adjacencyList[vertex1]
+        .filter(v => v !== vertex2)
+      this.adjacencyList[vertex2] = this.adjacencyList[vertex2]
+        .filter(v => v !== vertex1)
+      return true
+    }
+    return false
+  }
+
+  removeVertex(vertex) {
+    if (!this.adjacencyList[vertex]) return undefined
+
+    //пока вершина которую мы удаляем имеет ребра то цикл продолжает работать и удалять все связи
+    while (this.adjacencyList[vertex].length) {
+      let temp = this.adjacencyList[vertex].pop()
+      this.removeEdge(vertex, temp)
+    }
+
+    //дальше удаляем саму вершину
+    delete this.adjacencyList[vertex]
+    return this
+  }
+}
+let myGraph = new Graph()
+myGraph.addVertex("A")
+myGraph.addVertex("B")
+myGraph.addVertex("C")
+myGraph.addVertex("D")
+myGraph.addEdge("A", "B")
+myGraph.addEdge("A", "C")
+myGraph.addEdge("A", "D")
+myGraph.addEdge("B", "D")
+myGraph.addEdge("C", "D")
+
+
+
+
+
+
 
 
 
