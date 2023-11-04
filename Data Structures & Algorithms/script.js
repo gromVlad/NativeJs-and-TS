@@ -539,5 +539,72 @@ myDoublyLinkedList.remove(2)
 console.log(myDoublyLinkedList); 
 
 //-----------------------
-//_____
+//_______Stacks________
+//Последний зашел первый вышел
+//если собираемся сделать стэк с массивом то всегда его реализовывать с конца а не с начало т.к. ,более эффективнее работает код O(1)
+//Когда будем использовать связанные списки в качестве стэка то реализовываем с начало списка т.к. O(1)
+
+class Node {
+  constructor(value) {
+    this.value = value
+    this.next = null
+  }
+}
+
+class Stack {
+  constructor(value) {
+    const newNode = new Node(value)
+    this.top = newNode
+    this.length = 1
+  }
+
+  push(value) {
+    const newNode = new Node(value)
+    if (this.length === 0) {
+      this.top = newNode
+    } else {
+      newNode.next = this.top
+      this.top = newNode
+    }
+    this.length++
+    return this
+  }
+
+  pop() {
+    if (this.length === 0) return undefined
+
+    let temp = this.top
+    this.top = this.top.next
+    temp.next = null
+
+    this.length--
+    return temp
+  }
+}
+
+let myStack = new Stack(7)
+myStack.push(23)
+myStack.push(24)
+myStack.pop()
+console.log(myStack);
+//Node { value: 23, next: Node }
+//Node {value: 7, next: null}
+//value:23
+//{value: 7, next: null}
+
+//--------------------
+//_____Очередь_______
+//Первый зашел первый вышел
+// Array - зашел unshift() O(n), вышел pop() O(1)
+//Связанный список - зашел unshift() O(1), вышел pop() O(n)
+
+
+
+
+
+
+
+  
+
+ 
 
