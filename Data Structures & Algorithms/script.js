@@ -1088,8 +1088,252 @@ insertionSort([4, 2, 6, 5, 1, 3])
 
 //--------------------
 //______Merge Sort______
+//использует рекурсию
+//самая эффективная сортировка
+
+//вспомогательная функция слияние
+//сравниваем элементы одного массива со вторым элементам массива и формируем новый массив, также используем дополнительные циклы если в массиве в каком нибудь отсануться элементы то мы их просто добавим
+function merge(array1, array2) {
+  let combined = []
+  let i = 0
+  let j = 0
+  while (i < array1.length && j < array2.length) {
+    if (array1[i] < array2[j]) {
+      combined.push(array1[i])
+      i++
+    } else {
+      combined.push(array2[j])
+      j++
+    }
+  }
+  while (i < array1.length) {
+    combined.push(array1[i])
+    i++
+  }
+  while (j < array2.length) {
+    combined.push(array2[j])
+    j++
+  }
+  return combined
+}
+merge([1, 3, 7, 8], [2, 4, 5, 6])//[1, 2, 3, 4, 5, 6, 7, 8]
+
+//функция будет посторяться до базового случая когда длина массива будет равна 1
+//Будем делить массив пока не доберемся до базового случая, после начнем возврощать сортированые части массива и склеивать их
+function mergeSort(array) {
+  if (array.length === 1) return array
+
+  let mid = Math.floor(array.length / 2)
+  let left = array.slice(0, mid)
+  let right = array.slice(mid)
+
+  return merge(mergeSort(left), mergeSort(right))
+}
+mergeSort([3, 1, 4, 2])//[1,2,3,4]
+//О(n log n)
+
+//--------------------
+//____Algorithms_ Quick Sort_____
+//берем первый элемент сравниваем его с дуругими что меньше этого элемента ставим слева что больше справа  далее сортируем части
+//лучший способ если массив не отсортирован, если он сортирован то это худший способ
+
+//базовая функция
+//pivot - базовый элемент с которомы сравниваем отсальные
+//i - текущий элемент на котором находимся
+//swap - тот элемент до текущего с которомы меняем текущий если он меньше pivot если больше пропускаем и он сам становиться swap
+function swap(array, firstIndex, secondIndex) {
+  let temp = array[firstIndex]
+  array[firstIndex] = array[secondIndex]
+  array[secondIndex] = temp
+}
+
+function pivot(array, pivotIndex = 0, endIndex = array.length - 1) {
+  let swapIndex = pivotIndex
+
+  //сортируем все элементы меньше базового
+  for (let i = pivotIndex + 1; i <= endIndex; i++) {
+    if (array[i] < array[pivotIndex]) {
+      swapIndex++
+      swap(array, swapIndex, i)
+    }
+  }
+  //чтобы наш базовый элемент стал дальше всех сортируемых элементов
+  swap(array, pivotIndex, swapIndex)
+
+  return swapIndex
+}
+//относительно 4 сортируем элемнты, далее 4 помещаем выше сортированыйъ элементов ниже 4
+pivot([4, 6, 1, 7, 3, 2, 5])//3 (индекс элемента относительно которого проводили сортировку)-> [2,1,3,4,6,7,5]
+
+//дальше бы разрезаем берем части меньше и больше и также прогоняем эти части сортируя элементы
+function quickSort(array, left = 0, right = array.length - 1) {
+
+  //если левое меньше правого, а если остался только одни элемент то сортировка прекратиться
+  if (left < right) {
+    let pivotIndex = pivot(array, left, right)
+    //левая часть
+    quickSort(array, left, pivotIndex - 1)
+    //правая часть
+    quickSort(array, pivotIndex + 1, right)
+  }
+  return array
+}
+quickSort([4, 6, 1, 7, 3, 2, 5])//[1, 2, 3, 4, 5, 6, 7]
+//О(n log n)
+
+//------------------------
+//_______Tree Traversal______
+
+//пример дерево с которым будем работать
+//     47 
+//  |     |
+//  21    76
+// | |    | |
+//18 27  52 82
 
 
+//поиск в ширину
+//просто идем по веткам по порядку углубляясь все ниже и ниже пока не пройдем всю цепочку, есть массив 1 в который берем текущее значения и второй в котором уж находяться наследники этой цепочки, и так далее раскрывая дерево все больше и больше пока все не элементы в дереве не закончаться
+
+class Node {
+  constructor(value) {
+    this.value = value
+    this.left = null
+    this.right = null
+  }
+}
+
+class BST {
+  constructor() {
+    this.root = null
+  }
+
+  insert(value) {
+    const newNode = new Node(value)
+    if (this.root === null) {
+      this.root = newNode
+      return this
+    }
+    let temp = this.root
+    while (true) {
+      if (newNode.value === temp.value) return undefined
+      if (newNode.value < temp.value) {
+        if (temp.left === null) {
+          temp.left = newNode
+          return this
+        }
+        temp = temp.left
+      } else {
+        if (temp.right === null) {
+          temp.right = newNode
+          return this
+        }
+        temp = temp.right
+      }
+    }
+  }
+
+  contains(value) {
+    if (this.root === null) return false
+    let temp = this.root
+    while (temp) {
+      if (value < temp.value) {
+        temp = temp.left
+      } else if (value > temp.value) {
+        temp = temp.right
+      } else {
+        return true
+      }
+    }
+    return false
+  }
+
+  //получим value всего дерево
+  BFS() {
+    let currentNode = this.root
+    let results = []
+    let queue = []
+
+    //текущий элемент
+    queue.push(currentNode)
+
+    //пока весь массив текущих элементов не закончиться продолжаем цикл
+    while (queue.length) {
+
+      //дальше перемещаем элемент из queue в results (его значение)
+      currentNode = queue.shift()
+      results.push(currentNode.value)
+
+      //и если есть наследники слева и справа помещаем их в queue и опять продолжаем цикл
+      if (currentNode.left) queue.push(currentNode.left)
+      if (currentNode.right) queue.push(currentNode.right)
+    }
+    return results
+  }
+}
+
+let myTree = new BST()
+myTree.insert(47)
+myTree.insert(21)
+myTree.insert(76)
+myTree.insert(18)
+myTree.insert(27)
+myTree.insert(52)
+myTree.insert(82)
+myTree.BFS()// [47, 21, 76, 18, 27, 52, 82]
+
+//поиск в глубину
+//preOrder
+//реализована с помощью рекурсии
+//идем по очереди добовля слева элементы далее в глубь начиная слева , пройдя всю глубину слева идем направо , тоесть поочередно спускаясь вниз добовляем элементы
+DFSPreOrder() {
+  let results = []
+  function traverse(currentNode) {
+    results.push(currentNode.value)
+    if (currentNode.left) traverse(currentNode.left)
+    if (currentNode.right) traverse(currentNode.right)
+  }
+  traverse(this.root)
+  return results
+}
+//[47, 21, 18, 27, 76, 52, 82]
+
+//поиск в глубину
+//postorder
+//Спакаемся начиная с левого элемента на всю глубину до элемента у которого не будет наследников и его добовляем первым, далее переходим назад к родителю и идем уже направо, слева и справо прошли и у родителя не осталось элементов и поэтому его также добовляем и т.д.
+DFSPostOrder() {
+  let results = []
+  function traverse(currentNode) {
+
+    //идем налево по дереву и направо если слева нет элементов
+    if (currentNode.left) traverse(currentNode.left)
+    if (currentNode.right) traverse(currentNode.right)
+
+    //если не можем идти на лево и на право то добовляем элемент в массив
+    results.push(currentNode.value)
+  }
+  traverse(this.root)
+  return results
+}
+//[18, 27, 21, 52, 82, 76, 47] 
+
+//поиск в глубину
+//по порядку
+//идет как postorder практический за исключением того мы добовляем сразу родительский элемент а не после того как прошли наследника когда перешли с позиции слева идем через родителя на право
+
+DFSInOrder() {
+  let results = []
+  function traverse(currentNode) {
+    if (currentNode.left) traverse(currentNode.left)
+
+    //отличаеться только тем что добовляем  до того как перешли на право
+    results.push(currentNode.value)
+    if (currentNode.right) traverse(currentNode.right)
+  }
+  traverse(this.root)
+  return results
+}
+// [18, 21, 27, 47, 52, 76, 82]
 
 
 
