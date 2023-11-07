@@ -203,5 +203,5 @@ let pr2 = new Promise((res) => {
 xxx = pr2
   .then(() => 100)
   .catch(() => {})
-  .then((res) => console.log(100)); //100
+  .then((res) => console.log(100)); //100 
 
