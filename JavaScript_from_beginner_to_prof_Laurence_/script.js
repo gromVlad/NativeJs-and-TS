@@ -252,13 +252,118 @@ const BMI = weightInKg / (heightInMeters * heightInMeters);//58.5891316365966
 //----------------------------
 //___Множественные значения JavaScript__//
 
+//_Массивы и их свойства
+//Массивы — это перечни значений
+arr1 = new Array("purple", "green", "yellow");
+arr2 = ["black", "orange", "pink"];
 
+arr3 = new Array(10);//[ <10 empty items
+arr4 = [10];//[ 10 ]
 
+let arr = ["hi there", 5, true];
 
+//Вы можете изменить значения констант массива, но не можете изменить сам массив
+const arr = ["hi there"];
+arr[0] = "new value";
+console.log(arr[0]);//new value
+arr = ["nope, now you are overwriting the array"];//TypeError: Assignment to constant variable.
 
+//_Доступ к элементам
+cars = ["Toyota", "Renault", "Volkswagen"];
+console.log(cars[0]);//Toyota
 
+//_Перезапись элементов
+cars[0] = "Tesla";
+console.log(cars);//[ 'Tesla', 'Renault', 'Volkswagen' ]
 
+//_Встроенное свойство длины
+colors = ["black", "orange", "pink"]
+console.log("Length of colors:", colors.length);//Length of colors: 3
 
+//использовать длину для доступа к последнему элементу массива:
+lastElement = colors[colors.length - 1];
 
+//несуществующую индексную позицию
+numbers = [12, 24, 36];
+numbers[5] = 48;
+console.log(numbers.length);//numbers [ 12, 24, 36, <2 empty items>, 48 ]
 
+//_Добавление и замена элементов
+favoriteFruits = ["grapefruit", "orange", "lemon"];
+favoriteFruits.push("tangerine");
+
+//добавить элементы с определенным индексом
+let arrOfShapes = ["circle", "triangle", "rectangle", "pentagon"];
+// 1 - индекс массива, 2 - число элементов, которые мы хотим удалить
+arrOfShapes.splice(2, 0, "square", "trapezoid");
+console.log(arrOfShapes);
+/* 
+ 'circle',
+ 'triangle',
+ 'square',
+ 'trapezoid',
+ 'rectangle',
+ 'pentagon'
+] */
+
+//добавить массив в существующий масcив
+let arr5 = [1, 2, 3];
+let arr6 = [4, 5, 6];
+let arr7 = arr5.concat(arr6);
+console.log(arr7);//[ 1, 2, 3, 4, 5, 6 ]
+let arr8 = arr7.concat(7, 8, 9);
+console.log(arr8);//[1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+//Удаление первого элемента
+arr8.shift();
+//[ 2, 3, 4, 5, 6, 7, 8 ]
+
+//удаления значений
+arr8.splice(1, 3);
+//[ 2, 6, 7, 8 ]
+
+//удаления 
+delete arr8[0];
+//[ <1 empty item>, 6, 7, 8 ]
+
+//Поиск элементов 
+let findValue2 = arr8.find(e => e === 6);//6
+
+//найти элемент
+arr8 = [2, 6, 7, 8];
+let findIndex = arr8.indexOf(6);
+let findIndex2 = arr8.indexOf(10);
+console.log(findIndex, findIndex2);//1 -1
+
+//с какой позиции он должен начать поиск
+arr8 = [2, 6, 7, 8];
+let findIndex3 = arr8.indexOf(6, 2);//-1
+
+//Сортировка
+let names = ["James", "Alicia", "Fatiha", "Maria", "Bert"];
+names.sort();//[ 'Alicia', 'Bert', 'Fatiha', 'James', 'Maria' ]
+let ages = [18, 72, 33, 56, 40];
+ages.sort();//[ 18, 33, 40, 56, 72 ]
+
+//Метод reverse
+names.reverse();
+//[ 'Maria', 'James', 'Fatiha', 'Bert', 'Alicia' ]
+
+//Практическое занятие 
+let newListProducts = ["Milk", "Bread","Apples"]
+newListProducts.splice(1, 1, "Banana","Eggs.")
+newListProducts.splice(-1)
+newListProducts.sort()
+newListProducts.find(el => el === "Milk")
+newListProducts.splice(newListProducts.indexOf('Banana'), 0, "Carrots","Lettuce")
+let preList = ["Juice","Pop"]
+let resultList = newListProducts.concat(preList,preList)
+console.log(resultList);//['Carrots', 'Lettuce', 'Banana', 'Eggs.', 'Milk', 'Juice', 'Pop', 'Juice'
+
+//Многомерные массивы
+let arrOfArrays2 = [[1, 2, 3], [4, 5, 6], [7, 8, 9]];
+let value1 = arrOfArrays[0][1];//2
+
+//----------------------------
+//__Объекты в JavaScript__//
 
