@@ -1643,3 +1643,645 @@ let el = document.createElement("p");
 el.innerText = Math.floor(Math.random() * 100);
 document.body.appendChild(el);
 
+//------------------------
+//__Интерактивный контент и прослушиватели событий
+
+//С помощью прослушивателей событий
+//on: onclick, onload, onfocus, onblur, onchange
+//аналог addEventListener()
+
+//Обработчик событий onload
+//запускается сразу же после загрузки определенного элемента
+window.onload = function () {
+  // все, что должно произойти после загрузки страницы, помещается сюда
+}
+document.addEventListener("DOMContentLoaded", (e) => {
+  console.log(e);
+});
+
+//Обработчик событий мыши
+/* 
+ondblclick — двойной щелчок кнопкой мыши;
+onmousedown — кнопка нажата и удерживается;
+onmouseup — кнопка больше не удерживается;
+onmouseenter — указатель перемещается на элемент;
+onmouseleave — указатель покидает область элемента и его дочерних элементов;
+onmousemove — указатель перемещается через элемент;
+onmouseout — указатель покидает отдельный элемент;
+onmouseover — указатель зависает над элементом.
+*/
+
+//Свойство события target
+//<button type="button" onclick="triggerSomething()">Click</button>
+function triggerSomething() {
+  console.dir(event.target);
+}
+// button
+/* 
+<form>
+ <input type="text" name="firstname" placeholder="First name" />
+ <input type="text" name="lastname" placeholder="Last name" />
+ <input type="button" onclick="sendInfo()" value="Submit" />
+</form>
+*/
+let p = event.target.parentElement;//элемент формы
+p.firstname.value; 
+p.lastname.value
+
+//Поток событий DOM
+//Порядок запуска событий — от внутреннего к внешнему.
+//Данное явление называется всплытием событий
+//Так происходит, когда вы запускаете для элемента конкретные обработчики: сначала выполняются собственные события элемента, затем — его родителей, и так далее
+//Перемещение от внешнего элемента к внутреннему называется погружением событий.
+//Погружение и всплытие событий позволяют нам применять делегирование событий. Делегирование событий — это концепция, при которой вместо добавления обработчиков событий к каждому элементу конкретного HTML-блокамы определяем оболочку и добавляем событие к ней, после чего оно также применяется ко всем дочерним элементам.
+
+//События onchange и onblur
+//onchange срабатывает при изменении элемента, например значения поля ввода. onblur срабатывает, когда объект выходит из фокуса
+
+//Обработчик событий клавиатуры
+//onkeypress - когда нажимается клавиша
+//событие произошло при зажатой кнопке (то есть перед ее отпусканием), можете использовать событие onkeydown
+//onkeyup - при отпускании клавиши
+// event.key - Получить значение клавиши
+
+//Перетаскиваемые элементы
+/* 
+<div class="box">1</div>
+<div class="box">2</div>
+*/
+
+//добавить элемент, который будет перетаскиваться
+//включить атрибут draggable
+/* 
+<div class="box"> 1
+ <div id="dragme" draggable="true">
+ Drag Me Please!
+ </div>
+ </div>
+*/
+
+//добавим соответствующие функции
+{/* 
+< div class="box" ondrop = "dDrop()" ondragover = "nDrop()" >
+  1
+  <div id="dragme" ondragstart="dStart()" draggable="true">
+    Drag Me Please!
+  </div>
+</div > 
+
+<div class="box" ondrop="dDrop()" ondragover="nDrop()">2</div>
+*/}
+let holderItem;
+function dStart() {
+  holderItem = event.target;
+}
+function nDrop() {
+  event.preventDefault();
+}
+function dDrop() {
+  event.preventDefault();
+  if (event.target.className == "box") {
+    event.target.appendChild(holderItem);
+  }
+}
+//В начале события ondragstart мы сохраняем перетаскиваемый элемент в переменной holderItem
+//Чтобы это все же произошло, необходимо предотвратить событие по умолчанию event.preventDefault();
+//проверка целевого элемент, Если условие верно, мы добавляем holderItem в качестве дочернего элемента поля
+//по итогу элемент "dragme"  можно перемещать из одного поля в другое
+
+//Отправка формы
+//<input type="submit" value="send">
+//<form onsubmit="doSomething()">
+
+//перенаправить пользователя на другую страницу
+//<form action="anotherpage.html" method="get" onsubmit="doStuff()"> -> http://www.example.com/anotherpage.html?name=edward
+
+//функция будет возвращать логическое значение, форма отправится только при логическом значении, равном true
+/* 
+<form action="anotherpage.html" method="get" onsubmit="return valForm()">
+ <input type="text" id="firstName" name="firstName"
+ placeholder="First name" />
+ <input type="text" id="lastName" name="lastName" placeholder="Last name" />
+ <input type="text" id="age" name="age" placeholder="Age" />
+ <input type="submit" value="submit" />
+ </form>
+*/
+function valForm() {
+  var p = event.target.children;
+  if (p.firstName.value == "") {
+    message("Need a first name!!");
+    return false;
+  }
+  if (p.lastName.value == "") {
+    message("Need a last name!!");
+    return false;
+  }
+  if (p.age.value == "") {
+    message("Need an age!!");
+    return false;
+  }
+  return true;
+}
+
+//---------------------
+//___Средний уровень JavaScript___//
+
+
+//__Регулярные выражения
+//проверяет наличие действительного адреса электронной почты
+/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/g
+//Регулярное выражение задается между двумя слешами /JavaScrip/
+
+let text = "I love JavaScript!";
+console.log(text.match(/javascript/));//null
+
+//чтобы функция учитывала регистр, можете задать условие, поставив i
+console.log(text.match(/javascript/i));
+
+//Указание нескольких вариантов слов
+let text = "I love JavaScript!";
+console.log(text.match(/javascript|nodejs|react/i));
+
+//глобальный модификатор g
+let text = "I love React and JavaScript!";
+console.log(text.match(/javascript|nodejs|react/gi));//[ 'React', 'JavaScript' ]
+
+//Варианты символов
+let text = "t";
+console.log(text.match(/[a-zA-Z]/));
+console.log(text.match(/[a-zA-Z0-9]/));
+
+//любой символ
+let text = "Just some text.";
+console.log(text.match(/./g));
+
+//найти саму точку
+let text = "Just some text.";
+console.log(text.match(/\./g));
+
+//поиск всех цифр в выражении
+let text = "I'm 29 years old.";
+console.log(text.match(/\d/g));//[ '2', '9' ]
+
+//все символы пробела
+let text = "Coding is a lot of fun!";
+console.log(text.match(/\s/g));//[ ' ', ' ', ' ', ' ', ' ' ]
+
+//\b, который ищет буквенное сочетание, находящееся в начале слова
+let text = "In the end or at the beginning?";
+console.log(text.match(/\bin/gi));//[ 'In' ]
+
+//группу символов
+let text = "I love JavaScript!";
+console.log(text.match(/(love|dislike)\s(javascript|spiders)/gi));//[ 'love JavaScript' ]
+
+//необязательных символов
+let text = "You are doing great!";
+console.log(text.match(/n?g/gi));//[ 'ng', 'g' ]
+
+//больше повторений
+let text = "123123123";
+console.log(text.match(/(123)+/));// '123123123', '123'
+
+//совпадения любое количество раз
+/(123)*a/
+
+//конкретные запросы с помощью синтаксиса {min, max}
+let text = "abcabcabc";
+console.log(text.match(/(abc){1,2}/));//'abcabc', 'abc'
+
+//__Функции и объект arguments
+function test(a, b, c) {
+  console.log("first:", a, arguments[0]);
+  console.log("second:", b, arguments[1]);
+  console.log("third:", c, arguments[2]);
+}
+test("fun", "js", "secrets");
+/* 
+first: fun fun
+second: js js third:
+secrets secrets
+*/
+
+//__Поднятие в JavaScript
+//Поднятие — это принцип перемещения объявлений переменных в верхнюю часть области, в ко - Использование строгого режима 317 торой они определены
+x = 5;
+console.log(x);
+var x;
+//5
+
+//let and const вы получите ошибку ReferenceError
+
+//__Использование строгого режима
+"use strict";
+function sayHi() {
+  greeting = "Hello!";
+  console.log(greeting);
+}
+sayHi();//ReferenceError: greeting is not defined
+
+//__Отладка
+console.log() 
+//Более профессиональный метод отладки — это установка контрольных точек(в некоторых редакторах — точек останова).
+
+//__Обработка ошибок
+
+//Error может означать множество различных ошибок, мы собираемся проверить, с какой конкретно ошибкой имеем дело, и сделать ее специальную обработку
+try {
+  somethingVeryDangerous();
+} catch (e) {
+  if (e instanceof TypeError) {
+    // борьба с исключениями TypeError
+  } else if (e instanceof RangeError) {
+    // борьба с исключениями RangeError
+  } else if (e instanceof EvalError) {
+    // борьба с исключениями EvalError
+  } else {
+    // борьба со всеми остальными исключениями
+    throw e; // rethrow
+  } 
+} finally {
+  console.log("Error or no error, I will be logged!");
+}
+
+//_Использование файлов cookie
+//Cookie(куки) — это небольшие файлы данных, которые хранятся на вашем компьютере и используются веб - сайтами.
+//«ключ — значение», разделенные точками с запятой
+//document.cookie = "name=Maaike;favoriteColor=black";
+//считать информацию из cookie
+let cookie = decodeURIComponent(document.cookie);
+let cookieList = cookie.split(";");
+for (let i = 0; i < cookieList.length; i++) {
+  let c = cookieList[i];
+  if (c.charAt(0) == " ") {
+    c = c.trim();
+  }
+  if (c.startsWith("name")) {
+    alert(c.substring(5, c.length));
+  }
+}
+
+//__Локальное хранилище
+// помощью локального хранилища можно сохранять пары «ключ — значение» в браузере и использовать их в новом сеансе
+//localStorage / setItem() сохранить данные / getItem() извлекать значение
+
+//<div id="stored"></div>
+let message = "Hello storage!";
+localStorage.setItem("example", message);
+if (localStorage.getItem("example")) {
+  document.getElementById("stored").innerHTML =
+    localStorage.getItem("example");
+}
+
+//извлечь ключ по индексу
+window.localStorage.key(0);
+
+//удалять пары «ключ — значение»:
+window.localStorage.removeItem("name");
+
+//Все пары «ключ — значение» можно удалить из локального хранилища одной командой
+window.localStorage.clear();
+
+//__JSON
+//JavaScript Object Notation
+/* 
+{
+ "name" : "Malika",
+ "age" : 50,
+ "profession" : "programmer",
+ "languages" : ["JavaScript", "C#", "Python"],
+ "address" : {
+ "street" : "Some street",
+ "number" : 123,
+ "zipcode" : "3850AA",
+ "city" : "Utrecht",
+ "country" : "The Netherlands"
+ }
+}
+*/
+
+//Парсинг JSON
+//JavaScript может быть преобразована в объект JSON
+JSON.parse()
+
+//преобразовать объект JavaScript в строку JSON
+JSON.stringify()
+
+//-------------------------
+//___Параллелизм___//
+//концепция, согласно которой процессы в JavaScript происходят «в одно и то же время», или параллельно
+
+//Функции обратного вызова
+//setTimeout() и setInterval()
+//Функция callback принимает другую функцию в качествеаргумента, который затем вызывается, когда остальная часть первой функции завершена
+function doSomething(callback) {
+  callback();
+}
+function sayHi() {
+  console.log("Hi!");
+}
+doSomething(sayHi);//Hi!
+
+setInterval(encourage, 500);
+function encourage() {
+  console.log("You're doing great, keep going!");
+}
+
+//__Промисы
+let promise = new Promise(function (resolve, reject) {
+  // сделайте что-нибудь, что может занять некоторое время
+  let x = 20;
+  if (x > 10) {
+    resolve(x); // в случае успеха
+  } else {
+    reject("Too low"); // в случае ошибки
+  }
+});
+promise.then(
+  function (value) {
+    console.log("Success:", value);
+  },
+  function (error) {
+    console.log("Error:", error);
+  }
+)
+
+//цепочка промисов
+//then() само по себе является промисом, поэтому, когда оно возвращается, мы можем использовать полученный результат для следующего экземпляра then()
+const promise = new Promise((resolve, reject) => {
+  resolve("success!");
+})
+  .then(value => {
+    console.log(value);
+    return "we";
+  })
+  .then(value => {
+    console.log(value);
+    return "can";
+  })
+  .then(value => {
+    console.log(value);
+    return "chain";
+  })
+  .then(value => {
+    console.log(value);
+    return "promises";
+  })
+  .then(value => {
+    console.log(value);
+  })
+  .catch(value => {
+    console.log(value);
+  })
+/* 
+success!
+we
+can
+chain
+promises
+*/
+
+//__Операторы async и await
+function saySomething(x) {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      resolve("something" + x);
+    }, 2000);
+  });
+}
+async function talk(x) {
+  const words = await saySomething(x);
+  console.log(words);
+}
+talk(2);
+talk(4);
+talk(8);
+
+//Если функция talk() не будет асинхронной, она выдаст ошибку SyntaxError из-за ключевого слова await.Ключевое слово await действительно только в асинхронных функциях, поэтому функция talk() должна быть асинхронной.
+
+//__Цикл событий
+
+//Стек вызовов и очередь обратных вызовов
+//Цикл событий — процесс, который постоянно отслеживает стек вызовов, и всякий раз, когда нужно выполнить задачи, реализует их одну за другой
+console.log("Hi there");
+setTimeout(() => console.log("Sorry I'm late"),
+  1000);
+console.log(add(4, 5));
+function add(x, y) {
+  return x + y;
+}
+//setTimeout()  -> (callback queue)
+/* 
+Hi there
+9
+Sorry I'm late
+*/
+
+//----------------------
+//__HTML5, Canvas и JavaScript
+
+//Чтение локальных файлов
+let message = document.getElementById("message");
+if (window.FileReader) {
+  message.innerText = "Good to go!";
+} else {
+  message.innerText = "No FileReader :(";
+}
+
+//Загрузка файлов
+//<input type="file" onchange="uploadFile(this.files)" />
+function uploadFile(files) {
+  console.log(files[0]);
+  message.innerText = files[0].name;
+}
+
+//Чтение файлов
+//FileReader
+{/* <input type="file" onchange="uploadAndReadFile(this.files)" />
+ <div id="message"></div> */}
+let message = document.getElementById("message");
+function uploadAndReadFile(files) {
+  let fr = new FileReader();
+  fr.onload = function (e) {
+    message.innerHTML = e.target.result;
+  };
+  fr.readAsText(files[0]);
+}
+
+//__Использование функции GeoLocation для получения данных местоположения
+navigator.geolocation
+window.onload = init;
+function init() {
+  navigator.geolocation.getCurrentPosition(showGeoPosition);
+}
+function showGeoPosition(data) {
+  console.dir(data);//coords
+}
+
+//__HTML5-элемент canvas
+//<canvas id="c1"></canvas>
+let canvas = document.getElementById("c1");
+let ctx = canvas.getContext("2d");
+canvas.width = 500; // пикселей
+canvas.height = 500; // пикселей
+ctx.fillRect(20, 40, 100, 100);//нарисовать прямоугольник
+ctx.fillStyle = "pink";
+
+//Динамический элемент canvas
+let canvas = document.getElementById("canvas1");
+let ctx = canvas.getContext("2d");
+canvas.width = 100;
+canvas.height = 100;
+ctx.lineWidth = 2;
+ctx.moveTo(0, 20);//фокусирует внимание на точке
+ctx.lineTo(50, 100);//Вторая точка
+ctx.stroke();
+
+//создания круга
+/* 
+arc()
+начальная позиция x на холсте;
+начальная позиция y на холсте;
+радиус круга;
+начальный угол в радианах;
+конечный угол в радианах 
+*/
+let canvas = document.getElementById("canvas1");
+let ctx = canvas.getContext("2d");
+canvas.width = 150;
+canvas.height = 200;
+ctx.beginPath();
+ctx.arc(75, 100, 50, 0, Math.PI * 2);
+ctx.stroke();
+
+//Добавление текста в элемент canvas
+let canvas = document.getElementById("canvas1");
+let ctx = canvas.getContext("2d");
+canvas.width = 200;
+canvas.height = 200;
+ctx.font = "24px Arial";
+ctx.textAlign = "center";
+let txt = "Hi canvas!";
+//текст, позицию x и позицию y
+ctx.fillText(txt, 10, 35);
+
+//Добавление и загрузка изображений в элемент canvas
+
+//<img id="flower" src="flower.jpg" />
+let canvas = document.getElementById("c1");
+canvas.height = 300;
+canvas.width = 300;
+let ctx = canvas.getContext("2d");
+let myImage = document.getElementById("flower");
+ctx.drawImage(myImage, 10, 10);
+
+//один элемент canvas внутри другого
+let canvas1 = document.getElementById("canvas1");
+let ctx1 = canvas1.getContext("2d");
+ctx1.strokeRect(5, 5, 150, 100);
+let canvas2 = document.getElementById("canvas2");
+let ctx2 = canvas2.getContext("2d");
+ctx2.beginPath();
+ctx2.arc(60, 60, 20, 0, 2 * Math.PI);
+ctx2.stroke();
+
+//на третьем будет отображаться комбинация первых двух фигур
+let canvas3 = document.getElementById("canvas3");
+let ctx3 = canvas3.getContext("2d");
+ctx3.drawImage(canvas1, 10, 10);
+ctx3.drawImage(canvas2, 10, 10);
+
+//Добавление анимации в элемент canvas
+window.onload = init;
+var canvas = document.getElementById("canvas");
+var ctx = canvas.getContext("2d");
+canvas.height = 500;
+canvas.width = 500;
+var pos = {
+  x: 0,
+  y: 50,
+};
+function init() {
+  draw();
+}
+function draw() {
+  pos.x = pos.x + 5;
+  if (pos.x > canvas.width) {
+    pos.x = 0;
+  }
+  if (pos.y > canvas.height) {
+    pos.y = 0;
+  }
+  ctx.fillRect(pos.x, pos.y, 100, 100);
+  window.setTimeout(draw, 50);
+}
+//Этот скрипт начнет рисовать квадрат в позиции 5, 50. Через 50 миллисекунд начнется рисование другого квадрата в позиции 10, 50, еще через 50 — в позиции 15, 50. Скрипт продолжит изменять значение x на 5 до тех пор, пока оно не станет больше ширины элемента canvas
+
+//добавлять цветную фигуру на холст, но не сбрасываем значение цвета фигуры clearRect() / Первые два являются отправной точкой для рисования очищаемого прямоугольника (x и y).Третий — это width(ширина) прямоугольника, а последний — height(высота)
+
+//Рисование на холсте с помощью мыши
+let canvas = document.getElementById("canvas");
+let ctx = canvas.getContext("2d");
+canvas.width = 700;
+canvas.height = 700;
+
+function init() {
+  canvas.addEventListener("mousemove", draw);
+  canvas.addEventListener("mousemove", setPosition);
+  canvas.addEventListener("mouseenter", setPosition);
+}
+
+//а функция установки положения
+function setPosition(e) {
+  pos.x = e.pageX;
+  pos.y = e.pageY;
+}
+
+function draw(e) {
+  if (e.buttons !== 1) return;
+  ctx.beginPath();
+  ctx.moveTo(pos.x, pos.y);
+  setPosition(e);
+  ctx.lineTo(pos.x, pos.y);
+  ctx.lineWidth = 10;
+  ctx.lineCap = "round";
+  ctx.stroke();
+}
+
+//Сохранение динамических изображений
+let dataURL = canvas.toDataURL();
+document.getElementById("imageId").src = dataURL;
+
+//__Мультимедийный контент на странице
+/* 
+<audio controls>
+ <source src="sound.ogg" type="audio/ogg">
+ <source src="sound.mp3" type="audio/mpeg">
+</audio>
+*/
+
+/* 
+<video width="1024" height="576" controls>
+ <source src="movie.mp4" type="video/mp4">
+ <source src="movie.ogg" type="video/ogg">
+</video>
+*/
+
+{/* <iframe
+  width="1024"
+  height="576"
+  src="https://www.youtube.com/embed/v6VTv7czb1Y"
+>
+</iframe> */}
+
+//__Цифровая доступность в HTML
+
+//добавить элемент label
+{/* <label for="address">Address:</label>
+<input type="text" id="address" /> */}
+
+//добавить текст в alt:
+//<img src="umbrella.jpg" width="200" height="200" alt="rainbow colored umbrella" />
+
+//-----------------------
+//Используйте фриланс-платформы, такие как Upwork или Fiverr, для поиска проектов
