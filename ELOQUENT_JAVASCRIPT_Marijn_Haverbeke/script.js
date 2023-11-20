@@ -181,6 +181,7 @@ console.log(x + у + z);
 console.log(x + z);//40 
 
 //Вложенные области видимости 
+
 const hummus = function (factor) {
   const ingredient = function (amount, unit, name) {
     let ingredientAmount amount * factor;
