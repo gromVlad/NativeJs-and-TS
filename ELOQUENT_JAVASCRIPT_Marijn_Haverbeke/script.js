@@ -76,3 +76,128 @@ console.log(null == undefined);//true
 //_Упрощенное вычисление логических операторов 
 console.log(null || "user") //user 
 //стр 40
+
+//-------------------------
+//Структура программы 
+
+//Выражения и инструкции 
+//Простейший вид инструкции 
+1;
+!false
+
+//__Привязки 
+let caught = 5 * 5; 
+
+//Один оператор let может определять несколько привязок.
+let one = 1, two = 2;
+console.log(one + two); // 3
+
+//Условное выполнение 
+if (num < 10) {
+  console.log("Maлeнькoe");
+} else if (num < 100) {
+  console.log("Cpeднee");
+} else {
+  console.log("Бoльшoe");
+} 
+
+//Циклы while и do
+let number = 0;
+while (number <= 12) {
+  console.log(number);
+  number = number + 2;
+} 
+//  ... 0
+// ... 2
+// и так далее
+
+let yourName;
+do {
+  yourName = prompt("Kтo вы?");
+} while (!yourName);
+console.log(yourName); 
+
+//Циклы for 
+for (let number = 0; number <= 12; number = number + 2) {
+  console.log(number);
+}
+//  ... 0
+// ... 2
+
+//Принудительный выход из цикла 
+for (let current = 20; ; current = current + 1) {
+  if (current % 7 == 0) {
+    console.log(current); 
+    break;
+  }
+}
+//... 21 
+
+//Быстрое обновление привязок
+counter = counter + 1; 
+
+//Диспетчеризация по значению с помощью switch
+switch (key) {
+  case value:
+    
+    break;
+
+  default:
+    break;
+}
+
+//Использование прописных букв 
+fuzzylittleturtle
+fuzzy_little_turtle
+FuzzylittleTurtle
+fuzzyLittleTurtle
+
+//Комментарии 
+// Зеленая дыра; цепляясь бездумно, 
+/*
+Я впервые обнаружил, что это число написано на обороте старой записной
+книжки. с тех пор оно мне часто попадалось среди номеров телефонов
+и штрихкодов продуктов, которые я покупал. Похоже, я ему понравился,
+поэтому я решил его оставить. 
+*/
+
+//---------------------------
+//__Функции __//
+//Функции, которые вообще не имеют инструкции return возвращают undefined. 
+
+const square = function (x) {
+  return х * х;
+}; //144 
+
+//Привязки и области видимости 
+//let и const - локальные для блока
+let х = 10;
+if (true) {
+}
+let у = 20;
+var z = 30;
+console.log(x + у + z);
+//привязка у здесь не видна
+console.log(x + z);//40 
+
+//Вложенные области видимости 
+const hummus = function (factor) {
+  const ingredient = function (amount, unit, name) {
+    let ingredientAmount amount * factor;
+    if (ingredientAmount > 1) {
+      unit += "s";
+    }
+    console.log('${ingredientAmount} ${unit} ${name}');
+  };
+  ingredient(l, "банка", "нута");
+  ingredient(0.25, "стакан", "кунжутной пасты");
+  ingredient(0.25, "стакан", "лимонного сока");
+  ingredient(l, "зубок", "чеснока");
+  ingredient(2, "столовые ложки", "оливкового масла");
+  ingredient(0.5, "чайной ложки", "кумина"); 
+}
+
+//Функции как значения 
+
+
+
