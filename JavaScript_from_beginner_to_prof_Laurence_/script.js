@@ -975,3 +975,671 @@ setTimeout(youGotThis, 1000);
 
 //---------------------------------
 //___Классы___//
+//класс под каппотом функция конструктор
+class Dog {
+  constructor(dogName, weight, color, breed) {
+    this.dogName = dogName;
+    this.weight = weight;
+    this.color = color;
+    this.breed = breed;
+  }
+}
+let dog = new Dog("JavaScript", 2.4, "brown", "chihuahua");
+console.log(dog.dogName, "is a", dog.breed, "and weighs", dog.weight, "kg.");//JavaScript is a chihuahua and weighs 2.4 kg.
+
+class ClassName {
+  constructor(prop1, prop2) {
+    this.prop1 = prop1;
+    this.prop2 = prop2;
+  }
+}
+//экземпляр 
+let obj = new ClassName("arg1", "arg2");
+
+//Метод constructor
+//Он содержит свойства, которые будут установлены при инициализации класса
+//В методе constructor вы можете задать значения по умолчанию.
+//Методы, как и функции, могут принимать параметры и возвращать результаты
+//Свойства содержат данные класса - Person получает два свойства от конструктора: firstname и lastname
+class Person {
+  constructor(firstname, lastname = "Doe") {
+    this.firstname = firstname;
+    this.lastname = lastname;
+  }
+
+  //Методы
+  greet() {
+    console.log("Hi there! I'm", this.firstname);
+  }
+
+  compliment(name, object) {
+    return "That's a wonderful " + object + ", " + name;
+  }
+}
+let p = new Person("Maaike", "van Putten"); 
+console.log("Hi", p.firstname);//Hi Maaike
+p.greet();//Hi there! I'm Maaike
+let compliment = p.compliment("Harry", "hat");
+console.log(compliment);//That's a wonderful hat, Ha
+
+//свойства, недоступные извне
+class Person {
+  #firstname;
+  #lastname;
+  constructor(firstname, lastname) {
+    this.#firstname = firstname;
+    this.#lastname = lastname;
+  }
+}
+let p = new Person("Maria", "Saga");
+console.log(p.firstname);//undefined
+
+//Геттеры и сеттеры
+//Геттеры и сеттеры — это особые свойства, которые можно использовать для получения данных из класса и записи полей данных в классе.
+//Геттеры и сеттеры выглядят как функции, потому что после них ставят скобки(()), но функциями они не являются! Аксессоры начинаются с ключевых слов get и set
+//Геттер используется для получения свойства
+//Сеттер действует наоборот: принимает параметр, присваивает новое значение свойству и ничего не возвращает
+class Person {
+  #firstname;
+  #lastname;
+  constructor(firstname, lastname) {
+    this.#firstname = firstname;
+    this.#lastname = lastname;
+  }
+  get firstname() {
+    return this.#firstname;
+  }
+  set firstname(firstname) {
+    this.#firstname = firstname;
+  }
+  get lastname() {
+    return this.#lastname;
+  }
+  set lastname(lastname) {
+    this.#lastname = lastname;
+  }
+}
+let p = new Person("Maria", "Saga");
+console.log(p.firstname);//Maria
+p.firstname = "Adnane";
+console.log(p.firstname);//"Adnane"
+
+//Наследование
+//Наследование — одна из ключевых концепций ООП. Согласно ей классы могут иметь дочерние классы, которые наследуют свойства и методы родительского класса
+//использованием ключевого слова extends
+//super в конструкторе вызывает конструктор родителя — в данном случае конструктор Vehicle
+//Вызов super() не является обязательным, но вы должны использоватьэто ключевое слово при нахождении в классе, который наследуется от другогокласса — иначе получите ReferenceError.
+class Vehicle {
+  constructor(color, currentSpeed, maxSpeed) {
+    this.color = color;
+    this.currentSpeed = currentSpeed;
+    this.maxSpeed = maxSpeed;
+  }
+  move() {
+    console.log("moving at", this.currentSpeed);
+  }
+  accelerate(amount) {
+    this.currentSpeed += amount;
+  }
+}
+
+class Motorcycle extends Vehicle {
+  constructor(color, currentSpeed, maxSpeed, fuel) {
+    super(color, currentSpeed, maxSpeed);
+    this.fuel = fuel;
+  }
+  doWheelie() {
+    console.log("Driving on one wheel!");
+  }
+}
+let motor = new Motorcycle("Black", 0, 250, "gasoline");
+console.log(motor.color); //Black 
+motor.accelerate(50);
+motor.move();//moving at 50
+
+//Прототипы
+//Прототипы — это механизмы JavaScript, которые делают возможным существование объектов.
+//Object.prototype - всегда находится на вершине дерева наследования
+//Свойство prototype содержит в себе все методы и свойства объекта
+//, методы и свойства, определенные через prototype, точно такие же, как если бы они были определены в классе
+class Person {
+  constructor(firstname, lastname) {
+    this.firstname = firstname;
+    this.lastname = lastname;
+  }
+  greet() {
+    console.log("Hi there!");
+  }
+}
+Person.prototype.introduce = function () {
+  console.log("Hi, I'm", this.firstname);
+};
+Person.prototype.favoriteColor = "green";
+let p = new Person("Maria", "Saga");
+console.log(p.favoriteColor);//"green
+p.introduce();//green Hi, I'm Maria
+
+//-----------------------------------
+//___Встроенные методы JavaScript___//
+//функционал JavaScript, который мы получаем «из коробки»
+//Разница между методом и функцией заключается в том, что функция определяется в любом месте скрипта, а метод — внутри класса.Таким образом, методы в значительной степени являются функциями классов и экземпляров.
+let s = "Hello";
+console.log(
+  s.concat(" there!")
+    .toUpperCase()
+    .replace("THERE", "you")
+    .concat(" You're amazing!")
+);
+//HELLO you! You're amazing!
+
+//Глобальные методы
+let x = 7;
+console.log(Number.isNaN(x));//false
+//можно просто задать:
+console.log(isNaN(x));//false
+
+//Декодирование и кодирование URI
+//Кодирование — простая конвертация из одной формы в другую
+//Пример до использования кодирования:
+//https://www.example.com/submit?name=maaike
+//Тот же адрес URL, но с применением кодирования:
+//https://www.example.com/submit?name=maaike%20van%20putten
+
+//Методы decodeUri() и encodeUri()
+//код заменил пробелы в закодированной версии и снова удалил их в декодированной
+let uri = "https://www.example.com/submit?name=maaike van putten";
+let encoded_uri = encodeURI(uri);
+console.log("Encoded:", encoded_uri);//Encoded: https://www.example.com/submit?name=maaike%20van%20putten
+let decoded_uri = decodeURI(encoded_uri);
+console.log("Decoded:", decoded_uri);//Decoded: https://www.example.com/submit?name=maaike van putten
+
+//Методы decodeUriComponent() и encodeUriComponent()
+//с их помощью = и & заносятся в закодированную переменную
+let uri = "https://www.example.com/submit?name=maaike van putten";
+let encoded_uri = encodeURIComponent(uri);
+console.log("Encoded:", encoded_uri);//Encoded: https%3A%2F%2Fwww.example.com%2Fsubmit%3Fname%3Dmaaike%20 van%20putten
+let decoded_uri = decodeURIComponent(encoded_uri);
+console.log("Decoded:", decoded_uri);//Decoded: https://www.example.com/submit?name=maaike van putten
+
+//Парсинг чисел
+let str_int = "6";
+let int_int = parseInt(str_int);
+console.log("Type of ", int_int, "is", typeof int_int)//Type of 6 is number
+
+//JavaScript не любит сбоить и выдавать ошибки, поэтому пытается заставить работать код в меру своих возможностей
+let str_nan = "hello!";
+let int_nan = parseInt(str_nan);
+console.log("Type of", int_nan, "is", typeof int_nan);//Type of NaN is number
+
+//Создание чисел с плавающей точкой с помощью parseFloat()
+let str_float = "7.6";
+let float_float = parseFloat(str_float);
+console.log("Type of", float_float, "is", typeof float_float);//Type of 7.6 is number
+
+let str_version_nr = "2.3.4";
+let float_version_nr = parseFloat(str_version_nr);
+console.log("Type of", float_version_nr, "is", typeof float_version_nr);//Type of 2.3 is number
+
+//Исполнение кода JavaScript с помощью eval()
+//когда вы почувствуете, что вам действительно нужно использовать eval(), покопайтесь сначала в интернете.
+//<input onchange="go(this)"></input>
+{/* <script>
+  function go(e) {
+    eval(e.value);
+ }
+</script> */}
+
+//__Методы работы с массивами
+
+//определенного действия для каждого элемента
+let arr = ["grapefruit", 4, "hello", 5.6, true];
+function printStuff(element, index) {
+  console.log("Printing stuff:", element, "on array position:", index);
+}
+arr.forEach(printStuff);
+/* 
+Printing stuff: grapefruit on array position: 0
+Printing stuff: 4 on array position: 1
+Printing stuff: hello on array position: 2
+*/
+
+//Фильтрация массива
+let arr = ["squirrel", 5, "Tjed", new Date(), true];
+function checkString(element, index) {
+  return typeof element === "string";
+}
+let filterArr = arr.filter(checkString);
+console.log(filterArr);//[ 'squirrel', 'Tjed' ]
+
+//Проверка условия для всех элементов
+console.log(arr.every(checkString));//false
+
+//Замена части массива другой частью массива
+//Первый — это целевая позиция, в которую копируются значения. Второй — указание позиции, с которой надо начинать копирование.И третий — конец копируемой последовательности(данный индекс не включен в область копирования).
+arr = ["grapefruit", 4, "hello", 5.6, true];
+arr.copyWithin(0, 3, 4);//[ 5.6, 4, 'hello', 5.6, true ]
+
+//Сопоставление значений массива
+let arr = [1, 2, 3, 4];
+let mapped_arr = arr.map(x => x + 1);
+console.log(mapped_arr);//[ 2, 3, 4, 5 ]
+
+//Поиск последнего вхождения элемента в массиве
+let bb = ["so", "bye", "bye", "love"];
+console.log(bb.lastIndexOf("bye"));//2
+let bb = ["so", "bye", "bye", "love"];
+console.log(bb.lastIndexOf("hi"));//-1
+
+//__Строчные методы
+//Объединение строк
+let s1 = "Hello ";
+let s2 = "JavaScript";
+let result = s1.concat(s2);
+console.log(result);//Hello JavaScript
+
+//Преобразование строки в массив
+let result = "Hello JavaScript";
+let arr_result = result.split(" ");
+console.log(arr_result);//[ 'Hello', 'JavaScript' ]
+
+let favoriteFruits = "strawberry,watermelon,grapefruit";
+let arr_fruits = favoriteFruits.split(",");
+console.log(arr_fruits);//[ 'strawberry', 'watermelon', 'grapefruit' ]
+
+//Преобразование массива в строку
+let letters = ["a", "b", "c"];
+let x = letters.join();
+console.log(x);
+//a,b,c
+
+let letters = ["a", "b", "c"];
+let x = letters.join('-');
+console.log(x); //a-b-c
+
+//Работа со свойствами index и position
+//indexOf() работает быстрее, чем search()
+let poem = "Roses are red, violets are blue, if I can do JS, then you can too!";
+let index_re = poem.indexOf("re");
+console.log(index_re);//7
+
+let indexNotFound = poem.indexOf("python");
+console.log(indexNotFound);//-1
+
+let searchStr = "When I see my fellow, I say hello";
+let pos = searchStr.search("lo");
+console.log(pos);//17
+
+//lastIndexOf() — он возвращает индекс той позиции, где аргумент строки встречается последний раз.
+let lastIndex_re = poem.lastIndexOf("re");
+console.log(lastIndex_re);//24
+
+//какой символ находится под определенным индексо
+let pos1 = poem.charAt(10);
+console.log(pos1);//r
+
+//Создание подстрок
+let str = "Create a substring";
+let substr1 = str.slice(5);
+let substr2 = str.slice(0, 3);
+console.log("1:", substr1);//1: e a substring
+console.log("2:", substr2);//2: Cre
+
+//Замена фрагментов строки
+let hi = "Hi buddy";
+let new_hi = hi.replace("buddy", "Pascal");
+console.log(new_hi);//Hi Pascal
+
+//Если требуется заменить все встречающиеся значения, применяется метод replaceAll()
+let s3 = "hello hello";
+let new_s3 = s3.replaceAll("hello", "oh");
+console.log(new_s3);//oh oh
+
+//Верхний и нижний регистры 
+let low_bye = "bye!";
+let up_bye = low_bye.toUpperCase();
+console.log(up_bye)//BYE!
+
+let caps = "HI HOW ARE YOU?";
+let fixed_caps = caps.toLowerCase();
+console.log(fixed_caps);//hi how are you?
+
+//Начало и конец строки
+let encouragement = "You are doing great, keep up the good work!";
+let bool_start = encouragement.startsWith("You");
+console.log(bool_start);//true
+
+let bool_end = encouragement.endsWith("Something else");
+console.log(bool_end);//false
+
+//__Числовые методы
+
+//Проверка на принадлежность числовому типу данных
+let x = 34;
+console.log(isNaN(x));//false 
+console.log(!isNaN(x));//true 
+let str = "hi";
+console.log(isNaN(str));//true
+
+//Проверка на конечность значения
+let x = 3;
+let str = "finite";
+console.log(isFinite(x));//true
+console.log(isFinite(str));//false 
+console.log(isFinite(Infinity));//false 
+console.log(isFinite(10 / 0));//false 
+
+//Проверка целых чисел
+let x = 3;
+let str = "integer";
+console.log(Number.isInteger(x));//true
+console.log(Number.isInteger(str));//false
+console.log(Number.isInteger(Infinity)); //false
+console.log(Number.isInteger(2.4));//false
+
+//Указание количества знаков после запятой
+let x = 1.23456;
+let newX = x.toFixed(2);//1.23
+
+//Указание необходимой точности
+let x = 1.23456;
+let newX = x.toPrecision(2);//1.2
+
+//__Математические методы
+//Нахождение наибольшего и наименьшего числа
+let highest = Math.max(2, 56, 12, 1, 233, 4);
+console.log(highest);//233
+
+let lowest = Math.min(2, 56, 12, 1, 233, 4);
+console.log(lowest);//1
+
+//Квадратный корень и возведение в степень
+let result = Math.sqrt(64);
+console.log(result);//8
+
+let result2 = Math.pow(5, 3);
+console.log(result2);//125 -> 5 × 5 × 5
+
+//Преобразование десятичных дробей в целые числа
+let x = 6.78;
+let y = 5.34;
+console.log("X:", x, "becomes", Math.round(x));//X: 6.78 becomes 7
+console.log("Y:", y, "becomes", Math.round(y));//Y: 5.34 becomes 5
+console.log("X:", x, "becomes", Math.ceil(x));//X: 6.78 becomes 7
+console.log("Y:", y, "becomes", Math.ceil(y));//Y: 5.34 becomes 6
+console.log("X:", x, "becomes", Math.floor(x));//X: 6.78 becomes 6
+console.log("Y:", y, "becomes", Math.floor(y));//Y: 5.34 becomes 5
+
+//trunc() не округление в меньшую сторону, а просто возврат целой части
+console.log("X:", x, "becomes", Math.trunc(x));//X: 6.78 becomes 6
+console.log("Y:", y, "becomes", Math.trunc(y));//Y: 5.34 becomes 5
+
+//Показатель степени и логарифм
+let x = 2;
+let exp = Math.exp(x);
+console.log("Exp:", exp);//Exp: 7.38905609893065
+let log = Math.log(exp);
+console.log("Log:", log);//Log: 2
+
+//__Метод работы с датами
+
+//Генерирование дат
+let currentDateTime = new Date();
+console.log(currentDateTime);//2021-06-05T14:21:45.625Z
+
+let now2 = Date.now();
+console.log(now2);//1622902938507
+
+let specificDate = new Date(2022, 1, 10, 12, 10, 15, 100);
+console.log(specificDate);//2022-02-10T12:10:15.100Z
+
+//Методы получения и установки элементов даты
+let d = new Date();
+console.log("Day of week:", d.getDay());//Day of week: 6
+console.log("Day of month:", d.getDate());//Day of month: 5
+console.log("Month:", d.getMonth());//Month: 5
+console.log("Year:", d.getFullYear());//Year: 2021
+console.log("Seconds:", d.getSeconds());//Seconds: 24
+console.log("Milliseconds:", d.getMilliseconds());//Milliseconds: 171
+console.log("Time:", d.getTime());//Time: 1622903604171
+
+//Изменить дату подобным образом можно с помощью метода set.
+d.setFullYear(2010);
+console.log(d);//2010-06-05T14:29:51.481Z
+
+d.setMonth(9);
+console.log(d);//2010-10-05T14:30:39.501Z
+
+d.setHours(10);
+console.log(d);//2010-10-10T10:34:54.518Z
+
+d.setTime(1622889770682);
+console.log(d);//2021-06-05T10:42:50.682Z
+
+//Парсинг дат
+let d1 = Date.parse("June 5, 2021");
+console.log(d1);//1622851200000
+
+let d2 = Date.parse("6/5/2021");
+console.log(d2);//1622851200000
+
+//Преобразование даты в строку
+console.log(d.toDateString());//Sat Jun 05 2021
+console.log(d.toLocaleDateString());//6/5/2021
+
+//--------------------------
+//___Объектная модель документа (DOM)__//
+
+//BOM (Browser Object Model) - Объект window
+
+//Объект history
+//Объект history применятся для перехода на предыдущую страницу
+window.history.go(-1);
+//Объект navigator - информацию об используемомнами браузере — указывая, что это за браузер, какова его текущая версия и в какой операционной системе он функционирует
+//Объект location - Он содержит URL текущей веб - страницы
+
+//DOM -> head и body 
+//head -> title
+//body -> h1 и div. div ...
+
+//Дополнительные свойства DOM
+document // описывает DOM
+
+//Выбор элементов страницы
+//<h1 class="output">Hello World</h1>
+const ele1 = document.querySelector("h1");
+console.dir(ele1);//Hello World
+
+//querySelectorAll(): он вернет все элементы, которые совпадают с заданным значением, в виде массива
+//<div class="output">Test</div>
+const eles = document.querySelectorAll(".output");
+console.log(eles)//Test
+
+//__Управление динамическими элементами с помощью DOM
+
+//Базовое перемещение в DOM
+/* 
+<!DOCTYPE html>
+<html>
+ <body>
+ <h1>Let's find the treasure</h1>
+ <div id="forest">
+ <div id="tree1">
+ <div id="squirrel"></div>
+ <div id="flower"></div>
+ </div>
+ <div id="tree2">
+ <div id="shrubbery">
+ <div id="treasure"></div>
+ </div>
+ <div id="mushroom">
+ <div id="bug"></div>
+ </div>
+ </div>
+ </div>
+ </body>
+</html>
+*/
+
+document.body
+
+/* 
+childNodes — более полное явление, нежели потомки. Потомки просто
+содержат все HTML-элементы (по сути, узлы). childNodes содержит
+еще текстовые узлы и комментарии. Для работы с потомками тем
+не менее вы можете использовать идентификаторы, и это упрощает
+их применение
+*/
+//Чтобы добраться до сокровища с помощью потомков, вам придется использовать:
+console.dir(document.body.children.forest.children.tree2.children.shrubbery.children.treasure);//<div id="treasure"></div>
+
+//childNodes является массивом, поэтому для получения правильных дочерних элементов придется указывать точные значения индекса
+console.dir(document.body.childNodes[3].childNodes[3].childNodes[1].childNodes[1]);
+
+//код вернет нас к уровню родительскому
+document.body.children.forest.children.tree2.parentElement;
+
+//переместиться к tree1
+document.body.children.forest.children.tree2.previousElementSibling;
+//к tree2 
+document.body.children.forest.children.tree1.nextElementSibling;
+
+//Выбор элементов в качестве объектов
+/* 
+<!DOCTYPE html>
+<html>
+ <body>
+ <h1>Welcome page</h1>
+ <p id="greeting">
+ Hi!
+ </p>
+ </body>
+</html>
+*/
+document.body.children.greeting;//<p id="greeting">
+
+//Изменение свойства innerText
+document.body.children.greeting.innerText = "Bye!";
+document.body.children.greeting.innerHTML = "<b>Bye!</b>";
+
+//Доступ к элементам DOM
+//<div id="two" class="example">Hi!</div>
+document.getElementById("two");
+
+//Доступ к элементам по названию тега
+document.getElementsByTagName("div");
+/* HTMLCollection(3) [div#one.example, div#two.example, div#three.something,
+one: div#one.example, two: div#two.example, three: div#three.something] */
+document.getElementsByTagName("div").item(1);//<div id="two" class="example">Hi!</div>
+
+//Доступ к элементам по названию класса
+document.getElementsByClassName("example");
+/* 
+HTMLCollection(2) [div#one.example, div#two.example, one: div#one. example,
+two: div#two.example]
+*/
+
+//Доступ к элементам с помощью CSS - селектора
+document.querySelector("div"); //<div id="one" class="example">Hi!</div> / первое повстречавшееся значение div
+
+//Использование querySelectorAll()
+document.querySelectorAll("div");
+//NodeList(3) [div#one.example, div#two.example, div#three.something]
+
+//Обработчик щелчка кнопкой мыши на элементе
+/* 
+<!DOCTYPE html>
+<html>
+ <body>
+ <div id="one" onclick="alert('Ouch! Stop it!')">Don't click here!
+ </div>
+ </body>
+</html>
+*/
+
+/* 
+<!DOCTYPE html>
+<html>
+ <body>
+ <script>
+ function stop(){
+ alert("Ouch! Stop it!");
+ }
+ </script>
+ <div id="one" onclick="stop()">Don't click here!</div>
+ </body>
+</html>
+*/
+
+/* 
+<!DOCTYPE html>
+<html>
+ <body>
+ <div id="one">Don't click here!</div>
+ </body>
+</html>
+*/
+document.getElementById("one").onclick = function () {
+  alert("Auch! Stop!");
+}
+
+//Ключевое слово this и DOM
+//В DOM this относится к тому элементу DOM, которому оно принадлежит.Если мы определим onclick, чтобы отправить this в качестве аргумента, будет отправлен элемент с onclick.
+function reveal(el) {
+  console.log(el);
+}
+//<button onclick="reveal(this)">Click here!</button> / логировался тот элемент, в котором находится функция
+
+//Управление стилем элемента
+/* 
+p {
+ display: none;
+}
+
+p {
+ display: block;
+}
+*/
+//<button onclick="toggleDisplay()">Magic!</button>
+function toggleDisplay() {
+  let p = document.getElementById("magic");
+  if (p.style.display === "none") {
+    p.style.display = "block";
+  } else {
+    p.style.display = "none";
+  }
+}
+
+//Добавление классов в элементы
+document.getElementById("shape").classList.add("hide");
+
+//Удаление классов из элементов
+document.getElementById("shape").classList.remove("blue");
+
+//Переключение классов
+document.getElementById("shape").classList.toggle("hide");
+
+//Управление атрибутами
+//<a id="friend" class="fancy boxed" href="https://www.google.com">Ask my friend here.</a >
+//<div id="shape" class="square"></div>
+el.setAttribute("style", "background-color:red;border:1px solid black");
+el.setAttribute("id", "new");
+el.setAttribute("class", "circle");
+//<div id="new" class="circle" style="background-color:red;border:1px solid black"></div>
+
+//Прослушиватели событий элементов
+//<div id="square" style="width:100px;height:100px;background-color: grey; ">Click for magic</div>
+function changeColor() {
+  let red = Math.floor(Math.random() * 256);
+  let green = Math.floor(Math.random() * 256);
+  let blue = Math.floor(Math.random() * 256);
+  this.style.backgroundColor = `rgb(${red}, ${green}, ${blue})`;
+}
+window.onload = function () {
+  document.getElementById("square").addEventListener("click", changeColor);
+}
+
+//Создание новых элементо
+let el = document.createElement("p");
+el.innerText = Math.floor(Math.random() * 100);
+document.body.appendChild(el);
+
