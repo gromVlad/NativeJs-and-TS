@@ -371,5 +371,275 @@ let o = {
 // Также верно: o[s1] = 'foo val';
 
 //__Тип Object
+let o = new Object; // допустимо, но не рекомендуется
+
+//Каждый экземпляр Object имеет свойства и методы :
+// - constructor — функция, которая была использована для создания объекта
+// - hasOwnProperty (имяСвойства) — указывает, есть ли у объекта (не у прототипа) данное свойство
+// - isPrototypeOf(объект) — определяет, является ли объект прототипом другого объекта
+// - propertyIsEnumerable(имяСвойства) — указывает, можно ли перебирать данное свойство в инструкции for-in
+// - toLocaleString() — возвращает строковое представление объекта с региональными настройками среды выполнения
+// - toString() — возвращает строковое представление объекта
+// - valueOf() — возвращает строковый, численный или логический эквивалент объекта
+
+//__ОПЕРАТОРЫ
+
+//Унарные операторы
+//побочным эффектом c декрементoм
+let age = 29;
+let anotherAge = --age + 2;
+console.log(age); // 28
+console.log(anotherAge); // 30
+
+//с инкрементoм
+let num1 = 2;
+let num2 = 20;
+let num3 = num1-- + num2;
+let num4 = num1 + num2;
+console.log(num3); // 22
+console.log(num4); // 21
+
+//Унарные плюс и минус
+let s1 = "01";
+s1 = +s1; // результат — число 1
+
+let num = 25;
+num = -num;
+console.log(num); // -25
+
+//__Поразрядные операторы
+let num = -18;
+console.log(num.toString(2)); // "-10010"
+
+//Поразрядное НЕ  НЕ (~)
+let num1 = 25; // двоичное число 00000000000000000000000000011001
+let num2 = ~num1; // двоичное число 11111111111111111111111111100110
+console.log(num2); // -26
+
+//Поразрядное И
+let result = 25 & 3;
+console.log(result); // 1
+
+//Поразрядное ИЛИ
+let result = 25 | 3;
+console.log(result); // 27
+
+//Поразрядное исключающее ИЛИ
+let result = 25 ^ 3;
+console.log(result); // 26
+
+//Сдвиг влево
+//сдвигает все биты числа влево на указанное количество позиций
+let oldValue = 2; // 10 в двоичном формате
+let newValue = oldValue << 5; // 1000000 в двоичном формате (десятичное 64)
+
+//Сдвиг вправо с сохранением знака
+let oldValue = 64; // 1000000 в двоичном формате
+let newValue = oldValue >> 5; // 10 в двоичном формате или 2 в десятичном
+
+//Сдвиг вправо с заполнением нулями
+let oldVallue = 64; // 1000000 в двоичном формате
+let newValue = oldValue >>> 5; // 10 в двоичном формате или 2 в десятичном
+
+//__Логические операторы
+//НЕ, И и ИЛИ.
+
+//Логическое НЕ
+console.log(!false); // true
+console.log(!"blue"); // false
+console.log(!0); // true
+console.log(!NaN); // true
+console.log(!""); // true
+console.log(!12345); // false
+
+//Логическое И
+let result = true && true; //true
+let result = true && false; // false
+
+//Логическое ИЛИ
+let result = true || false;// true
+
+//__Мультипликативные операторы
+// * / %...
+let result = 34 * 56;
+let result = 66 / 11;
+let result = 26 % 5; // 1
+
+//__Оператор возведения в степень
+console.log(Math.pow(3, 2)); // 9
+console.log(3 ** 2); // 9
+
+//__Операторы сложения и вычитания
+let result = 1 + 2;
+let result1 = 5 + 5; // два числа
+console.log(result1); // 10
+let num1 = 5;
+let num2 = 10;
+let message = "The sum of 5 and 10 is " + num1 + num2;
+console.log(message); // выводится сообщение о том, что сумма 5 и 10 равна 510
+
+let result1 = 5 - true; // 4, потому что true преобразуется в 1
+let result2 = NaN - 1; // NaN
+let result3 = 5 - 3; // 2
+let result4 = 5 - ""; // 5, потому что "" преобразуется в 0
+let result5 = 5 - "2"; // 3, потому что "2" преобразуется в 2
+let result6 = 5 - null; // 5, потому что null преобразуется в 0
+
+//__Операторы отношений
+let result1 = 5 > 3; // true
+let result2 = 5 < 3; // false
+let result = "Brick" < "alphabet"; // true
+let result = "23" < 3; // false
+
+//__Равенство и неравенство
+let result1 = ("55" == 55); // true — равно благодаря преобразованию
+let result2 = ("55" === 55); // false — не равно из-за разных типов данных
+
+let result1 = ("55" != 55); // false — равно благодаря преобразованию
+let result2 = ("55" !== 55); // true — не равно из-за разных типов данных
+
+//__Условный оператор
+let max = (num1 > num2) ? num1 : num2
+
+//__Операторы присваивания
+let num = 10;
+num += 10;
+
+//__Оператор «запятая»
+let num1 = 1, num2 = 2, num3 = 3;
+
+//__Инструкция if
+if (i > 25) {
+  console.log("Greater than 25.");
+} else if (i < 0) {
+  console.log("Less than 0.");
+} else {
+  console.log("Between 0 and 25, inclusive.");
+}
+
+//__Инструкция do-while
+//Тело цикла выполняется как минимум один раз
+let i = 0;
+do {
+  i += 2;
+} while (i < 10);
+
+//__Инструкция while
+let i = 0;
+while (i < 10) {
+  i += 2;
+}
+
+//__Инструкция for
+let count = 10;
+for (let i = 0; i < count; i++) {
+  console.log(i);
+}
+
+//__Инструкция for-in
+//для перебора несимвольных ключевых свойств объектов
+for (const propName in window) {
+  document.write(propName);
+}
+//всех свойств объекта windows
+
+//__Инструкция for-of
+//прохождения элементов в итерируемом объекте
+for (const el in [2, 4, 6, 8]) {
+  document.write(el);
+}
+
+//__Метки инструкций
+start: for (let i = 0; i < count; i++) {
+  console.log(i);
+}
+//на метку start можно ссылаться позднее в инструкции break или continue
+
+//__Инструкции break и continue
+// break немедленно завершает цикл, передавая управление следующей инструкции после цикла
+// continue завершает только текущую итерацию цикла
+let num = 0;
+for (let i = 1; i < 10; i++) {
+  if (i % 5 == 0) {
+    break;
+  }
+  num++;
+}
+console.log(num); // 4
+
+let num = 0;
+for (let i = 1; i < 10; i++) {
+  if (i % 5 == 0) {
+    continue;
+  }
+  num++;
+}
+console.log(num); // 8
+
+//с помеченными инструкциями
+outermost:
+for (let i = 0; i < 10; i++) {
+  for (let j = 0; j < 10; j++) {
+    if (i == 5 && j == 5) {
+      break outermost;
+    }
+    num++;
+  }
+}
+console.log(num); // 55
+
+//__Инструкция with
+//В строгом режиме инструкция with не поддерживается
+//делает областью видимости кода конкретный объект
+//ради удобства для тех случаев, когда имя одного объекта приходится вводить снова и снова
+let qs = location.search.substring(1);
+let hostName = location.hostname;
+let url = location.href;
+
+//можно переписать следующим образом
+with (location) {
+  let qs = search.substring(1);
+  let hostName = hostname;
+  let url = href;
+}
+
+//__Инструкция switch
+switch (i) {
+  case 25:
+    console.log("25");
+    break;
+  case 35:
+    console.log("35");
+    break;
+  case 45:
+    console.log("45");
+    break;
+  default:
+    console.log("Other");
+}
+
+//__ФУНКЦИИ
+function sayHi(name, message) {
+  console.log("Hello " + name + ", " + message);
+}
+
+//при достижении инструкции return функция сразу завершается
+function sum(num1, num2) {
+  return num1 + num2;
+  console.log("Hello world!"); // никогда не выполняется
+}
+
+//return можно также использовать без указания возвращаемого значения
+function sayHi(name, message) {
+  return;
+  console.log("Hello " + name + ", " + message); // никогда не вызывается
+}
+
+//-----------------------------------
+//____Переменные, область видимости и память______//
+
+
+
+
 
 
