@@ -637,6 +637,354 @@ function sayHi(name, message) {
 
 //-----------------------------------
 //____Переменные, область видимости и память______//
+//переменные могут содержать значения двух видов: примитивные и ссылочные
+
+//Ссылочные значения - работаете не с самим объектом, а со ссылкой (reference) на него
+
+//Копирование значений
+//примитивные 
+let num1 = 5;
+let num2 = num1; //5
+
+//ссылочные
+//обе переменные указывают на один объект
+let obj1 = new Object();
+let obj2 = obj1;
+obj1.name = "Nicholas";
+console.log(obj2.name); // "Nicholas"
+
+//Передача аргументов
+//аргументы в функции передаются только по значению
+function addTen(num) {
+  num += 10;
+  return num;
+}
+let count = 20;
+let result = addTen(count);
+console.log(count); // 20 — без изменений
+console.log(result); // 30
+
+function setName(obj) {
+  obj.name = "Nicholas";
+  obj = new Object();
+  obj.name = "Greg";
+}
+let person = new Object();
+setName(person);
+console.log(person.name); // "Nichola
+
+//Проверка типа
+let s = "Nicholas";
+console.log(typeof s); // string
+console.log(person instanceof Object); // относится ли person к типу Object?
+
+//__КОНТЕКСТ ВЫПОЛНЕНИЯ И ОБЛАСТЬ ВИДИМОСТИ
+// Каждый контекст может искать переменные и функции в цепочке областей видимости по направлению наружу, но не внутрь.
+//Основных типов контекстов выполнения два, глобальный контекст и контекст функции
+var color = "blue";
+function changeColor() {
+  let anotherColor = "red";
+  function swapColors() {
+    let tempColor = anotherColor;
+    anotherColor = color;
+    color = tempColor;
+    // здесь доступны переменные color, anotherColor и tempColor
+  }
+  // здесь доступны переменные color и anotherColor, но не tempColor
+  swapColors();
+}
+// здесь доступна только переменная color
+changeColor();
+
+//Объявление области действия блока с помощью let, const
+if (true) {
+  let a;
+}
+console.log(a); // ReferenceError: a is not defined
+
+if (true) {
+  const a = 0;
+}
+console.log(a); // ReferenceError: a is not defined
+
+//__СБОРКА МУСОРА
+//за управление памятью при работе сценариев отвечает среда выполнения
+
+//Отслеживание и очистка
+//Когда переменная покидает контекст, она помечается как находящаяся вне контекста,после этого, считаются готовыми к удалению
+//примерно таким же способом очищаеться и ссылочные данные
+
+//Утечки памяти
+let outer = function () {
+  let name = 'Jake';
+  return function () {
+    return name;
+  };
+}
+//пока существует функция outer, переменная name не может быть очищена
+
+//-------------------------------------------
+//______Ссылочные типы_________
+
+//__ТИП DATE
+let now = new Date();
+
+//создать объект Date для 23 мая 2019 г
+let someDate = new Date("May 23, 2019");
+
+// 5 мая 2005 г., 17:55:55 по локальному времени
+let allFives = new Date(2005, 4, 5, 17, 55, 55);
+
+// получение времени начала
+let start = Date.now();
+
+let date1 = new Date(2019, 0, 1); // 1 января 2019 г.
+let date2 = new Date(2019, 1, 1); // 1 февраля 2019 г.
+console.log(date1 < date2); // true
+console.log(date1 > date2); // false
+
+//getTime()  / setTime (миллисекунды) / setFullYear (год) / getMonth() ...
+
+//__ТИП REGEXP
+//регулярные выражения
+//g — включает глобальный режим
+//i — включает режим без учета регистр
+//m — включает многострочный режим
+//y — включает режим закрепления
+//u — включает режим Юникода.
+
+//Регулярное выражение создается путем объединения шаблона и флагов
+// Поиск всех экземпляров "at" в строке.
+let pattern1 = /at/g;
+
+// Поиск первого экземпляра "bat" или "cat" без учета регистра.
+let pattern2 = /[bc]at/i;
+
+// Поиск всех трехсимвольных сочетаний, заканчивающихся на "at", независимо от регистра.
+let pattern3 = /.at/gi;
+
+// Поиск первого экземпляра "bat" или "cat" без учета регистра.
+let pattern1 = /[bc]at/i;
+
+// То же, что и pattern1, но с использованием конструктора.
+let pattern2 = new RegExp("[bc]at", "i");
+
+let re = null;
+for (let i = 0; i < 10; i++) {
+  re = /cat/g;
+  re.test("catastrophe");
+}
+
+//Свойства экземпляра RegExp
+let pattern1 = /\[bc\]at/i; 
+console.log(pattern1.global); // false
+console.log(pattern1.ignoreCase); // true
+
+//___Тип Boolean
+let booleanObject = new Boolean(true);
+
+//__Тип Number
+let numberObject = new Number(10);
+let num = 10;
+console.log(num.toString()); // "10"
+
+//__Тип String
+let stringObject = new String("hello world");
+let message = "foobarbaz";
+console.log(message.startsWith("foo")); // true
+console.log(message.startsWith("bar")); // false
+
+let stringValue = " hello world ";
+let trimmedStringValue = stringValue.trim();
+
+let stringValue = "na ";
+console.log(stringValue.repeat(16) + "batman");
+// na na na na na na na na na na na na na na na na batman
+
+let stringValue = "foo";
+console.log(stringValue.padStart(6)); // " foo"
+console.log(stringValue.padStart(9, ".")); // "......foo"
+
+let stringValue = "hello world";
+console.log(stringValue.toLocaleUpperCase()); // "HELLO WORLD"
+console.log(stringValue.toUpperCase()); // "HELLO WORLD"
+
+let text = "cat, bat, sat, fat";
+let pattern = /.at/;
+// то же, что и pattern.exec(text)
+let matches = text.match(pattern);
+console.log(matches.index); // 0
+console.log(matches[0]); // "cat"
+console.log(pattern.lastIndex); // 0
+
+let text = "cat, bat, sat, fat";
+let result = text.replace("at", "ond");
+console.log(result); // "cond, bat, sat, fat"
+
+let colorText = "red,blue,green,yellow";
+let colors1 = colorText.split(","); // ["red", "blue", "green", "yellow"]
+let colors2 = colorText.split(",", 2); // ["red", "blue"]
+let colors3 = colorText.split(/[^\,]+/); // ["", ",", ",", ",", ""]
+
+let stringValue = "yellow";
+console.log(stringValue.localeCompare("brick")); // 1
+console.log(stringValue.localeCompare("yellow")); // 0
+console.log(stringValue.localeCompare("zoo")); // -1
+
+//__Строковые итераторы и деструктурирование
+let message = "abc";
+let stringIterator = message[Symbol.iterator]();
+console.log(stringIterator.next()); // {value: "a", done: false}
+console.log(stringIterator.next()); // {value: "b", done: false}
+console.log(stringIterator.next()); // {value: "c", done: false}
+console.log(stringIterator.next()); // {value: undefined, done: true}
+
+//__Методы кодирования URI
+//Чтобы браузер все же мог принимать и понимать их, методы кодирования URI
+// encodeURI() не кодирует специальные знаки, входящие в URI
+//encodeURIComponent() кодирует любой нестандартный знак
+let uri = "http://www.wrox.com/illegal value.js#start";
+console.log(encodeURI(uri));//// "http://www.wrox.com/illegal%20value.js#start"
+console.log(encodeURIComponent(uri));//// "http%3A%2F%2Fwww.wrox.com%2Fillegal%20value.js%23start"
+
+//обратные методы, decodeURI() и decodeURIComponent()
+
+//__Объект Window
+let color = "red";
+function sayColor() {
+  console.log(window.color);
+}
+window.sayColor(); // "red"
+
+//__Объект Math
+let max = Math.max(3, 54, 32, 16);
+console.log(max); // 54
+let min = Math.min(3, 54, 32, 16);
+console.log(min); // 3
+
+console.log(Math.ceil(25.9)); // 26
+console.log(Math.ceil(25.5)); // 26
+console.log(Math.ceil(25.1)); // 26
+console.log(Math.round(25.9)); // 26
+console.log(Math.round(25.5)); // 26
+console.log(Math.round(25.1)); // 25
+console.log(Math.fround(0.4)); // 0.4000000059604645
+console.log(Math.fround(0.5)); // 0.5
+console.log(Math.fround(25.9)); // 25.899999618530273
+console.log(Math.floor(25.9)); // 25
+console.log(Math.floor(25.5)); // 25
+console.log(Math.floor(25.1)); // 25
+
+let num = Math.floor(Math.random() * 10 + 1);
+
+//Math.abs(x) / Math.exp(x) / Math.expm1(x) / Math.log(x) ...
+
+//------------------------------------
+//____Ссылочные типы коллекций______
+
+//__ТИП OBJECT
+let person = new Object();
+person.name = "Nicholas";
+person.age = 29;
+
+let person = {
+  name: "Nicholas",
+  age: 29
+};
+
+//Для доступа к свойствам объектов обычно применяется точечная нотация
+alert(person["name"]); // "Nicholas"
+alert(person.name); // "Nicholas"
+
+//__ТИП ARRAY
+let colors = new Array("red", "blue", "green");
+let colors = ["red", "blue", "green"]; // массив с тремя строками
+
+// Строки будут разбиты на массив из отдельных символов
+alert(Array.from("Matt")); // ["M", "a", "t", "t"]
+
+let colors = ["red", "blue", "green"]; // объявить массив строк
+alert(colors[0]); // вывести первый элемент
+colors[2] = "black"; // изменить третий элемент
+colors[3] = "brown"; // добавить четвертый элемент
+
+if (Array.isArray(value)) {
+  // какие-то действия с массивом
+}
+
+const aKeys = Array.from(a.keys());
+const aValues = Array.from(a.values());
+const aEntries = Array.from(a.entries());
+alert(aKeys); // [0, 1, 2, 3]
+alert(aValues); // ["foo", "bar", "baz", "qux"]
+alert(aEntries); // [[0, "foo"], [1, "bar"], [2, "baz"], [3, "qux"]]
+
+// Весь массив заполняется пятерками
+zeroes.fill(5);
+alert(zeroes); // [5, 5, 5, 5, 5]
+zeroes.fill(0); // сброс
+// Заполнение массива начиная с индекса 3 шестерками
+zeroes.fill(6, 3);
+alert(zeroes); // [0, 0, 0, 6, 6]
+
+let ints = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+ints.copyWithin(5);
+alert(ints); // [0, 1, 2, 3, 4, 0, 1, 2, 3, 4]
+
+let colors = ["red", "blue", "green"]; // массив с тремя строками
+alert(colors.toString()); // red,blue,green
+alert(colors.valueOf()); // red,blue,green
+
+let colors = ["red", "blue"];
+colors.push("brown"); // добавление элемента
+colors[3] = "black"; // добавление элемента
+alert(colors.length); // 4
+let item = colors.pop(); // получение последнего элемента
+alert(item); // "black"
+
+let values = [1, 2, 3, 4, 5];
+values.reverse();// 5,4,3,2,1
+
+let values = [0, 1, 5, 10, 15];
+values.sort();// 0,1,10,15,5
+
+let colors = ["red", "green", "blue"];
+let colors2 = colors.concat("yellow", ["black", "brown"]);
+alert(colors); // red,green,blue
+alert(colors2); // red,green,blue,yellow,black,brown
+
+let colors = ["red", "green", "blue", "yellow", "purple"];
+let colors2 = colors.slice(1);
+let colors3 = colors.slice(1, 4);
+alert(colors2); // green,blue,yellow,purple
+alert(colors3); // green,blue,yellow
+
+let numbers = [1, 2, 3, 4, 5, 4, 3, 2, 1];
+alert(numbers.indexOf(4)); // 3
+alert(numbers.lastIndexOf(4)); // 5
+alert(numbers.includes(4)); // true
+
+const people = [
+  {
+    name: "Matt",
+    age: 27
+  },
+  {
+    name: "Nicholas",
+    age: 29
+  }
+];
+people.find((element, index, array) => element.age < 28)// {name: "Matt", age: 27}
+alert(people.findIndex((element, index, array) => element.age < 28));
+//
+
+//Методы перебора элементов
+//every() / filter() / forEach / map() / some()
+
+let values = [1, 2, 3, 4, 5];
+let sum = values.reduce((prev, cur, index, array) => prev + cur);
+alert(sum); // 15
+
 
 
 
