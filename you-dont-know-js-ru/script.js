@@ -1058,5 +1058,562 @@ console.log(studentName);
 let studentName = "Suzy";
 
 //-------------------------------------------------
-//___Ограничение раскрытия областей видимости_____
+//___Ограничение раскрытия областей видимости____//
 
+//__Принцип наименьшего раскрытия
+//по умолчанию раскрытие должно ограничиваться абсолютным минимумом, а все остальное должно остаться приватным 
+function diff(x, y) {
+  if (x > y) {
+    //tmp блоковую область видимости
+    let tmp = x;
+    x = y;
+    y = tmp;
+  }
+  return y - x;
+}
+diff(3, 7); // 4
+diff(7, 5); // 2
+
+//__Сокрытие в функциональной области видимости
+// внешняя/глобальная область видимости
+function hideTheCache() {
+  // промежуточная область видимости, в которой скрывается `cache`
+  var cache = {};
+  return factorial;
+  // **********************
+  function factorial(x) {
+    // внутренняя область видимости
+    if (x < 2) return 1;
+    if (!(x in cache)) {
+      cache[x] = x * factorial(x - 1);
+    }
+    return cache[x];
+  }
+}
+var factorial = hideTheCache();
+factorial(6);
+// 720
+factorial(7);
+// 5040
+
+//__Немедленный вызов функциональных выражений
+//IIFE (Immediately Invoked Function Expression)
+var factorial = (function hideTheCache() {
+  var cache = {};
+  function factorial(x) {
+    if (x < 2) return 1;
+    if (!(x in cache)) {
+      cache[x] = x * factorial(x - 1);
+    }
+    return cache[x];
+  }
+  return factorial;
+})();
+factorial(6);
+// 720
+factorial(7);
+// 5040
+
+// внешняя область видимости
+(function () {
+  // внутренняя область видимости
+})();
+// снова внешняя область видимости
+
+//__Создание областей видимости с блоками
+{
+  // не обязательно область видимости (пока)
+  // ..
+  // теперь мы знаем, что блок должен быть областью видимости
+  let thisIsNowAScope = tr
+  for (let i = 0; i < 5; i++) {
+    // также является областью видимости, активизируемой
+    // после каждой итерации
+    if (i % 2 == 0) {
+      // просто блок, не область видимости
+      console.log(i);
+    }
+  }
+}
+// 0 2 4
+
+//я рекомендую использовать дополнительную явную блоковую область видимости
+
+function getNextMonthStart(dateStr) {
+  var nextMonth, year;
+  {
+    let curMonth;
+    [, year, curMonth] = dateStr.match(
+      /(\d{4})-(\d{2})-\d{2}/
+    ) || [];
+    nextMonth = (Number(curMonth) % 12) + 1;
+  }
+  if (nextMonth == 1) {
+    year++;
+  }
+  return `${year}-${String(nextMonth).padStart(2, "0")
+    }-01`;
+}
+getNextMonthStart("2019-12-25"); // 2020-01-01
+
+function sortNamesByLength(names) {
+  var buckets = [];
+  for (let firstName of names) {
+    if (buckets[firstName.length] == null) {
+      buckets[firstName.length] = [];
+    }
+    buckets[firstName.length].push(firstName);
+  }
+  // блок для сужения области видимости
+  {
+    let sortedNames = [];
+    for (let bucket of buckets) {
+      if (bucket) {
+        // каждый массив сортируется по алфавиту
+        bucket.sort();
+        // присоединить отсортированные имена
+        // к текущему списку
+        sortedNames = [
+          ...sortedNames,
+          ...bucket
+        ];
+      }
+    }
+    return sortedNames;
+  }
+}
+sortNamesByLength([
+  "Sally",
+  "Suzy",
+  "Frank",
+  "John",
+  "Jennifer",
+  "Scott"
+]);
+// [ "John", "Suzy", "Frank", "Sally",
+// "Scott", "Jennifer" ]
+
+//__var и let
+//должна объявляться так, чтобы область ее использования была очевидно
+//var присоединяется к ближайшей вмещающей области видимости функции, где бы она ни находилась
+//Если объявление принадлежит блоковой области видимости, используйте let
+
+//переменная i, по сути, всегда используется только внутри цикла
+for (let i = 0; i < 5; i++) {
+  // ...
+}
+
+//объявление catch можно опустить
+try {
+  doOptionOne();
+}
+catch { // Объявление catch опущено
+  doOptionTwoInstead();
+}
+
+//__FiB
+//полностью избегать FiB
+//никогда не размещайте объявления функций непосредственновнутри любого блока.Всегда размещайте объявления функцийв любой точке области верхнего уровня функции(или глобальной области видимости).
+//о нежелательности функциональных объявлений в блоках
+if (true) {
+  function ask() {
+    console.log("Am I called?");
+  }
+}
+
+
+var isArray = function isArray(a) {
+  return Array.isArray(a);
+};
+// переопределите определение, если это необходимо
+if (typeof Array.isArray == "undefined") {
+  //Размещение функциональных выражений в блоках — абсолютно нормальное и допустимое решение
+  isArray = function isArray(a) {
+    return Object.prototype.toString.call(a)
+      == "[object Array]";
+  };
+}
+
+//--------------------------------
+//___Использование замыканий____//
+//Замыкание является аспектом поведения функций и только функций
+
+//Замыкание позволяет greetStudent(..) продолжать обращатьсяк этим внешним переменным даже после завершения внешней области видимости / экземпляры students и studentID будут оставаться в памяти
+// внешняя/глобальная область видимости: КРАСНЫЙ(1)
+function lookupStudent(studentID) {
+  // области видимости функции: СИНИЙ(2)
+  var students = [
+    { id: 14, name: "Kyle" },
+    { id: 73, name: "Suzy" },
+    { id: 112, name: "Frank" },
+    { id: 6, name: "Sarah" }
+  ];
+  return function greetStudent(greeting) {
+    // область видимости функции: ЗЕЛЕНЫЙ(3)
+    var student = students.find(
+      student => student.id == studentID
+    );
+    return `${greeting}, ${student.name}!`;
+  };
+}
+var chosenStudents = [
+  lookupStudent(6),
+  lookupStudent(112)
+];
+// обращение к свойству name функции:
+chosenStudents[0].name;
+// greetStudent
+chosenStudents[0]("Hello");
+// Hello, Sarah!
+chosenStudents[1]("Howdy");
+// Howdy, Frank!
+
+//__Замыкание и стрелки
+//даже крошечные стрелочные функции могут участвовать в системе замыканий
+var student = students.find(
+  student =>
+    // область видимости функции: ОРАНЖЕВЫЙ(4)
+    student.id == studentID
+);
+
+//__Накопление замыканий
+//Каждый экземпляр внутренней функции addTo(..) замыкается по своей собственной переменной
+//при каждом выполнении внешней функции adder(..) создается новый экземпляр внутренней функции
+function adder(num1) {
+  return function addTo(num2) {
+    return num1 + num2;
+  };
+}
+var add10To = adder(10);
+var add42To = adder(42);
+add10To(15); // 25
+add42To(9); // 51
+
+//__Живая ссылка, а не снимок
+//е замыкание представляет собой живую ссылку, которая сохраняет доступ к полноценной переменной
+
+//замыкание включают перемнные, а не ее значение
+var studentName = "Frank";
+var greeting = function hello() {
+  // В замыкании используется `studentName`,
+  // а не "Frank"
+  console.log(
+    `Hello, ${studentName}!`
+  );
+}
+// позднее
+studentName = "Suzy";
+// позднее
+greeting();
+// Hello, Suzy!
+
+var keeps = [];
+for (var i = 0; i < 3; i++) {
+  keeps[i] = function keepI() {
+    // замыкание по `i`
+    return i;
+  };
+}
+keeps[0](); // 3 -- ПОЧЕМУ!?
+keeps[1](); // 3
+keeps[2](); // 3
+
+var keeps = [];
+for (var i = 0; i < 3; i++) {
+  // при каждой итерации создается новая переменная `j`,
+  // которой присваивается копия значения `i` на данный момент
+  let j = i;
+  // переменная `i` здесь еще не замкнута, поэтому ничто не
+  // мешает непосредственно использовать ее текущее значение
+  // при каждой итерации цикла
+  keeps[i] = function keepEachJ() {
+    // замыкание по `j`, не по `i`!
+    return j;
+  };
+}
+keeps[0](); // 0
+keeps[1](); // 1
+keeps[2](); // 2
+
+//объявление let в цикле for создает не только одну переменную для цикла, но и новую переменную для каждой итерации цикла.Этот трюк / странность — именно то, что необходимо для наших замыканий в циклах
+var keeps = [];
+for (let i = 0; i < 3; i++) {
+  // `let i` автоматически создает новую переменную `i`
+  // для каждой итерации!
+  keeps[i] = function keepEachI() {
+    return i;
+  };
+}
+keeps[0](); // 0
+keeps[1](); // 1
+keeps[2](); // 2
+
+//__Типичные замыкания: Ajax и события
+function lookupStudentRecord(studentID) {
+  ajax(
+    `https://some.api/student/${studentID}`,
+    function onRecord(record) {
+      console.log(
+        `${record.name} (${studentID})`
+      );
+    }
+  );
+}
+lookupStudentRecord(114);
+// Frank (114)
+
+//Обработчики событий
+//При нажатии кнопки label все еще существует и может использоваться
+function listenForClicks(btn, label) {
+  btn.addEventListener("click", function onClick() {
+    console.log(
+      `The ${label} button was clicked!`
+    );
+  });
+}
+var submitBtn = document.getElementById("submit-btn");
+listenForClicks(submitBtn, "Checkout");
+
+//Это не замыкание а поиск по лексическим областям вызова
+function say(myName) {
+  var greeting = "Hello";
+  output();
+  function output() {
+    console.log(
+      `${greeting}, ${myName}!`
+    );
+  }
+}
+say("Kyle");
+// Hello, Kyle!
+
+//Переменные, которые просто присутствуют, но к которым не происходят обращения, не приводят к созданию замыканий
+function lookupStudent(studentID) {
+  return function nobody() {
+    var msg = "Nobody's here yet.";
+    console.log(msg);
+  };
+}
+var student = lookupStudent(112);
+student();
+// Nobody's here yet.
+
+//___Жизненный цикл замыканий и сборка мусора(GC)
+//Замыкание может неожиданнопомешать освобождению переменной, с которой вы уже завершили работу, что приводит к утечке памяти со временем.
+function manageStudentGrades(studentRecords) {
+  var grades = studentRecords.map(getGrade);
+  // сбросить значение `studentRecords`, чтобы предотвратить
+  // нежелательное удержание памяти в замыкании
+  studentRecords = null;
+  return addGrade;
+  // ..
+}
+
+//__Для чего нужны замыкания?
+//Замыкание может повысить эффективность, так как экземплярфункции может запомнить ранее определенную информацию, вместо того чтобы каждый раз вычислять ее заново
+//. Замыкание позволяет экземпляру внутренней функции makeRequest() запомнить эту переменную и обращаться к ней при необходимости
+function setupButtonHandler(btn) {
+  var recordKind = btn.dataset.kind;
+  var requestURL = APIendpoints[recordKind];
+  var requestData = data[recordKind];
+  btn.addEventListener(
+    "click",
+    function makeRequest(evt) {
+      ajax(requestURL, requestData);
+    }
+  );
+}
+
+//---------------------------------
+//_____Паттерн «Модуль»_________//
+//-Должна существовать внешняя область видимости — обычно от функции - фабрики модулей, выполняемой хотя бы один раз.
+//- Внутренняя область видимости модуля должна содержать хотя бы один блок скрытой информации, представляющей состояние модуля.
+//- Модуль должен возвращать через свой открытый API ссылку на хотя бы одну функцию, которая содержит замыкание на скрытое состояние модуля(чтобы это состояние сохранялось после вызова).
+
+//__Инкапсуляция и принцип наименьшего раскрытия(POLE)
+
+//__Пространства имен (группировка без состояния)
+//несколько взаимосвязанных функций без данных
+
+// пространство имен, не модуль
+var Utils = {
+  cancelEvt(evt) {
+    evt.preventDefault();
+    evt.stopPropagation();
+    evt.stopImmediatePropagation();
+  },
+  wait(ms) {
+    return new Promise(function c(res) {
+      setTimeout(res, ms);
+    });
+  },
+  isValidEmail(email) {
+    return /[^@]+@[^@.]+\.[^@.]+/.test(email);
+  }
+};
+
+//__Структуры данных (группировка с состоянием)
+// структура данных, не модуль
+var Student = {
+  records: [
+    { id: 14, name: "Kyle", grade: 86 },
+    { id: 73, name: "Suzy", grade: 87 },
+    { id: 112, name: "Frank", grade: 75 },
+    { id: 6, name: "Sarah", grade: 91 }
+  ],
+  getName(studentID) {
+    var student = this.records.find(
+      student => student.id == studentID
+    );
+    return student.name;
+  }
+};
+Student.getName(73);
+// Suzy
+
+//__Модули (управление доступом с состоянием)
+//getName(..) обращается к приватным скрытым данным records
+// IIFE подразумевает о один центральный экземпляр модуля обычно называется одиночкой (singleton)
+var Student = (function defineStudent() {
+  var records = [
+    { id: 14, name: "Kyle", grade: 86 },
+    { id: 73, name: "Suzy", grade: 87 },
+    { id: 112, name: "Frank", grade: 75 },
+    { id: 6, name: "Sarah", grade: 91 }
+  ];
+  var publicAPI = {
+    getName
+  };
+  return publicAPI;
+  // ************************
+  function getName(studentID) {
+    var student = records.find(
+      student => student.id == studentID
+    );
+    return student.name;
+  }
+})();
+Student.getName(73); // Suzy
+
+//__Фабрика модулей (множественные экземпляры)
+// фабричная функция, не IIFE для создания одиночного экземпляра
+//мы просто определяем обычную автономную функцию
+function defineStudent() {
+  var records = [
+    { id: 14, name: "Kyle", grade: 86 },
+    { id: 73, name: "Suzy", grade: 87 },
+    { id: 112, name: "Frank", grade: 75 },
+    { id: 6, name: "Sarah", grade: 91 }
+  ];
+  var publicAPI = {
+    getName
+  };
+  return publicAPI;
+  // ************************
+  function getName(studentID) {
+    var student = records.find(
+      student => student.id == studentID
+    );
+    return student.name;
+  }
+}
+var fullTime = defineStudent();
+fullTime.getName(73); // Suzy
+
+//__Модули Node CommonJS
+//один модуль на файл
+//по аналогии со стилем определения модулей IIFE
+module.exports.getName = getName;
+// ************************
+var records = [
+  { id: 14, name: "Kyle", grade: 86 },
+  { id: 73, name: "Suzy", grade: 87 },
+  { id: 112, name: "Frank", grade: 75 },
+  { id: 6, name: "Sarah", grade: 91 }
+];
+function getName(studentID) {
+  var student = records.find(
+    student => student.id == studentID
+  );
+  return student.name;
+}
+
+//
+var Student = require("/path/to/student.js");
+Student.getName(73);
+// Suzy
+
+//Пример модуль
+// function useCalc(..) { .. }
+// function formatTotal(..) { .. }
+function calculator() {
+  var currentTotal = 0;
+  var currentVal = "";
+  var currentOper = "=";
+  var publicAPI = {
+    number,
+    eq,
+    plus() { return operator("+"); },
+    minus() { return operator("-"); },
+    mult() { return operator("*"); },
+    div() { return operator("/"); }
+  };
+  return publicAPI;
+  // ********************
+  function number(key) {
+    // цифра?
+    if (/\d/.test(key)) {
+      currentVal += key;
+      return key;
+    }
+  }
+  function eq() {
+    // клавиша = ?
+    if (currentOper != "=") {
+      currentTotal = op(
+        currentTotal,
+        currentOper,
+        Number(currentVal)
+      );
+      currentOper = "=";
+      currentVal = "";
+      return formatTotal(currentTotal);
+    }
+    return "";
+  }
+  function operator(key) {
+    // серия из нескольких операций?
+    if (
+      currentOper != "=" &&
+      currentVal != ""
+    ) {
+      // предполагается нажатие '='
+      eq();
+    }
+    else if (currentVal != "") {
+      currentTotal = Number(currentVal);
+    }
+    currentOper = key;
+    currentVal = "";
+    return key;
+  }
+  function op(val1, oper, val2) {
+    var ops = {
+      // ВНИМАНИЕ: стрелочные функции
+      // используются только для краткости
+      "+": (v1, v2) => v1 + v2,
+      "-": (v1, v2) => v1 - v2,
+      "*": (v1, v2) => v1 * v2,
+      "/": (v1, v2) => v1 / v2
+    };
+    return ops[oper](val1, val2);
+  }
+}
+var calc = calculator();
+useCalc(calc, "4+3="); // 4+3=7
+useCalc(calc, "+9="); // +9=16
+useCalc(calc, "*8="); // *5=128
+useCalc(calc, "7*2*3="); // 7*2*3=42
+useCalc(calc, "1/0="); // 1/0=ERR
+useCalc(calc, "+3="); // +3=ERR
+useCalc(calc, "51="); // 51
