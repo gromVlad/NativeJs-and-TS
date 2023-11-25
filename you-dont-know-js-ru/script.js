@@ -1617,3 +1617,590 @@ useCalc(calc, "7*2*3="); // 7*2*3=42
 useCalc(calc, "1/0="); // 1/0=ERR
 useCalc(calc, "+3="); // +3=ERR
 useCalc(calc, "51="); // 51
+
+//-------------------------------------
+//_________Что такое this?__________//
+//При вызове функции создается запись активации, также называемая контекстом выполнения
+//Связывание this происходит в момент вызова функции, и то, начто ссылается this, определяется исключительно местом вызова, из которого была вызвана функция.
+
+function identify() {
+  return this.name.toUpperCase();
+}
+function speak() {
+  var greeting = "Hello, Im " + identify.call(this);
+  console.log(greeting);
+}
+var me = {
+  name: "Kyle"
+};
+var you = {
+  name: "Reader"
+};
+identify.call(me); // KYLE
+identify.call(you); // READER
+speak.call(me); // Hello, I’m KYLE
+speak.call(you); // Hello, I’m READER
+
+function foo(num) {
+  console.log("foo: " + num);
+  // Подсчет вызовов `foo`.
+  // Примечание: `this` в действительности сейчас содержит
+  // `foo` из-за того, как была вызвана функция `foo`
+  this.count++;
+}
+foo.count = 0;
+var i;
+for (i = 0; i < 10; i++) {
+  if (i > 5) {
+    // используя `call(..)`, мы гарантируем, что `this`
+    // указывает на сам объект функции (`foo`)
+    foo.call(foo, i);
+  }
+}
+// foo: 6
+// foo: 7
+// foo: 8
+// foo: 9
+// сколько раз была вызвана функция `foo`?
+console.log(foo.count); // 4
+
+function baz() {
+  // Стек вызовов: `baz`
+  // Следовательно, место вызова принадлежит глобальной
+  // области видимости
+  console.log("baz");
+  bar(); // <-- Место вызова для `bar`
+}
+function bar() {
+  // Стек вызовов: `baz` -> `bar`
+  // Следовательно, место вызова находится в `baz`
+  console.log("bar");
+  foo(); // <-- Место вызова для `foo`
+}
+function foo() {
+  // Стек вызовов: `baz` -> `bar` -> `foo`
+  // Следовательно, место вызова находится в `bar`
+  console.log("foo");
+}
+baz(); // <-- Место вызова для `baz`
+
+//__Связывание по умолчанию
+//автономных вызовов функций
+function foo() {
+  console.log(this.a)
+}
+var a = 2;
+foo(); // 2
+
+//режим strict
+function foo() {
+  "use strict";
+  console.log(this.a);
+}
+var a = 2;
+foo(); // TypeError: `this` is `undefined`
+
+//__Неявное связывание
+function foo() {
+  console.log(this.a);
+}
+var obj = {
+  a: 2,
+  foo: foo
+};
+obj.foo(); // 2 / this.a
+
+//__Неявная потеря this
+function foo() {
+  console.log(this.a);
+}
+var obj = {
+  a: 2,
+  foo: foo
+};
+var bar = obj.foo; // Ссылка на функцию/синоним!
+var a = "oops, global"; // `a` также является свойством
+// глобального объекта
+bar(); // "oops, global"
+
+function foo() {
+  console.log(this.a);
+}
+function doFoo(fn) {
+  // `fn` - просто еще одна ссылка на `foo`
+  fn(); // <-- место вызова!
+}
+var obj = {
+  a: 2,
+  foo: foo
+};
+var a = "oops, global"; // `a` также является свойством
+// глобального объекта
+doFoo(obj.foo); // "oops, global"
+
+//Обработчики событий в популярных JavaScript нередко заставляют обратные вызовы иметь значение this, указывающее, например, на элемент DOM
+
+//__Явное связывание
+function foo() {
+  console.log(this.a);
+}
+var obj = {
+  a: 2
+};
+foo.call(obj); // 2
+
+//__Жесткое связывание
+//bind(..)  возвращает новую функцию, жестко запрограмированную для вызова исходной функции с заданным вами контекстом this.
+function foo(something) {
+  console.log(this.a, something);
+  return this.a + something;
+}
+var obj = {
+  a: 2
+};
+var bar = foo.bind(obj);
+var b = bar(3); // 2 3
+console.log(b); // 5
+
+//__«Контексты» вызовов API
+//Во внутренней реализации эти функции почти наверняка используют явное связывание
+function foo(el) {
+  console.log(el, this.id);
+}
+var obj = {
+  id: "awesome"
+};
+// Использовать `obj` как `this` для вызовов `foo(..)`
+[1, 2, 3].forEach(foo, obj);
+// 1 awesome 2 awesome 3 awesome
+
+//__Связывание new
+function foo(a) {
+  this.a = a;
+}
+var bar = new foo(2);
+console.log(bar.a); // 2
+
+//__Приоритет
+//явное связывание приоритетнее неявного, а следовательно, перед проверкой неявного связывания следует сначала проверить, действует ли явное связывание
+//- Функция вызвана с new (связывание new)? Если да, то this содержит новый сконструированный объект / var bar = new foo()
+//- Функция вызвана с call или apply (явное связывание), дажескрытыми в жесткой привязке bind ? Если да, то this содержит явно заданный объект / var bar = foo.call( obj2 )
+//- Функция вызвана с контекстом (неявное связывание), такженазываемым объектом - владельцем или содержащим объектом ? Если да, то this содержит контекстный объект. / var bar = obj1.foo()
+//- В остальных случаях используется this по умолчанию (привязка по умолчанию). Если действует режим strict, выбирается undefined, а если нет — глобальный объект: var bar = foo()
+
+//__Игнорирование this
+//null или undefined, эти значения фактически игнорируются, и к вызову применяется правило связывания по умолчанию
+function foo() {
+  console.log(this.a);
+}
+var a = 2;
+foo.call(null); // 2
+
+//__Безопасность при использовании this
+//созданного объекта, который гарантированно не создаст неприятных побочных эффектов в вашей программе
+function foo(a, b) {
+  console.log("a:" + a + ", b:" + b);
+}
+// Пустой DMZ-объект
+var ø = Object.create(null);
+// распределение массива по параметрам
+foo.apply(ø, [2, 3]); // a:2, b:3
+// каррирование вызовом `bind(..)`
+var bar = foo.bind(ø, 2);
+bar(3); // a:2, b:3
+
+//__Косвенные ссылки
+function foo() {
+  console.log(this.a);
+}
+var a = 2;
+var o = { a: 3, foo: foo };
+var p = { a: 4 };
+o.foo(); // 3
+(p.foo = o.foo)(); // 2
+
+//__Лексическое поведение this
+//принимают связывание this от внешней области видимости
+function foo() {
+  // Вернуть стрелочную функцию
+  return (a) => {
+    // `this` здесь лексически наследуется от `foo()`
+    console.log(this.a);
+  };
+}
+var obj1 = {
+  a: 2
+};
+var obj2 = {
+  a: 3
+};
+var bar = foo.call(obj1);
+bar.call(obj2); // 2, не 3!
+
+function foo() {
+  setTimeout(() => {
+    // `this` здесь лексически наследуется от `foo()`
+    console.log(this.a);
+  }, 100);
+}
+var obj = {
+  a: 2
+};
+foo.call(obj); // 2
+
+//До появления ES6 уже существовал довольно распространенный паттерн, который по духу был почти неотличим от стрелочных функций ES6
+function foo() {
+  var self = this; // лексический захват `this`
+  setTimeout(function () {
+    console.log(self.a);
+  }, 100);
+}
+var obj = {
+  a: 2
+};
+foo.call(obj); // 2
+
+//-----------------------------------
+//___________Объекты______________//
+//в двух формах: декларативной (литеральной) и сконструированной.
+
+//__Встроенные объекты
+//String Number Boolean Object Function Array Date RegExp Error
+//Каждая из встроенных функций может использоватьсякак конструктор
+var strPrimitive = "I am a string";
+typeof strPrimitive; // "string"
+strPrimitive instanceof String; // false
+var strObject = new String("I am a string");
+typeof strObject; // "object"
+strObject instanceof String; // true
+// проверка подтипа объекта
+Object.prototype.toString.call(strObject); // [object String]
+
+//язык автоматически преобразует строковый примитив в объект String тогда, когда это необходимо / движок автоматически преобразует его в объект String, чтобы обращение к свойству / методу работало
+var strPrimitive = "I am a string";
+console.log(strPrimitive.length); // 13
+console.log(strPrimitive.charAt(3)); // "m"
+
+//__Оbject
+var myObject = {
+  a: 2
+};
+myObject.a; // 2
+myObject["a"]; // 2
+
+var myObject = {};
+myObject[true] = "foo";
+myObject[3] = "bar";
+myObject[myObject] = "baz";
+myObject["true"]; // "foo"
+myObject["3"]; // "bar"
+myObject["[object Object]"]; // "baz"
+
+//вычисляемые имена свойств
+var prefix = "foo";
+var myObject = {
+  [prefix + "bar"]: "hello",
+  [prefix + "baz"]: "world"
+};
+myObject["foobar"]; // hello
+myObject["foobaz"]; // world
+
+var myObject = {
+  [Symbol.Something]: "hello world"
+};
+
+//функция становится методом не при определении, а во время выполнения
+
+//__Массивы
+var myArray = ["foo", 42, "bar"];
+myArray.length; // 3
+myArray[0]; // "foo"
+myArray[2]; // "bar"
+
+//__Дублирование объектов
+
+//поверхностной копии значение a нового объекта будет копией значения 2
+//Глубокое копирование создаст копии не только myObject, но и anotherObject и anotherArray
+function anotherFunction() { /*..*/ }
+var anotherObject = {
+  c: true
+};
+var anotherArray = [];
+var myObject = {
+  a: 2,
+  b: anotherObject, // ссылка, а не копия!
+  c: anotherArray, // другая ссылка!
+  d: anotherFunction
+};
+anotherArray.push(anotherObject, myObject);
+
+//1
+var newObj = JSON.parse(JSON.stringify(someObj));
+
+//2
+var newObj = Object.assign({}, myObject);
+newObj.a; // 2
+newObj.b === anotherObject; // true
+newObj.c === anotherArray; // true
+newObj.d === anotherFunction; // true
+
+//__Дескрипторы свойств
+//анализировать характеристики свойств на программном уровне
+var myObject = {
+  a: 2
+};
+Object.getOwnPropertyDescriptor(myObject, "a");
+// {
+// value: 2,
+// writable: true,
+// enumerable: true,
+// configurable: true
+// }
+
+var myObject = {};
+Object.defineProperty(myObject, "a", {
+  value: 2,
+  writable: true,
+  configurable: true,
+  enumerable: true
+});
+myObject.a; // 2
+
+//Writable
+//возможность изменения значения свойства
+var myObject = {};
+Object.defineProperty(myObject, "a", {
+  value: 2,
+  writable: false, // запись невозможна!
+  configurable: true,
+  enumerable: true
+});
+myObject.a = 3;
+myObject.a; // 2
+
+//Configurable
+//и свойство допускает настройку
+//переключение configurable в состояние false необратимо
+//:false блокирует возможность использования оператора delete
+var myObject = {
+  a: 2
+};
+myObject.a = 3;
+myObject.a; // 3
+Object.defineProperty(myObject, "a", {
+  value: 4,
+  writable: true,
+  configurable: false, // настройка невозможна!
+  enumerable: true
+});
+myObject.a; // 4
+myObject.a = 5;
+myObject.a; // 5
+Object.defineProperty(myObject, "a", {
+  value: 6,
+  writable: true,
+  configurable: true,
+  enumerable: true
+}); // TypeError
+
+//Enumerable
+//должно ли свойство включаться в перечисления свойств объектов, например, в циклах for..in
+
+//Объектные константы
+//Объединяя writable:false с configurable:false, можно фактически создать константу как свойство объекта
+var myObject = {};
+Object.defineProperty(myObject, "FAVORITE_NUMBER", {
+  value: 42,
+  writable: false,
+  configurable: false
+});
+
+//Запрет расширения
+//запретить возможность добавления новых свойств в объект
+var myObject = {
+  a: 2
+};
+Object.preventExtensions(myObject);
+myObject.b = 3;
+myObject.b; // undefined
+
+//Seal
+//Object.seal(..) создает «запечатанный» объект; функция получает существующий объект и фактически вызывает для негоObject.preventExtensions(..), но также все существующие свойства получают пометку configurable: false.
+
+//Freeze
+//Object.freeze(..) создает «замороженный» объект; функция получает существующий объект и фактически вызывает для негоObject.seal(..), но также все свойства доступа к данным получают пометку writable:false, так что их значения не могут быть изменены.
+
+//___[[Get]]
+//обращения к свойствам
+var myObject = {
+  a: 2
+};
+myObject.b; // undefined
+
+//__Геттеры и сеттеры
+//Геттер — свойства, которые вызывают скрытую функцию для получения нужного значения.Сеттер — свойства,которые вызывают скрытую функцию для присваивания значения.
+var myObject = {
+  // define a getter for `a`
+  get a() {
+    return 2;
+  }
+};
+Object.defineProperty(
+  myObject, // приемник
+  "b", // имя свойства
+  { // дескриптор
+    // определение геттера для `b`
+    get: function () { return this.a * 2 },
+    // чтобы свойство `b` включалось в список свойств объекта
+    enumerable: true
+  }
+);
+myObject.a; // 2
+myObject.b; // 4
+
+var myObject = {
+  // определить геттер для `a`
+  get a() {
+    return this._a_;
+  },
+  // определить сеттер для `a`
+  set a(val) {
+    this._a_ = val * 2;
+  }
+};
+myObject.a = 2;
+myObject.a; // 4
+
+//__Существование
+var myObject = {
+  a: 2
+};
+("a" in myObject); // true
+("b" in myObject); // false
+myObject.hasOwnProperty("a"); // true
+myObject.hasOwnProperty("b"); // false
+
+//__Перечисление
+var myObject = {};
+Object.defineProperty(
+  myObject,
+  "a",
+  // свойство `a` является перечисляемым, как обычно
+  { enumerable: true, value: 2 }
+);
+Object.defineProperty(
+  myObject,
+  "b",
+  // `b` делается неперечисляемым
+  { enumerable: false, value: 3 }
+);
+myObject.propertyIsEnumerable("a"); // true
+myObject.propertyIsEnumerable("b"); // false
+Object.keys(myObject); // ["a"]
+Object.getOwnPropertyNames(myObject); // ["a", "b"]
+
+//__Перебор
+var myArray = [1, 2, 3];
+for (var i = 0; i < myArray.length; i++) {
+  console.log(myArray[i]);
+}
+// 1 2 3
+
+var myArray = [1, 2, 3];
+for (var v of myArray) {
+  console.log(v);
+}
+// 1
+// 2
+// 3
+
+//У массивов имеется встроенная реализация @@iterator
+var myArray = [1, 2, 3];
+var it = myArray[Symbol.iterator]();
+it.next(); // { value:1, done:false }
+it.next(); // { value:2, done:false }
+it.next(); // { value:3, done:false }
+it.next(); // { done:true }
+
+//-----------------------------------
+//________Классы____________//
+
+//Чтобы получить объект, с которым можно взаимодействовать, необходимо создать экземпляр(построить) на основе класса
+//Конструктор класса принадлежит классу, а его имя почти всегдасовпадает с именем класса.Кроме того, конструкторы практически всегда должны вызываться с оператором new, чтобы языковоеядро понимало, что вы хотите сконструировать новый экземпляр класса.
+
+//__Наследование
+//Наследие родителя оказало на него серьезное влияние, однако потомок — вполне неповторимая и самостоятельная личность. Дочерний класс содержит исходную копию поведения родителя, но он может переопределять любое унаследованное поведение и даже определять новые аспекты поведения.
+
+//__Полиморфизм
+//определение метода ... полиморфно изменяется в зависимости от того, к какому классу (уровню наследования) относится экземпляр
+
+//__Множественное наследование
+//Множественное наследование означает, что каждое определение родительского класса копируется в дочерний класс.
+
+//__Примеси
+//явные и неявные
+
+//Явные примеси
+// сильно упрощенный пример `mixin(..)`:
+function mixin(sourceObj, targetObj) {
+  for (var key in sourceObj) {
+    // копировать, если не существует
+    if (!(key in targetObj)) {
+      targetObj[key] = sourceObj[key];
+    }
+  }
+  return targetObj;
+}
+
+var Vehicle = {
+  engines: 1,
+  ignition: function () {
+    console.log("Turning on my engine.");
+  },
+  drive: function () {
+    this.ignition();
+    console.log("Steering and moving forward!");
+  }
+};
+var Car = mixin(Vehicle, {
+  wheels: 4,
+  drive: function () {
+    Vehicle.drive.call(this);
+    console.log(
+      "Rolling on all " + this.wheels + " wheels!"
+    );
+  }
+});
+
+//Неявные примеси
+var Something = {
+  cool: function () {
+    this.greeting = "Hello World";
+    this.count = this.count ? this.count + 1 : 1;
+  }
+};
+Something.cool();
+Something.greeting; // "Hello World"
+Something.count; // 1
+var Another = {
+  cool: function () {
+    // неявная примесь `Something` к `Another`
+    Something.cool.call(this);
+  }
+};
+Another.cool();
+Another.greeting; // "Hello World"
+Another.count; // 1 (не использует общее состояние с `Something`)
+
+//------------------------------------------
+//_________Прототипы______________//
+// [[Prototype]]; в нем хранится обычная ссылка на другой объект
+var anotherObject = {
+  a: 2
+};
+// создать объект, связанный с `anotherObject`
+var myObject = Object.create(anotherObject);
+myObject.a; // 2
+
+//Любая нормальная цепочка [[Prototype]] завершается на встроенном объекте Object.prototype
+//стр  247
