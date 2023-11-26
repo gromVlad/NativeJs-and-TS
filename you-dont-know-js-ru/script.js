@@ -2203,4 +2203,418 @@ var myObject = Object.create(anotherObject);
 myObject.a; // 2
 
 //Любая нормальная цепочка [[Prototype]] завершается на встроенном объекте Object.prototype
-//стр  247
+
+//Будьте очень внимательны при работе с делегированными свойствам,правильный способ anotherObject.a++.
+var anotherObject = {
+  a: 2
+};
+var myObject = Object.create(anotherObject);
+anotherObject.a; // 2
+myObject.a; // 2
+anotherObject.hasOwnProperty("a"); // true
+myObject.hasOwnProperty("a"); // false
+myObject.a++; // неявное замещение!
+anotherObject.a; // 2
+myObject.a; // 3
+myObject.hasOwnProperty("a"); // true
+
+//__Конструкторы
+function Foo() {
+  // ...
+}
+var a = new Foo();
+
+function Foo() {
+  // ...
+}
+Foo.prototype.constructor === Foo; // true
+var a = new Foo();
+a.constructor === Foo; // true
+
+//каждый из объектов a и b получает внутреннюю ссылку  [[Prototype]] 
+function Foo(name) {
+  this.name = name;
+}
+Foo.prototype.myName = function () {
+  return this.name;
+};
+var a = new Foo("a");
+var b = new Foo("b");
+a.myName(); // "a"
+b.myName(); // "b"
+
+//__Наследование (на основе прототипов)
+//механизм[[Prototype]] основан на внутренней ссылке, которая существует в одном объекте и указывает на другой объект
+
+//свойство .constructor объекта указывает по умолчаниюна функцию, которая взаимно содержит ссылку на этот объект — ссылку, которая называется.prototype.
+
+function Foo(name) {
+  this.name = name;
+}
+Foo.prototype.myName = function () {
+  return this.name;
+};
+function Bar(name, label) {
+  Foo.call(this, name);
+  this.label = label;
+}
+// здесь мы создаем новый объект `Bar.prototype`,
+// связанный с `Foo.prototype`
+Bar.prototype = Object.create(Foo.prototype);
+// Внимание! Значение `Bar.prototype.constructor` исчезает.
+// Возможно, вам придется вручную "исправить" его, если
+// вы привыкли полагаться на такие свойства!
+Bar.prototype.myLabel = function () {
+  return this.label;
+};
+var a = new Bar("a", "obj a");
+a.myName(); // "a"
+a.myLabel(); // "obj a"
+
+//Сравним стандартные методы связывания Bar.prototype с Foo. prototype до ES6 и в ES6:
+// до ES6
+// теряет существующий объект `Bar.prototype` по умолчанию
+Bar.prototype = Object.create(Foo.prototype);
+// ES6+
+// изменяет существующий объект `Bar.prototype`
+Object.setPrototypeOf(Bar.prototype, Foo.prototype);
+
+//подход к анализу связей [[Prototype]] выглядит так
+Foo.prototype.isPrototypeOf(a); // true
+
+//напоминает вызов a.__proto__() (вызов getфункции)
+a.__proto__
+
+//Object.create(..) создает новый объект (bar), связанный с заданным объектом (foo)
+var foo = {
+  something: function () {
+    console.log("Tell me something good...");
+  }
+};
+var bar = Object.create(foo);
+bar.something(); // Tell me something good...
+
+//можно спроектировать так, чтобы он был менее «волшебным», но при этом использовал всю мощь связывания [[Prototype]]
+var anotherObject = {
+  cool: function () {
+    console.log("cool!");
+  }
+};
+var myObject = Object.create(anotherObject);
+myObject.doCool = function () {
+  this.cool(); // внутреннее делегирование!
+};
+myObject.doCool(); // "cool!"
+
+//__Сравнение моделей мышления
+
+//1) В первом фрагменте используется классический стиль
+function Foo(who) {
+  this.me = who;
+}
+Foo.prototype.identify = function () {
+  return "I am " + this.me;
+};
+function Bar(who) {
+  Foo.call(this, who);
+}
+Bar.prototype = Object.create(Foo.prototype);
+Bar.prototype.speak = function () {
+  alert("Hello, " + this.identify() + ".");
+};
+var b1 = new Bar("b1");
+var b2 = new Bar("b2");
+b1.speak();
+b2.speak();
+
+//2) абсолютно ту же функциональность кодом в стиле делегирование
+//все происходящее сильно упрощается,потому что на этот раз мы просто настраиваем связи между объектами без всей запутанной шелухи, которая пытается походить на классы(но не обладает их поведением) с конструкторами, прототипами и вызовами new.
+Foo = {
+  init: function (who) {
+    this.me = who;
+  },
+  identify: function () {
+    return "I am " + this.me;
+  }
+};
+Bar = Object.create(Foo);
+Bar.speak = function () {
+  alert("Hello, " + this.identify() + ".");
+}
+var b1 = Object.create(Bar);
+b1.init("b1");
+var b2 = Object.create(Bar);
+b2.init("b2");
+b1.speak();
+b2.speak();
+
+//__«Классы» виджетов
+// Родительский класс
+
+//классическую архитектуру «классов» на чистом JS
+function Widget(width, height) {
+  this.width = width || 50;
+  this.height = height || 50;
+  this.$elem = null;
+}
+Widget.prototype.render = function ($where) {
+  if (this.$elem) {
+    this.$elem.css({
+      width: this.width + "px",
+      height: this.height + "px"
+    }).appendTo($where);
+  }
+};
+// дочерний класс
+function Button(width, height, label) {
+  // "super" constructor call
+  Widget.call(this, width, height);
+  this.label = label || "Default";
+  this.$elem = $("<button>").text(this.label);
+}
+// Заставить `Button` "наследовать" от `Widget`
+Button.prototype = Object.create(Widget.prototype);
+// переопределить базовую "унаследованную" версию `render(..)`
+Button.prototype.render = function ($where) {
+  // вызов "super"
+  Widget.prototype.render.call(this, $where);
+  this.$elem.click(this.onClick.bind(this));
+};
+
+Button.prototype.onClick = function (evt) {
+  console.log("Button '" + this.label + "' clicked!");
+};
+$(document).ready(function () {
+  var $body = $(document.body);
+  var btn1 = new Button(125, 30, "Hello");
+  var btn2 = new Button(150, 40, "World");
+  btn1.render($body);
+  btn2.render($body);
+});
+
+//Классы в ES6
+class Widget {
+  constructor(width, height) {
+    this.width = width || 50;
+    this.height = height || 50;
+    this.$elem = null;
+  }
+  render($where) {
+    if (this.$elem) {
+      this.$elem.css({
+        width: this.width + "px",
+        height: this.height + "px"
+      }).appendTo($where);
+    }
+  }
+}
+class Button extends Widget {
+  constructor(width, height, label) {
+    super(width, height);
+    this.label = label || "Default";
+    this.$elem = $("<button>").text(this.label);
+  }
+  render($where) {
+    super($where);
+    this.$elem.click(this.onClick.bind(this));
+  }
+  onClick(evt) {
+    console.log("Button ‘" + this.label + "’ clicked!");
+  }
+}
+$(document).ready(function () {
+  var $body = $(document.body);
+  var btn1 = new Button(125, 30, "Hello");
+  var btn2 = new Button(150, 40, "World");
+  btn1.render($body);
+  btn2.render($body);
+});
+
+//Делегирование 
+var Widget = {
+  init: function (width, height) {
+    this.width = width || 50;
+    this.height = height || 50;
+    this.$elem = null;
+  },
+  insert: function ($where) {
+    if (this.$elem) {
+      this.$elem.css({
+        width: this.width + "px",
+        height: this.height + "px"
+      }).appendTo($where);
+    }
+  }
+};
+
+var Button = Object.create(Widget);
+Button.setup = function (width, height, label) {
+  // делегированный вызов
+  this.init(width, height);
+  this.label = label || "Default";
+  this.$elem = $("<button>").text(this.label);
+};
+Button.build = function ($where) {
+  // делегированный вызов
+  this.insert($where);
+  this.$elem.click(this.onClick.bind(this));
+};
+Button.onClick = function (evt) {
+  console.log("Button '" + this.label + "' clicked!");
+};
+$(document).ready(function () {
+  var $body = $(document.body);
+  var btn1 = Object.create(Button);
+  btn1.setup(125, 30, "Hello");
+  var btn2 = Object.create(Button);
+  btn2.setup(150, 40, "World");
+  btn1.build($body);
+  btn2.build($body);
+});
+
+//__различие классов и делигирование(OLOO)
+
+//классы
+class Foo {
+  methodName() { /* .. */ }
+}
+
+// делигирование - удобный синтаксис объектных литералов с компактными методами!
+var AuthController = {
+  errors: [],
+  checkAuth() {
+    // ...
+  },
+  server(url, data) {
+    // ...
+  }
+  // ...
+};
+// ТЕПЕРЬ `AuthController` связывается для делегирования
+`LoginController`
+Object.setPrototypeOf(AuthController, LoginController);
+
+//--------------------------------------
+//--------------------------------------
+//_____ТИПЬI & ГРАММАТИЧЕСКИЕ КОНСТРУКЦИИ____//
+
+//Встроенные типы 
+//null undefined boolean number string object symbol - добавлен в ES6! 
+
+typeof undefined ==== "undefined"; // true
+typeof true ===  "boolean"; // true
+typeof 42 === "number"; // true
+typeof "42" === "string"; // true
+typeof { life: 42 } === "object"; // true
+//Добавлен в ЕSб!
+typeof Symbol() === "symbol"; // true
+
+//Null - единственное примитивное значение, которое является «ложным»
+var а = null;
+(!а && typeof а === "object"); // true 
+typeof [1, 2, З] === "object"; // true 
+
+//у переменных нет типов  типы есть только у значений
+
+//__undefined и необъявленные переменные 
+var а;
+typeof а; //undefтув
+
+
+//__Значения
+
+//Массивы 
+var а = [1, "2", [3]];
+a.length;//3
+а[0] === 1;//true
+а[2][0] === 3;//true
+
+//Будьте внимательны с созданием «разреженных» массивов (в которых остаются или создаются пустые/отсутствующие элементы)
+
+//добавлять строковые ключи/свойства к массивам не рекомендуется. 
+a["foobar"] = 2; 
+
+//Подобие массивов 
+//списки элементов DOM / arguments в функции
+
+//__Строки
+//CтpoкиjavaScript неизменяемы, тогда как массивы вполне могут изменяться(мутировать)
+
+//__Числа 
+var а = 0.42;
+var Ь =  .42;
+
+0.1 + 0.2 === 0.3; // false / 0,30000000000000004
+
+//Проверка целых чисел 
+Number.isinteger(42); // true
+Number.isinteger(42.000); // true
+Number.isinteger(42.3); // false 
+//является ли значение безопасным целым число
+Number.isSafeinteger(Number.MAX_SAFE_INTEGER);// true 
+Number.isSafeinteger(Math.pow(2, 53));// false
+Number.isSafeinteger(Math.pow(2, 53) - 1);// true 
+
+//Пустые значения
+//пull - пустое значение; 
+//uпdefiпed - отсутствующее значение.
+
+//__Оператор void 
+//Выражение void стирает любое значение так что результат выражения всегда явл. неопределенным
+var а = 42;
+console.log(void а, а); // undefined 42
+
+function doSomething() {
+  // примечание: 'APP.ready· предоставляется приложением
+  if (!APP.ready) {
+    //попробовать позднее
+    return void setTimeout(doSomething, 100);
+  }
+  var result;
+  //заняться чем - то другим
+  return result;
+}
+//получилось с первой попытки ?
+if (doSomething()) {
+  //заняться другими задачами
+} 
+
+//__NaN 
+//(Not А Number)
+
+var Ь = "foo";
+//ошибка при использовании isNaN
+window.isNaN(b) // true ...
+
+//использовать Number. isNaN( .. ).
+
+//__Бесконечности
+var а = 1 / 0; // Infinity
+var Ь  = 1 / 0; // -Infinity
+
+//__нули
+function isNegZero(n) {
+  n = Number(n);
+  return (n === 0) && (1 / n)
+}
+isNegZero(-0); // true
+isNegZero(0 / -3);// true
+isNegZero(0);// false 
+
+//__Специальное равенство
+//Obj ect. is () - использоваться для проверки двух значений на абсолютное равенство
+
+//__Значения и ссылки 
+var а = 2
+var Ь = a
+Ь++;
+а; // 2
+Ь; // 3
+
+//объекты всегда создают копию ссылки
+var с = [1, 2, 3];
+var d = с; // 'd' - ссылка на общее значение '[1,2,3]'
+d.push(4);
+с; // [1,2,3,4]
+d; // [1,2,3,4]
+
