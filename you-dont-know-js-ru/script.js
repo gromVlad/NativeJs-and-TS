@@ -2328,4 +2328,376 @@ var a = new Foo("a");
 var b = new Foo("b");
 a.myName(); // "a"
 b.myName(); // "b"
-//260
+
+//__снова о «конструкторе»
+//свойство .constructor объекта Foo.prototype присутствует по умолчанию только у объекта, созданного при объявлении функции Foo.
+function Foo() { /* .. */ }
+Foo.prototype = { /* .. */ }; // создание нового объекта
+prototype
+var a1 = new Foo();
+a1.constructor === Foo; // false!
+a1.constructor === Object; // true! / делегирование продолжается и доходит до Object.prototype
+
+//__Наследование (на основе прототипов)
+function Foo(name) {
+  this.name = name;
+}
+Foo.prototype.myName = function () {
+  return this.name;
+};
+function Bar(name, label) {
+  Foo.call(this, name);
+  this.label = label;
+}
+
+// здесь мы создаем новый объект `Bar.prototype`,
+// связанный с `Foo.prototype`
+//делает Bar.prototype ещеодной ссылкой на Foo.prototype
+Bar.prototype = Object.create(Foo.prototype);
+// Внимание! Значение `Bar.prototype.constructor` исчезает.
+// Возможно, вам придется вручную "исправить" его, если вы привыкли полагаться на такие свойства!
+
+Bar.prototype.myLabel = function () {
+  return this.label;
+};
+var a = new Bar("a", "obj a");
+a.myName(); // "a"
+a.myLabel(); // "obj a"
+
+//
+//Сравним стандартные методы связывания Bar.prototype с Foo. prototype до ES6 и в ES6:
+// до ES6
+// теряет существующий объект `Bar.prototype` по умолчанию
+Bar.prototype = Object.create(Foo.prototype);
+// ES6+
+// изменяет существующий объект `Bar.prototype`
+Object.setPrototypeOf(Bar.prototype, Foo.prototype);
+
+//__Анализ связей «классов»
+function Foo() {
+  // ...
+}
+
+Foo.prototype.blah = ""
+
+var a = new Foo();
+
+a instanceof Foo; // true
+
+//более элегантный подход
+Foo.prototype.isPrototypeOf(a); // true
+
+// Встречается ли b где-то в цепочке
+// [[Prototype]] объекта c?
+b.isPrototypeOf(c);
+
+Object.getPrototypeOf(a) === Foo.prototype; // true
+
+//Таким образом, когда мы обращаемся (получаем значение) a.__proto__, это скорее напоминает вызов a.__proto__()(вызов getфункции).
+a.__proto__ === Foo.prototype; // true
+
+//__Создание связей вызовом Create()
+//Object.create(..) создает новый объект (bar), связанный с заданным объектом (foo). Таким образом, вы получаете всю мощьмеханизма[[Prototype]](делегирование), но без функций new, моделирующих классы, вызовов конструкторов, непонятныхссылок.prototype и.constructor, а также прочих ненужных сложностей.
+var foo = {
+  something: function () {
+    console.log("Tell me something good...");
+  }
+};
+
+var bar = Object.create(foo);
+
+bar.something(); // Tell me something good...
+
+//полифил для Object.create(..)
+function createAndLinkObject(o) {
+  function F() { }
+  F.prototype = o;
+  return new F();
+}
+
+var anotherObject = {
+  a: 2
+};
+
+var myObject = createAndLinkObject(anotherObject);
+myObject.a; // 2
+
+//можно спроектировать так, чтобы он был менее «волшебным»
+var anotherObject = {
+  cool: function () {
+    console.log("cool!");
+  }
+};
+
+var myObject = Object.create(anotherObject);
+
+myObject.doCool = function () {
+  this.cool(); // внутреннее делегирование!
+};
+
+myObject.doCool(); // "cool!"
+
+//__Делегирование поведения
+//вся суть механизма , заключается в связях одних объектов с другими объектам
+//я называю такой стиль программирования OLOO
+//Вместо того чтобы мысленновыстраивать объекты по вертикали(от верхних родителей к нижним потомкам), представьте себе объекты как расположенныерядом друг с другом на одном уровне; связи делегирования проходят между объектами в любом направлении так, как вам потребуется.
+
+//__Сравнение моделей мышления
+//(ОО против OLOO)
+
+//ОО-стиль
+function Foo(who) {
+  this.me = who;
+}
+
+Foo.prototype.identify = function () {
+  return "I am " + this.me;
+};
+
+function Bar(who) {
+  Foo.call(this, who);
+}
+
+Bar.prototype = Object.create(Foo.prototype);
+
+Bar.prototype.speak = function () {
+  alert("Hello, " + this.identify() + ".");
+};
+
+var b1 = new Bar("b1");
+var b2 = new Bar("b2");
+b1.speak();
+b2.speak();
+
+//в стиле OLOO
+//мы просто настраиваем связи между объектами без всей запутанной шелухи
+Foo = {
+  init: function (who) {
+    this.me = who;
+  },
+  identify: function () {
+    return "I am " + this.me;
+  }
+};
+
+Bar = Object.create(Foo);
+
+Bar.speak = function () {
+  alert("Hello, " + this.identify() + ".");
+};
+
+var b1 = Object.create(Bar);
+b1.init("b1");
+var b2 = Object.create(Bar);
+b2.init("b2");
+b1.speak();
+b2.speak();
+
+//__Классы и объекты
+//классическую архитектуру «классов» на чистом JS
+// Родительский класс
+function Widget(width, height) {
+  this.width = width || 50;
+  this.height = height || 50;
+  this.$elem = null;
+}
+
+Widget.prototype.render = function ($where) {
+  if (this.$elem) {
+    this.$elem.css({
+      width: this.width + "px",
+      height: this.height + "px"
+    }).appendTo($where);
+  }
+};
+
+// дочерний класс
+function Button(width, height, label) {
+  // "super" constructor call
+  Widget.call(this, width, height);
+  this.label = label || "Default";
+  this.$elem = $("<button>").text(this.label);
+}
+
+// Заставить `Button` "наследовать" от `Widget`
+Button.prototype = Object.create(Widget.prototype);
+
+// переопределить базовую "унаследованную" версию `render(..)`
+Button.prototype.render = function ($where) {
+  // вызов "super"
+  Widget.prototype.render.call(this, $where);
+  this.$elem.click(this.onClick.bind(this));
+};
+
+Button.prototype.onClick = function (evt) {
+  console.log("Button '" + this.label + "' clicked!");
+};
+
+$(document).ready(function () {
+  var $body = $(document.body);
+  var btn1 = new Button(125, 30, "Hello");
+  var btn2 = new Button(150, 40, "World");
+  btn1.render($body);
+  btn2.render($body);
+});
+
+//Классы в ES6
+class Widget {
+  constructor(width, height) {
+    this.width = width || 50;
+    this.height = height || 50;
+    this.$elem = null;
+  }
+  render($where) {
+    if (this.$elem) {
+      this.$elem.css({
+        width: this.width + "px",
+        height: this.height + "px"
+      }).appendTo($where);
+    }
+  }
+}
+
+class Button extends Widget {
+  constructor(width, height, label) {
+    super(width, height);
+    this.label = label || "Default";
+    this.$elem = $("<button>").text(this.label);
+  }
+  render($where) {
+    super($where);
+    this.$elem.click(this.onClick.bind(this));
+  }
+  onClick(evt) {
+    console.log("Button ‘" + this.label + "’ clicked!");
+  }
+}
+
+$(document).ready(function () {
+  var $body = $(document.body);
+  var btn1 = new Button(125, 30, "Hello");
+  var btn2 = new Button(150, 40, "World");
+  btn1.render($body);
+  btn2.render($body);
+});
+
+//с использованием делегирования в стиле OLOO
+var Widget = {
+  init: function (width, height) {
+    this.width = width || 50;
+    this.height = height || 50;
+    this.$elem = null;
+  },
+  insert: function ($where) {
+    if (this.$elem) {
+      this.$elem.css({
+        width: this.width + "px",
+        height: this.height + "px"
+      }).appendTo($where);
+    }
+  }
+}
+
+var Button = Object.create(Widget);
+
+Button.setup = function (width, height, label) {
+  // делегированный вызов
+  this.init(width, height);
+  this.label = label || "Default";
+  this.$elem = $("<button>").text(this.label);
+};
+
+Button.build = function ($where) {
+  // делегированный вызов
+  this.insert($where);
+  this.$elem.click(this.onClick.bind(this));
+};
+
+Button.onClick = function (evt) {
+  console.log("Button '" + this.label + "' clicked!");
+};
+
+$(document).ready(function () {
+  var $body = $(document.body);
+  var btn1 = Object.create(Button);
+  btn1.setup(125, 30, "Hello");
+  var btn2 = Object.create(Button);
+  btn2.setup(150, 40, "World");
+  btn1.build($body);
+  btn2.build($body);
+});
+
+//__Более приятный синтаксис
+//сокращенный синтаксис объявления методов классо
+
+//class в ES6
+class Foo {
+  methodName() { /* .. */ }
+}
+
+// OLOO
+var LoginController = {
+  errors: [],
+  getUser() { // Смотрите, здесь нет `function`!
+    // ...
+  },
+  getPassword() {
+    // ...
+  },
+  // или такой подход
+  bar: function (x) {
+    if (x < 10) {
+      return Foo.bar(x * 2);
+    }
+    return x;
+  },
+};
+
+//__Интроспекция
+//для получения информации о структуре/возможностях объекта на основании того, как он был создан
+function Foo() {
+  // ...
+}
+Foo.prototype.something = function () {
+  // ...
+}
+var a1 = new Foo();
+
+// он просто сообщает, связаны ли ...
+if (a1 instanceof Foo) {
+  a1.something();
+}
+
+// связывание `Foo` и `Bar` друг с другом
+Bar.prototype instanceof Foo; // true
+
+Object.getPrototypeOf(Bar.prototype)
+  === Foo.prototype; // true
+
+Foo.prototype.isPrototypeOf(Bar.prototype); // true
+
+// связывание `b1` с `Foo` и `Bar`
+b1 instanceof Foo; // true
+b1 instanceof Bar; // true
+
+Object.getPrototypeOf(b1) === Bar.prototype; // true
+
+Foo.prototype.isPrototypeOf(b1); // true
+Bar.prototype.isPrototypeOf(b1); // true
+
+//к коду в стиле OLOO
+var Foo = { /* .. */ };
+var Bar = Object.create(Foo);
+//Bar...
+var b1 = Object.create(Bar);
+
+Foo.isPrototypeOf(Bar); // true
+
+Object.getPrototypeOf(Bar) === Foo; // true
+
+// связывание `b1` с `Foo` и `Bar`
+Foo.isPrototypeOf(b1); // true
+Bar.isPrototypeOf(b1); // true
+
+Object.getPrototypeOf(b1) === Bar; // true
+
