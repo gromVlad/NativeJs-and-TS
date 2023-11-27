@@ -1860,13 +1860,24 @@ var obj = {
 };
 foo.call(obj); // 2
 
-//-----------------------------------
-//___________Объекты______________//
-//в двух формах: декларативной (литеральной) и сконструированной.
+//---------------------------------
+//___________Объекты____________//
+//Объекты существуют в двух формах: декларативной (литеральной) и сконструированной.
 
-//__Встроенные объекты
+//Литеральный синтаксис 
+var myObj = {
+  key: value
+  // ...
+};
+
+//Сконструированная
+var myObj = new Object();
+myObj.key = value;
+
+//__Тип
+//Объекты — общие структурные элементы 6 основных типов
 //String Number Boolean Object Function Array Date RegExp Error
-//Каждая из встроенных функций может использоватьсякак конструктор
+//представляют собой встроенные функции,вызов функции с оператором new
 var strPrimitive = "I am a string";
 typeof strPrimitive; // "string"
 strPrimitive instanceof String; // false
@@ -1874,27 +1885,18 @@ var strObject = new String("I am a string");
 typeof strObject; // "object"
 strObject instanceof String; // true
 // проверка подтипа объекта
-Object.prototype.toString.call(strObject); // [object String]
+Object.prototype.toString.call(strObject); // [object String] / был создан конструктором String
 
-//язык автоматически преобразует строковый примитив в объект String тогда, когда это необходимо / движок автоматически преобразует его в объект String, чтобы обращение к свойству / методу работало
+//язык автоматически преобразует строковый примитивв объект String тогда, когда это необходимо
 var strPrimitive = "I am a string";
 console.log(strPrimitive.length); // 13
-console.log(strPrimitive.charAt(3)); // "m"
 
-//__Оbject
+//Способ хранения значений / . или оператор []
 var myObject = {
   a: 2
 };
 myObject.a; // 2
 myObject["a"]; // 2
-
-var myObject = {};
-myObject[true] = "foo";
-myObject[3] = "bar";
-myObject[myObject] = "baz";
-myObject["true"]; // "foo"
-myObject["3"]; // "bar"
-myObject["[object Object]"]; // "baz"
 
 //вычисляемые имена свойств
 var prefix = "foo";
@@ -1905,13 +1907,18 @@ var myObject = {
 myObject["foobar"]; // hello
 myObject["foobaz"]; // world
 
+//Свойства и методы
+//функция становится методом не приопределении, а во время выполнения только для конкретного вызова в зависимости от того, как именно она вызывается
 var myObject = {
-  [Symbol.Something]: "hello world"
+  foo: function foo() {
+    console.log("foo");
+  }
 };
-
-//функция становится методом не при определении, а во время выполнения
+var someFoo = myObject.foo;
+someFoo; // function foo(){..}
 
 //__Массивы
+//рассчитаны на числовое индексирование
 var myArray = ["foo", 42, "bar"];
 myArray.length; // 3
 myArray[0]; // "foo"
@@ -1919,7 +1926,7 @@ myArray[2]; // "bar"
 
 //__Дублирование объектов
 
-//поверхностной копии значение a нового объекта будет копией значения 2
+//У поверхностной копии значение a нового объекта будет копией значения 2, но свойства b, c и d будут всего лишь ссылками на те же области памяти
 //Глубокое копирование создаст копии не только myObject, но и anotherObject и anotherArray
 function anotherFunction() { /*..*/ }
 var anotherObject = {
@@ -1934,10 +1941,9 @@ var myObject = {
 };
 anotherArray.push(anotherObject, myObject);
 
-//1
-var newObj = JSON.parse(JSON.stringify(someObj));
+var newObj = JSON.parse( JSON.stringify( someObj ) );
 
-//2
+//поверхностное копирование - > Object.assign(..) - в первом параметре объект-приемник, а в остальных параметрах — один или несколько объектов - источников
 var newObj = Object.assign({}, myObject);
 newObj.a; // 2
 newObj.b === anotherObject; // true
@@ -1945,7 +1951,6 @@ newObj.c === anotherArray; // true
 newObj.d === anotherFunction; // true
 
 //__Дескрипторы свойств
-//анализировать характеристики свойств на программном уровне
 var myObject = {
   a: 2
 };
@@ -1956,7 +1961,9 @@ Object.getOwnPropertyDescriptor(myObject, "a");
 // enumerable: true,
 // configurable: true
 // }
+//writable (возможность записи), enumerable(перечисляемость) и configurable(возможность настройки)
 
+// Object.defineProperty(..) для добавления нового свойства или изменения существующего свойства
 var myObject = {};
 Object.defineProperty(myObject, "a", {
   value: 2,
@@ -1967,7 +1974,7 @@ Object.defineProperty(myObject, "a", {
 myObject.a; // 2
 
 //Writable
-//возможность изменения значения свойства
+//writable определяет возможность изменения
 var myObject = {};
 Object.defineProperty(myObject, "a", {
   value: 2,
@@ -1979,14 +1986,14 @@ myObject.a = 3;
 myObject.a; // 2
 
 //Configurable
-//и свойство допускает настройку
-//переключение configurable в состояние false необратимо
-//:false блокирует возможность использования оператора delete
+//допускает настройку
+//блокирует возможность использования оператора delete
 var myObject = {
   a: 2
 };
 myObject.a = 3;
 myObject.a; // 3
+
 Object.defineProperty(myObject, "a", {
   value: 4,
   writable: true,
@@ -1996,6 +2003,7 @@ Object.defineProperty(myObject, "a", {
 myObject.a; // 4
 myObject.a = 5;
 myObject.a; // 5
+
 Object.defineProperty(myObject, "a", {
   value: 6,
   writable: true,
@@ -2004,10 +2012,10 @@ Object.defineProperty(myObject, "a", {
 }); // TypeError
 
 //Enumerable
-//должно ли свойство включаться в перечисления свойств объектов, например, в циклах for..in
+//должно ли свойство включаться в перечисления свойств объектов
 
-//Объектные константы
-//Объединяя writable:false с configurable:false, можно фактически создать константу как свойство объекта
+//Неизменяемость
+//Объединяя writable:false с configurable:false, можно фактически создать константу
 var myObject = {};
 Object.defineProperty(myObject, "FAVORITE_NUMBER", {
   value: 42,
@@ -2016,7 +2024,6 @@ Object.defineProperty(myObject, "FAVORITE_NUMBER", {
 });
 
 //Запрет расширения
-//запретить возможность добавления новых свойств в объект
 var myObject = {
   a: 2
 };
@@ -2025,39 +2032,20 @@ myObject.b = 3;
 myObject.b; // undefined
 
 //Seal
-//Object.seal(..) создает «запечатанный» объект; функция получает существующий объект и фактически вызывает для негоObject.preventExtensions(..), но также все существующие свойства получают пометку configurable: false.
+//Object.seal(..) - все существующие свойства получают пометку configurable:false
 
 //Freeze
-//Object.freeze(..) создает «замороженный» объект; функция получает существующий объект и фактически вызывает для негоObject.seal(..), но также все свойства доступа к данным получают пометку writable:false, так что их значения не могут быть изменены.
+//Object.freeze(..) самая высокая степень неизменяемости 
 
-//___[[Get]]
-//обращения к свойствам
+//__[[Get]]
 var myObject = {
   a: 2
 };
-myObject.b; // undefined
+myObject.b; // undefined /  если ей не удается каким - либо образом получить значение
 
 //__Геттеры и сеттеры
-//Геттер — свойства, которые вызывают скрытую функцию для получения нужного значения.Сеттер — свойства,которые вызывают скрытую функцию для присваивания значения.
-var myObject = {
-  // define a getter for `a`
-  get a() {
-    return 2;
-  }
-};
-Object.defineProperty(
-  myObject, // приемник
-  "b", // имя свойства
-  { // дескриптор
-    // определение геттера для `b`
-    get: function () { return this.a * 2 },
-    // чтобы свойство `b` включалось в список свойств объекта
-    enumerable: true
-  }
-);
-myObject.a; // 2
-myObject.b; // 4
-
+//Геттер — свойства, которые вызывают скрытую функцию для получения нужного значения.Сеттер — свойства, которые вызывают скрытую функцию для присваивания значения.
+// Имя _a_ выбрано в данном примере исключительно по общепринятой схеме; оно не несет никакой информации о поведении — это обычное свойство, как и любое другое.
 var myObject = {
   // определить геттер для `a`
   get a() {
@@ -2075,25 +2063,33 @@ myObject.a; // 4
 var myObject = {
   a: 2
 };
+
+//обхода цепочки [[Prototype]] / существование свойства
 ("a" in myObject); // true
 ("b" in myObject); // false
-myObject.hasOwnProperty("a"); // true
-myObject.hasOwnProperty("b"); // false
+
+//не обращается к цепочке [[Prototype]]
+myObject.hasOwnProperty("a"); // true 
+myObject.hasOwnProperty("b"); // false / 
 
 //__Перечисление
 var myObject = {};
 Object.defineProperty(
   myObject,
   "a",
-  // свойство `a` является перечисляемым, как обычно
+  // разрешить для `a` перечисление, как обычно
   { enumerable: true, value: 2 }
 );
 Object.defineProperty(
   myObject,
   "b",
-  // `b` делается неперечисляемым
+  // ЗАПРЕТИТЬ для `b` перечисление
   { enumerable: false, value: 3 }
 );
+
+//Циклы for..in рекомендуется использовать только с объектами
+
+//различения перечисляемых и неперечисляемых свойств / enumerable:true + существует ли свойство 
 myObject.propertyIsEnumerable("a"); // true
 myObject.propertyIsEnumerable("b"); // false
 Object.keys(myObject); // ["a"]
@@ -2105,6 +2101,8 @@ for (var i = 0; i < myArray.length; i++) {
   console.log(myArray[i]);
 }
 // 1 2 3
+
+//forEach(..) every(..) some(..)
 
 var myArray = [1, 2, 3];
 for (var v of myArray) {
@@ -2122,25 +2120,67 @@ it.next(); // { value:2, done:false }
 it.next(); // { value:3, done:false }
 it.next(); // { done:true }
 
-//-----------------------------------
-//________Классы____________//
+var myObject = {
+  a: 2,
+  b: 3
+};
 
-//Чтобы получить объект, с которым можно взаимодействовать, необходимо создать экземпляр(построить) на основе класса
-//Конструктор класса принадлежит классу, а его имя почти всегдасовпадает с именем класса.Кроме того, конструкторы практически всегда должны вызываться с оператором new, чтобы языковоеядро понимало, что вы хотите сконструировать новый экземпляр класса.
+var myObject = {
+  a: 2,
+  b: 3
+};
+
+// собственную реализацию @@iterator по умолчанию для любого объекта
+Object.defineProperty(myObject, Symbol.iterator, {
+  enumerable: false,
+  writable: false,
+  configurable: true,
+  value: function () {
+    var o = this;
+    var idx = 0;
+    var ks = Object.keys(o);
+    return {
+      next: function () {
+        return {
+          value: o[ks[idx++]],
+          done: (idx > ks.length)
+        };
+      }
+    };
+  }
+});
+// ручной перебор `myObject`
+var it = myObject[Symbol.iterator]();
+it.next(); // { value:2, done:false }
+it.next(); // { value:3, done:false }
+it.next(); // { value:undefined, done:true }
+// перебор `myObject` в `for..of`
+for (var v of myObject) {
+  console.log(v);
+}
+// 2
+// 3
+
+//---------------------------------
+//___________Классы______________//
+//Класс — тот же план. Чтобы получить объект, с которым можно взаимодействовать, необходимо создать экземпляр
+
+//__Конструктор
+//Экземпляры классов конструируются специальным методом класса, имя которого обычно совпадает с именем класса.Этот метод называется конструктором
 
 //__Наследование
-//Наследие родителя оказало на него серьезное влияние, однако потомок — вполне неповторимая и самостоятельная личность. Дочерний класс содержит исходную копию поведения родителя, но он может переопределять любое унаследованное поведение и даже определять новые аспекты поведения.
+//Дочерний класс содержит исходную копию поведения родителя, но он может переопределять любое унаследованное поведение и даже определять новые аспекты поведения
 
 //__Полиморфизм
-//определение метода ... полиморфно изменяется в зависимости от того, к какому классу (уровню наследования) относится экземпляр
+//что любой метод может обратиться к другому методу на более высоком уровне иерархии наследовани
 
 //__Множественное наследование
-//Множественное наследование означает, что каждое определение родительского класса копируется в дочерний класс.
+//каждое определение родительского класса копируется в дочерний класс
 
 //__Примеси
-//явные и неявные
 
 //Явные примеси
+//Такая функция во многих библиотеках/фреймворках часто называется extend(..)
 // сильно упрощенный пример `mixin(..)`:
 function mixin(sourceObj, targetObj) {
   for (var key in sourceObj) {
@@ -2152,27 +2192,46 @@ function mixin(sourceObj, targetObj) {
   return targetObj;
 }
 
-var Vehicle = {
-  engines: 1,
-  ignition: function () {
-    console.log("Turning on my engine.");
-  },
-  drive: function () {
-    this.ignition();
-    console.log("Steering and moving forward!");
-  }
+//Паразитическое наследование
+//Разновидность паттерна явной примеси — явная в одних отношениях и неявная в других — называется «паразитным наследованием»
+// "Традиционный класс JS" `Vehicle`
+function Vehicle() {
+  this.engines = 1;
+}
+Vehicle.prototype.ignition = function () {
+  console.log("Turning on my engine.");
 };
-var Car = mixin(Vehicle, {
-  wheels: 4,
-  drive: function () {
-    Vehicle.drive.call(this);
+Vehicle.prototype.drive = function () {
+  this.ignition();
+  console.log("Steering and moving forward!");
+};
+
+// "Паразитический класс" `Car`
+function Car() {
+ // сначала `car` является `Vehicle`
+  var car = new Vehicle();
+  // изменить `car` для создания специализации
+  car.wheels = 4;
+  // сохранить привилегированную ссылку на `Vehicle::drive()`
+  var vehDrive = car.drive;
+  // переопределить `Vehicle::drive()`
+  car.drive = function () {
+    vehDrive.call(this);
     console.log(
       "Rolling on all " + this.wheels + " wheels!"
     );
+    return car;
   }
-});
+}
+  var myCar = new Car();
+  myCar.drive();
+
+// Turning on my engine.
+// Steering and moving forward!
+// Rolling on all 4 wheels!
 
 //Неявные примеси
+//лучше избегать
 var Something = {
   cool: function () {
     this.greeting = "Hello World";
@@ -2192,9 +2251,10 @@ Another.cool();
 Another.greeting; // "Hello World"
 Another.count; // 1 (не использует общее состояние с `Something`)
 
-//------------------------------------------
-//_________Прототипы______________//
-// [[Prototype]]; в нем хранится обычная ссылка на другой объект
+//-------------------------------
+//________Прототипы_____________//
+//внутреннее свойство  [[Prototype]]
+//Если операция [[Get]] по умолчанию не может найти запрашиваемое свойство непосредственно в объекте, она переходит по ссылке[[Prototype]] объекта
 var anotherObject = {
   a: 2
 };
@@ -2202,9 +2262,16 @@ var anotherObject = {
 var myObject = Object.create(anotherObject);
 myObject.a; // 2
 
-//Любая нормальная цепочка [[Prototype]] завершается на встроенном объекте Object.prototype
+//оператор in проверит всю цепочку объекта
+("a" in myObject); // true
 
-//Будьте очень внимательны при работе с делегированными свойствам,правильный способ anotherObject.a++.
+//__Object.prototype
+//[[Prototype]] завершается на встроенном объекте Object.prototype
+
+myObject.foo = "bar";
+//, когда foo находится не в myObject, а на более высоком уровне цепочки[[Prototype]] myObject доступное только для чтения
+
+//замещение создает слишком много сложностей и нюансов  стараетесь избежать его
 var anotherObject = {
   a: 2
 };
@@ -2218,11 +2285,25 @@ anotherObject.a; // 2
 myObject.a; // 3
 myObject.hasOwnProperty("a"); // true
 
-//__Конструкторы
+//__Функции «классов»
+function Foo() {
+  // ...
+}
+Foo.prototype; // { }
+
+//объект, создаваемый вызовом new Foo() , наделяется (отчасти произвольно) связью через[[Prototype]] с этим объектом
+//объект a во внутренней реализации связывается через[[Prototype]] с объектом Foo.prototype.
+//Мы просто связали два объекта друг с другом по ссылке
 function Foo() {
   // ...
 }
 var a = new Foo();
+Object.getPrototypeOf(a) === Foo.prototype; // true
+
+//JS создает связь между двумя объектами , благодаря которой один объект может делегировать обращения к свойствам / функциям другому объект а не наследование
+
+//__«Конструкторы»
+//.constructor, и это свойство содержит обратную ссылку на функцию с которой был связан объект
 
 function Foo() {
   // ...
@@ -2231,7 +2312,12 @@ Foo.prototype.constructor === Foo; // true
 var a = new Foo();
 a.constructor === Foo; // true
 
-//каждый из объектов a и b получает внутреннюю ссылку  [[Prototype]] 
+//Конструктор или вызов?
+//в JavaScript правильнее всего говорить, что «конструктор» — любая функция, вызываемая с ключевым словом
+
+//__Механика
+//Foo.prototype не копируются в каждый из объектов a и b
+
 function Foo(name) {
   this.name = name;
 }
@@ -2242,379 +2328,4 @@ var a = new Foo("a");
 var b = new Foo("b");
 a.myName(); // "a"
 b.myName(); // "b"
-
-//__Наследование (на основе прототипов)
-//механизм[[Prototype]] основан на внутренней ссылке, которая существует в одном объекте и указывает на другой объект
-
-//свойство .constructor объекта указывает по умолчаниюна функцию, которая взаимно содержит ссылку на этот объект — ссылку, которая называется.prototype.
-
-function Foo(name) {
-  this.name = name;
-}
-Foo.prototype.myName = function () {
-  return this.name;
-};
-function Bar(name, label) {
-  Foo.call(this, name);
-  this.label = label;
-}
-// здесь мы создаем новый объект `Bar.prototype`,
-// связанный с `Foo.prototype`
-Bar.prototype = Object.create(Foo.prototype);
-// Внимание! Значение `Bar.prototype.constructor` исчезает.
-// Возможно, вам придется вручную "исправить" его, если
-// вы привыкли полагаться на такие свойства!
-Bar.prototype.myLabel = function () {
-  return this.label;
-};
-var a = new Bar("a", "obj a");
-a.myName(); // "a"
-a.myLabel(); // "obj a"
-
-//Сравним стандартные методы связывания Bar.prototype с Foo. prototype до ES6 и в ES6:
-// до ES6
-// теряет существующий объект `Bar.prototype` по умолчанию
-Bar.prototype = Object.create(Foo.prototype);
-// ES6+
-// изменяет существующий объект `Bar.prototype`
-Object.setPrototypeOf(Bar.prototype, Foo.prototype);
-
-//подход к анализу связей [[Prototype]] выглядит так
-Foo.prototype.isPrototypeOf(a); // true
-
-//напоминает вызов a.__proto__() (вызов getфункции)
-a.__proto__
-
-//Object.create(..) создает новый объект (bar), связанный с заданным объектом (foo)
-var foo = {
-  something: function () {
-    console.log("Tell me something good...");
-  }
-};
-var bar = Object.create(foo);
-bar.something(); // Tell me something good...
-
-//можно спроектировать так, чтобы он был менее «волшебным», но при этом использовал всю мощь связывания [[Prototype]]
-var anotherObject = {
-  cool: function () {
-    console.log("cool!");
-  }
-};
-var myObject = Object.create(anotherObject);
-myObject.doCool = function () {
-  this.cool(); // внутреннее делегирование!
-};
-myObject.doCool(); // "cool!"
-
-//__Сравнение моделей мышления
-
-//1) В первом фрагменте используется классический стиль
-function Foo(who) {
-  this.me = who;
-}
-Foo.prototype.identify = function () {
-  return "I am " + this.me;
-};
-function Bar(who) {
-  Foo.call(this, who);
-}
-Bar.prototype = Object.create(Foo.prototype);
-Bar.prototype.speak = function () {
-  alert("Hello, " + this.identify() + ".");
-};
-var b1 = new Bar("b1");
-var b2 = new Bar("b2");
-b1.speak();
-b2.speak();
-
-//2) абсолютно ту же функциональность кодом в стиле делегирование
-//все происходящее сильно упрощается,потому что на этот раз мы просто настраиваем связи между объектами без всей запутанной шелухи, которая пытается походить на классы(но не обладает их поведением) с конструкторами, прототипами и вызовами new.
-Foo = {
-  init: function (who) {
-    this.me = who;
-  },
-  identify: function () {
-    return "I am " + this.me;
-  }
-};
-Bar = Object.create(Foo);
-Bar.speak = function () {
-  alert("Hello, " + this.identify() + ".");
-}
-var b1 = Object.create(Bar);
-b1.init("b1");
-var b2 = Object.create(Bar);
-b2.init("b2");
-b1.speak();
-b2.speak();
-
-//__«Классы» виджетов
-// Родительский класс
-
-//классическую архитектуру «классов» на чистом JS
-function Widget(width, height) {
-  this.width = width || 50;
-  this.height = height || 50;
-  this.$elem = null;
-}
-Widget.prototype.render = function ($where) {
-  if (this.$elem) {
-    this.$elem.css({
-      width: this.width + "px",
-      height: this.height + "px"
-    }).appendTo($where);
-  }
-};
-// дочерний класс
-function Button(width, height, label) {
-  // "super" constructor call
-  Widget.call(this, width, height);
-  this.label = label || "Default";
-  this.$elem = $("<button>").text(this.label);
-}
-// Заставить `Button` "наследовать" от `Widget`
-Button.prototype = Object.create(Widget.prototype);
-// переопределить базовую "унаследованную" версию `render(..)`
-Button.prototype.render = function ($where) {
-  // вызов "super"
-  Widget.prototype.render.call(this, $where);
-  this.$elem.click(this.onClick.bind(this));
-};
-
-Button.prototype.onClick = function (evt) {
-  console.log("Button '" + this.label + "' clicked!");
-};
-$(document).ready(function () {
-  var $body = $(document.body);
-  var btn1 = new Button(125, 30, "Hello");
-  var btn2 = new Button(150, 40, "World");
-  btn1.render($body);
-  btn2.render($body);
-});
-
-//Классы в ES6
-class Widget {
-  constructor(width, height) {
-    this.width = width || 50;
-    this.height = height || 50;
-    this.$elem = null;
-  }
-  render($where) {
-    if (this.$elem) {
-      this.$elem.css({
-        width: this.width + "px",
-        height: this.height + "px"
-      }).appendTo($where);
-    }
-  }
-}
-class Button extends Widget {
-  constructor(width, height, label) {
-    super(width, height);
-    this.label = label || "Default";
-    this.$elem = $("<button>").text(this.label);
-  }
-  render($where) {
-    super($where);
-    this.$elem.click(this.onClick.bind(this));
-  }
-  onClick(evt) {
-    console.log("Button ‘" + this.label + "’ clicked!");
-  }
-}
-$(document).ready(function () {
-  var $body = $(document.body);
-  var btn1 = new Button(125, 30, "Hello");
-  var btn2 = new Button(150, 40, "World");
-  btn1.render($body);
-  btn2.render($body);
-});
-
-//Делегирование 
-var Widget = {
-  init: function (width, height) {
-    this.width = width || 50;
-    this.height = height || 50;
-    this.$elem = null;
-  },
-  insert: function ($where) {
-    if (this.$elem) {
-      this.$elem.css({
-        width: this.width + "px",
-        height: this.height + "px"
-      }).appendTo($where);
-    }
-  }
-};
-
-var Button = Object.create(Widget);
-Button.setup = function (width, height, label) {
-  // делегированный вызов
-  this.init(width, height);
-  this.label = label || "Default";
-  this.$elem = $("<button>").text(this.label);
-};
-Button.build = function ($where) {
-  // делегированный вызов
-  this.insert($where);
-  this.$elem.click(this.onClick.bind(this));
-};
-Button.onClick = function (evt) {
-  console.log("Button '" + this.label + "' clicked!");
-};
-$(document).ready(function () {
-  var $body = $(document.body);
-  var btn1 = Object.create(Button);
-  btn1.setup(125, 30, "Hello");
-  var btn2 = Object.create(Button);
-  btn2.setup(150, 40, "World");
-  btn1.build($body);
-  btn2.build($body);
-});
-
-//__различие классов и делигирование(OLOO)
-
-//классы
-class Foo {
-  methodName() { /* .. */ }
-}
-
-// делигирование - удобный синтаксис объектных литералов с компактными методами!
-var AuthController = {
-  errors: [],
-  checkAuth() {
-    // ...
-  },
-  server(url, data) {
-    // ...
-  }
-  // ...
-};
-// ТЕПЕРЬ `AuthController` связывается для делегирования
-`LoginController`
-Object.setPrototypeOf(AuthController, LoginController);
-
-//--------------------------------------
-//--------------------------------------
-//_____ТИПЬI & ГРАММАТИЧЕСКИЕ КОНСТРУКЦИИ____//
-
-//Встроенные типы 
-//null undefined boolean number string object symbol - добавлен в ES6! 
-
-typeof undefined ==== "undefined"; // true
-typeof true ===  "boolean"; // true
-typeof 42 === "number"; // true
-typeof "42" === "string"; // true
-typeof { life: 42 } === "object"; // true
-//Добавлен в ЕSб!
-typeof Symbol() === "symbol"; // true
-
-//Null - единственное примитивное значение, которое является «ложным»
-var а = null;
-(!а && typeof а === "object"); // true 
-typeof [1, 2, З] === "object"; // true 
-
-//у переменных нет типов  типы есть только у значений
-
-//__undefined и необъявленные переменные 
-var а;
-typeof а; //undefтув
-
-
-//__Значения
-
-//Массивы 
-var а = [1, "2", [3]];
-a.length;//3
-а[0] === 1;//true
-а[2][0] === 3;//true
-
-//Будьте внимательны с созданием «разреженных» массивов (в которых остаются или создаются пустые/отсутствующие элементы)
-
-//добавлять строковые ключи/свойства к массивам не рекомендуется. 
-a["foobar"] = 2; 
-
-//Подобие массивов 
-//списки элементов DOM / arguments в функции
-
-//__Строки
-//CтpoкиjavaScript неизменяемы, тогда как массивы вполне могут изменяться(мутировать)
-
-//__Числа 
-var а = 0.42;
-var Ь =  .42;
-
-0.1 + 0.2 === 0.3; // false / 0,30000000000000004
-
-//Проверка целых чисел 
-Number.isinteger(42); // true
-Number.isinteger(42.000); // true
-Number.isinteger(42.3); // false 
-//является ли значение безопасным целым число
-Number.isSafeinteger(Number.MAX_SAFE_INTEGER);// true 
-Number.isSafeinteger(Math.pow(2, 53));// false
-Number.isSafeinteger(Math.pow(2, 53) - 1);// true 
-
-//Пустые значения
-//пull - пустое значение; 
-//uпdefiпed - отсутствующее значение.
-
-//__Оператор void 
-//Выражение void стирает любое значение так что результат выражения всегда явл. неопределенным
-var а = 42;
-console.log(void а, а); // undefined 42
-
-function doSomething() {
-  // примечание: 'APP.ready· предоставляется приложением
-  if (!APP.ready) {
-    //попробовать позднее
-    return void setTimeout(doSomething, 100);
-  }
-  var result;
-  //заняться чем - то другим
-  return result;
-}
-//получилось с первой попытки ?
-if (doSomething()) {
-  //заняться другими задачами
-} 
-
-//__NaN 
-//(Not А Number)
-
-var Ь = "foo";
-//ошибка при использовании isNaN
-window.isNaN(b) // true ...
-
-//использовать Number. isNaN( .. ).
-
-//__Бесконечности
-var а = 1 / 0; // Infinity
-var Ь  = 1 / 0; // -Infinity
-
-//__нули
-function isNegZero(n) {
-  n = Number(n);
-  return (n === 0) && (1 / n)
-}
-isNegZero(-0); // true
-isNegZero(0 / -3);// true
-isNegZero(0);// false 
-
-//__Специальное равенство
-//Obj ect. is () - использоваться для проверки двух значений на абсолютное равенство
-
-//__Значения и ссылки 
-var а = 2
-var Ь = a
-Ь++;
-а; // 2
-Ь; // 3
-
-//объекты всегда создают копию ссылки
-var с = [1, 2, 3];
-var d = с; // 'd' - ссылка на общее значение '[1,2,3]'
-d.push(4);
-с; // [1,2,3,4]
-d; // [1,2,3,4]
-
+//260
