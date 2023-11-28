@@ -2701,3 +2701,383 @@ Bar.isPrototypeOf(b1); // true
 
 Object.getPrototypeOf(b1) === Bar; // true
 
+//---------------------------------------
+//---------------------------------------
+//__Типы и грамматические конструкции__//
+//Встроенные типы  примитивы - null  undefined boolean number  string object symbol
+//Ссылочный тип - object
+typeof undefined === "undefined"; // true
+typeof true === "boolean"; // true
+typeof 42 === "number"; // true
+typeof "42" === "string"; // true
+typeof { life: 42 } === "object"; // true
+//Добавлен в ЕSб!
+typeof Symbol() === "symbol"; // true
+
+// является «ложным»
+typeof null === "object"; // true
+var а = null;
+(!а && typeof а === "object"); // true 
+
+//на самом деле ближе к «подтипу» object
+typeof function а() {/* .. */ } === "function"; // true
+
+typeof [1, 2, З] === "object"; // true
+
+//__Значения как типы
+//В языке JavaScript у переменных нет типов - типы есть у значений
+
+//Переменные, на данный момент не имеющие значения, на самом деле имеют значение undefined.
+var а;
+typeof а; //undefined
+
+//__typeof для необъявленных переменных 
+//Безопасная проверка существования
+if (typeof DEBUG !== "undefined") {
+  console.log("Debugging is starting");
+} 
+
+if (window.DEBUG) {
+  //..  
+}
+
+//__Значения 
+
+//Массивы 
+var а = [1, "2", [3]];
+a.length;//3
+а[0] === 1;//true
+а[2][0] === 3;//true
+
+//Подобие массивов 
+//DOM возвращают списки элементов
+function foo() {
+  var arr = Array.prototype.slice.call(arguments);
+  arr.push("bam");
+  console.log(arr);
+}
+foo("bar", "baz"); // ["bar","baz","bam"] 
+
+//тo же самое
+var arr =  Array.from(arguments)
+
+//Строки 
+//CтpoкиjavaScript неизменяемы , надо возврощать новые значение
+//обходное решение 
+var с = а
+  // разбиение ·а· на массив символов
+  .split("")
+  // переставить массив символов в обратном порядке
+  .reverse()
+  // снова объединить массив символов в строку
+  .join("");
+с; // "oof"
+
+//Числа 
+//42. 0 является таким же «целым» числом, как и 42.
+var а = 0.42;
+var Ь = .42;
+
+//методы, встроенные в Number. prototype
+var а = 42.59;
+a.toFixed(0); // "43"
+a.toFixed(1); // "42.6" 
+a.toPrecision(1); // "4e+l" 
+42 .toFixed(З); // "42.000" 
+0xf3; // шестнадцатеричная запись для 243
+0o363;// восьмеричная запись для 243
+
+//Малые дробные значения
+0.1 + 0.2 === 0.3; // false / (0,30000000000000004)
+
+//Безопасные целочисленные диапазоны 
+//Number. MAX_SAFE_INТEGER
+
+//Проверка целых чисел
+Number.isinteger(42); // true
+Number.isinteger(42.000); // true 
+
+//является ли значение безопасным целым числом, используйте метод Number. isSafeinteger( .. )
+Number.isSafeinteger(Number.MAX_SAFE_INTEGER);//// true 
+
+//Пустые значения 
+// пull - пустое значение; 
+// uпdefiпed - отсутствующее значение
+
+//void
+//стирает любое значение
+var а = 42;
+console.log(void а, а); // undefined 42
+
+//NaN 
+//Not А Number
+//никогда не равно другому значению NaN 
+var а = 2 / "foo"; // NaN
+
+var а = 2 / "foo";
+var Ь = "foo";
+Number.isNaN(а); // true
+Number.isNaN(Ь); // false 
+
+//или
+Object.is(а, NaN); // true 
+
+//Бесконечности
+var а = 1 / 0; // Infinity
+
+//нули
+// если вы хотите отличать -0 от 0 в своем коде,
+function isNegZero(n) {
+  n = Number(n);
+  return (n === 0) && (1 / n === -Infinity)
+}
+isNegZero(-0);// true
+isNegZero(0 / -3);// true
+isNegZero(0);// false 
+
+//или
+Object.is(b, -0); // true 
+
+//__Значения и ссылки 
+
+//простые значения всегда передаються копированием
+var а
+var Ь = а; // 'Ь' все
+Ь++;
+Ь; // 3
+а; // 2
+
+//ссылочный тип по ссылке
+//Чтобы передать составное значение (например, массив) посредством копирования значения, необходимо создать его копию вручную, чтобы переданная ссылка не продолжала указывать на оригинал.
+var а = [1, 2, 3];
+var Ь = а;
+а; // [1,2,3]
+Ь; // [1,2,3] 
+
+//__Встроенные объекты(natives)
+var а = new String("аЬс");
+typeof а; // "object" ... не "String"
+а instanceof String; // true
+Object.prototype.toString.call(а); // "[object String]" 
+
+// Примитивные значения не имеют свойств или методов, так что для обращения к . length и . tostring() вам понадобится объектная обертка для значения, JS автоматически упаковывает примитивные значения для обслуживания таких обращений
+var а = "аЬс";
+a.length; // З
+a.toUpperCase(); // "
+
+//Распаковка в примитивное значение
+var а = пеw Striпg("аЬс");
+var b = пеw Number(42);
+var с = nеw Вооlеаn(true);
+a.valueOf(); // "аЬс"
+Ь.valueOf(); // 42
+с.valueOf(); // true 
+
+var а = пеw Striпg("аЬс");
+var Ь = а + ""; // ·ь- содержит распакованное примитивное
+// значение "аЬс"
+typeof а;// "object"
+typeof Ь;// "string"
+
+//Встроенные объекты как конструкторы 
+
+//Array(..)
+var а = nеw Array(1, 2, З);
+а; // [1, 2, З] 
+var Ь = [1, 2, 3];
+Ь; // [1, 2, 3]
+
+var а = new Array(З);//пустые значения / [ ,  ,  ]
+a.length; // З 
+
+var а = Array.apply(null, { length: З });
+а; // [ undefined, undefined, undefined ]
+
+//Object( .. ), Function( .. ) и RegExp( .. ) 
+// лучше избегать
+var с = new Object();
+c.foo =  "bar";
+с; // { foo: "bar" } 
+
+//Date( .. ) и Error( .. ) 
+if (!Date.now) {
+  Date.now = function () {
+    return (new Date()).getTime();
+  };
+}
+
+function foo(x) {
+  if (!х) {
+    throw new Error("х wasn't provided");
+  }
+}
+
+//Symbol( .. ) 
+// «уникальные»
+var mysym = Symbol("my own symbol");
+mysym; // Symbol(my own symbol)
+mysym.toString(); // "Symbol(my own symbol)"
+typeof mysym; // "symbol" 
+
+var а = {};
+a[mysym] = "foobar"; 
+Object.getOwпPropertySymbols(а);// [Symbol(my оwп symbol)] 
+
+//Встроенные прототипы
+//Благодаря делегированию прототипов методы доступны
+var а = " аЬс ";
+a.indexOf("с"); // З 
+
+//__Преобразование типов
+//явное и неявное
+var а  = 42;
+var Ь = а + "" //неявное преобразование
+var с = String(а); //явное преобразование
+
+//ToString
+var а = [1, 2, 3];
+a.toString(); // "1,2,3"
+
+//Преобразование JSON в строку 
+JSON.stringify(42); // "42" 
+
+var а = {
+  Ь: 42,
+  с: "42",
+  d: [1, 2, 3]
+};
+JSON.stringify(а, ["Ь", "с"]); // "{"Ь":42,"с":"42"}" 
+
+//отступ 3 пробела перед свойствам
+JSON.stringify(а, null, З);
+
+//ToNumber 
+Number("42"); //42
+
+//ToBoolean
+//«ложные~значения - undefined nul false  +0, -0 и NaN ""
+
+//Ложные объекты
+//дают true
+var а = new Boolean(false);
+var Ь = new Number(0);
+var с = new String(""); 
+var d = Boolean(а && Ь && с); // true 
+
+//Истинные значения 
+//все отсальные
+
+var а = "0";
+!!а; // true
+
+//_Явное преобразование типов
+var а = 42;
+var Ь = String(а);// "42"
+
+var с = "3.14";
+var d = +с;// 3.14
+
+var d = new Date("Моп, 18 Aug 2014 08:53:06 CDT");
++d; // 1408369986000
+
+~42; // -(42+1) ==> -43
+
+Math.floor(-49.6); //- 50
+~~- 49.6; //- 49
+
+//_Неявное преобразование 
+var а = "42";
+var b = "0";
+а + b// "420" 
+
+var а = "3.14";
+var Ь = а - 0;// 3.14
+
+//__Операторы || и && 
+var а = 42;
+var Ь = "аЬс";
+var с = null;
+а || Ь; //42 / приблизительно эквивалентно а ? а : Ь;
+а && Ь; //"аЬс"приблизительно эквивалентно а ? Ь : a
+
+function foo() {
+  console.log(а);
+}
+var а = 42;
+а && foo(); // 42
+
+if (!!а && (!!Ь || !!с)) {
+  console.log("уер");
+}
+
+//_Равенство строгое и нестрогое 
+//«== проверяет на равенство значения, а === проверяет на равенство как значения, так и тип
+var а = 42;
+var Ь = "42";
+а === Ь; //false
+а == Ь;//true
+
+var х = true;
+var у = "42";
+х == у; // false / 1 == "42".
+
+var а = "42";
+
+//плохо(проверка не проходит!):
+if (а == true) {
+  // ..
+}
+
+//тоже плохо(проверка не проходит!):
+if (а === true) {
+  // ..
+}
+
+//достаточно хорошо(неявное преобразование):
+if (а) {
+  // ..
+}
+
+//лучше(явное преобразование):
+if (!!а) {
+  //..
+}
+
+//тоже хорошо(явное преобразование):
+if (Вооlеап(а)) {
+  //..
+} 
+
+// Я рекомендую использовать это преобраэование, чтобы null и undefined не различались в программе и интерпретировались как одно значения
+if (a == null) {
+  //..
+} 
+
+var а = 42;
+var b = [42];
+а == Ь; // true 
+
+//Если в одной из частей сравнения может находиться значение true или false , [], '', никогда не использовать ==
+
+//Абстрактное относительное сравнение
+//cначало ToPrimitive , ToNumber
+var а = ["42" ];
+var Ь = ["043" ];
+a < b //false
+
+//если вам нужны гаранитии безопасности то лучше выполнить явное преобразование
+Number(а) < Number(Ь);
+
+//__Грамматика 
+var а = 42;
+а++; // 42
+а·, // 43
+
+++а; // 44
+а; // 44
+
+var а, Ь, с;
+а = Ь = с = 42; 
+
+true ? false : true ? true : true;//false
+
