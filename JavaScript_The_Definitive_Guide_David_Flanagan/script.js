@@ -1778,22 +1778,396 @@ class Histogram {
 class AbstractSet {
   // Сгенерировать ошибку, чтобы заставить подклассы определять
   // собственную работающую версию этого метода.
-  has(x) { throw new Error("Абстрактный метод"); }
+  has(x) {
+    throw new Error("Абстрактный метод");
+  }
 }
 
 class RangeSet extends AbstractSet {
   constructor(from, to) {
     super();
-    this, from = from;
+    this, (from = from);
     this.to * to;
   }
   // Наша реализация унаследованного абстрактного метода
-  has(x) { return x >= this.from && x <= this.to; }
-toString() {
-  return `{ x| ${this.from} £ x £ ${this.to} `}
+  has(x) {
+    return x >= this.from && x <= this.to;
+  }
+  toString() {
+    return `{ x| ${this.from} £ x £ ${this.to} `;
+  }
 }
 
 //----------------------------------------
 //________________Модули________________//
+//позволить собирать крупные программы с использованием модулей кода
+//На практике модульность главным образом касается инкапсуляции или сокрытия внутренних деталей
 
+//___Модули, использующие классы, объекты и замыкания
+// Вот так мы могли бы определить модуль расчета статистических данных.
+const stats = (function () {
+  // Служебные функции закрыты по отношению к модулю,
+  const sum = (х, у) => х + у;
+  const square = (х) => х * х;
+  // Открытая функция, которая будет экспортироваться,
+  function mean(data) {
+    return data.reduce(sum) / data.length;
+  }
+  // Открытая функция, которая будет экспортироваться,
+  function stddev(data) {
+    let m = mean(data);
+    return (
+      Math,
+      sqrt(
+        data
+          .map((x) => x - m)
+          .map(square)
+          .reduce(sum) /
+          (data.length - 1)
+      )
+    );
+  }
+  // Открытые функции экспортируются в виде свойств объекта,
+  return {
+    mean,
+    stddev,
+  };
+})();
+//А так м ы можем использовать модуль.
+stats.mean([1, 3, 5, 7, 9]); // => 5
+stats.stddev([1, 3, 5, 7, 9]); //=> Math, sqrt (10)
+
+//___Модули в Node
+
+//_Экспортирование в Node
+const sum = (х, у) => х + у;
+const square = (х) => х * х;
+exports.mean = (data) => data.reduce(sum) / data.length;
+exports.stddev = function (d) {
+  let m = exports.mean(d);
+  return Math.sqrt(
+    d
+      .map((x) => x - m)
+      .map(square)
+      .reduce(sum) /
+      (d.length - 1)
+  );
+};
+
+//экспортирует только одну функцию или класс
+module.exports = class BitSet extends AbstractWritableSet {
+  // реализация не показана
+};
+
+// Определить все функции, открытые и закрытые.
+const sum = (х, у) => х + у;
+const square = (х) => х * х;
+const mean = (data) => data.reduce(sum) / data.length;
+const stddev = (d) => {
+  let m = mean(d);
+  return Math.sqrt(
+    d
+      .map((x) => x - m)
+      .map(square)
+      .reduce(sum) /
+      (d.length - 1)
+  );
+};
+// Теперь экспортировать только открытые функции.
+module.exports = { mean, stddev };
+
+//_Импортирование в Node
+// Эти модули встроены в Node.
+const fs = require("fs"); // Встроенный модуль файловой системы
+const http = require("http"); // Встроенный модуль HTTP
+
+//импортировать модуль собственного кода
+//можете опускать суффикс .js
+const stats = require("./stats.js");
+const BitSet = require("./utils/bitset.js");
+
+const { stddev } = require("./stats.js");
+
+//___Модули в ES6
+//каждый файл имеет собственный закрытый контекст
+//"use strict" по умолчанию
+
+//_Экспортирование в ES6
+export const PI = Math.PI;
+export function degreesToRadians(d) {
+  return (d * PI) / 180;
+}
+export class Circle {
+  constructor(r) {
+    this.r = r;
+  }
+  area() {
+    return PI * this.r * this.r;
+  }
+}
+//export { Circle, degreesToRadians, PI };
+
+//экспортируют только одно значение
+export default class BitSet {
+  // реализация не показана
+}
+
+//_ Импортирование в ES6
+//default
+import BitSet from "./bitset.js";
+
+import { mean, stddev } from " ./stats.js";
+
+//через объект stats, вызывая их как stats.mean() и stats.stddev()
+import * as stats from "./stats.js";
+
+//cмешанный импорт
+import Histogram, { mean, stddev } from " ./histogram-stats.js";
+
+//используется с модулями, вообще не имеющими операторов экспорта
+import " ./analytics.js";
+
+//_Импортирование и экспортирование с переименованием
+import { render as renderlmage } from "./imageutils. js";
+import { render as renderUI } from " ./ui. js";
+import { default as Histogram, mean, stddev } from ". /histogram-stats, js";
+
+//_Повторное экспортирование
+import { mean } from "./stats/mean. js";
+import { stddev } from "./stats/stddev.js";
+export { mean, stdev };
+
+//экспортировать из другого модуля все именованные значения
+export * from "./stats/mean.js";
+export * from " ./stats/stddev.js";
+
+//____Модули JavaScript для веб-сети
+
+//выполняются подобно сценариям с атрибутом defer
+//выполнение кода не начнется до тех пор, пока не закончится синтаксический анализ HTML - разметки
+//<script type="module">import "./main. js";</script>
+
+//async будет выполняться, как только загрузится код, даже если синтаксический анализ HTML-разметки не закончен
+
+//Динамическое импортирование с помощью import()
+import * as stats from ". /stats.js";
+
+import(". /stats.js").then((stats) => {
+  let average = stats.mean(data);
+});
+
+//-----------------------------------------
+//____Стандартная библиотека JavaScript___//
+
+//_Множества и отображения
+//Object
+
+//_Класс Set
+//является итерируемым
+let t = new Set(s); // Новое множество, которое
+// копирует элементы s.
+let unique = new Set("Mississippi"); //4 элемента: "M", "i"f "s" и "p"
+
+let s = new Set(); // Начать с пустого множества
+s.size; // => О
+s.add(1); // Добавить число
+s.size; // => 1; теперь множество имеет один член
+s.add(1); // Добавить то же самое число еще раз
+s.size; // => 1; размер не изменился
+s.add(true); // Добавить другое значение; обратите внимание на допустимость смешивания типов => 2
+s.delete(1); // => true: успешное удаление элемента 1
+s.clear(); // Удалить все из множества
+
+//является ли указанное значение членом множества
+let oneDigitPrimes = new Set([12, 3, 5, 7]);
+oneDigitPrimes.has(2); // => true: 2 - простое число с одной цифрой
+
+let sum = 0;
+for (let p of oneDigitPrimes) {
+  // Пройти по простым числам с одной
+  sum += р; // цифрой и сложить их
+}
+sum; // => 17: 2 + 3 + 5 + 7
+
+//_ Класс Мар
+let m = new Мар(); // Новое пустое отображение
+let n = new Мар([
+  // Новое отображение, которое инициализировано
+  // строковыми ключами, отображенными на числа
+  ["one", 1],
+  ["two", 2],
+]);
+let о = { х: 1, у: 2 }; // Объект с двумя свойствами
+let р = new Map(Object.entries(о)); // То же, что и
+// new m a p ([["х", 1], ["у", 2]])
+
+let m = new Мар();
+m.size; //0
+m.set("one", 1);
+m.set("two", 2);
+m.size; //2
+m.get("two"); //2
+m.get("three"); //undefined
+m.set("one", true); //Изменить значение
+m.size; //2
+m.has("one"); //true: отображение имеет ключ "one"
+m.has(true); //false: отображение не содержит ключа true
+m.delete("one"); //=> true: ключ существует, и удаление проходит успешно
+m.size; // => 1
+m.delete("three"); // => false: не удалось удалить несуществующий ключ
+m.clear(); // Удалить все ключи и значения из отображения
+
+//можно выстраивать в цепочки
+let m = new Map().set("one", 1).set("two", 2).set(" th ree ", 3);
+
+let m = new Map([
+  ["x", 1],
+  ["у", 2],
+]);
+[...m]; // => [["x", 1], ["у”, 2]]
+for (let [key, value] of m) {
+  //На первой итерации ключом будет "х", а значением - 1
+  //На второй итерации ключом будет "у", а значением - 2
+}
+
+[...m.keys()]; //=> ["х", "у"]: только ключи
+[...m.values()]; // => [1, 2]: только значения
+[...m.entries()]; //=> [["х", 1], ["у”, 2]]: тоже, что и [...т]
+
+//_WeakMap и WeakSet
+//WeakMap хранит “слабые” ссылки сборщик мусора не удаляет их
+
+//Конструктор WeakMap() похож на конструктор Мар()
+//Ключи обязаны быть объектами или массивами
+//WeakMap реализует только методы get(), set(), has() и delete()
+//не является итерируемым
+//не реализует свойство size
+
+//Класс WeakSet реализует множество объектов, которые не препятствуют оба6отке этих объектов сборщиком мусора.
+
+//_Типизированные массивы и двоичные данные
+//Int8Array() - байты со знаком / Uint8Array() - байты без знака ...
+let bytes = new Uint8Array(1024); // Буфер размером 1 килобайт
+let pattern = new Uint8Array([0, 1, 2, 3]); // Массив из 4 байтов
+bytes.set(pattern); //Копировать их в начало другого байтового массива
+bytes, set(pattern, 4); // Копировать их снова по другому смещению
+bytes.set([0, 1, 2, 3], 8); // Или просто копировать значения прямо
+//из обыкновенного массива
+bytes.slice(0, 12); // => new Uint8Array([0,1,2,3,0,1,2,3,0,1,2,3])
+
+//Класс DataView определяет десять методов получения для десяти классов типизированных массивов
+
+//_Регулярное выражение
+// объект, который описывает текстовый шаблон
+"7 plus 8 equals 15".match(/\d+/g); // => ["7", "8", "15"]
+
+//_Дата и время
+let epoch = new Date(0); // Полночь, 1 января 1970 года,  гринвичское среднее время
+
+let d = new Date();
+setMonth(d.getMonth() + 3, d.getDateO + 14);
+
+//_ Классы ошибок
+class HTTPError extends Error {
+  constructor(status, statusText, url) {
+    super("${status} ${statusText}: ${url}");
+    this.status = status;
+    this.statusText = statusText;
+    this.url = url;
+  }
+  get name() {
+    return "HTTPError";
+  }
+}
+
+//_Сериализация и разбор данных в формате JS0N
+let о = { s: "", n: 0, a: [true, false, null] };
+let s = JSON.stringify(o); //s = ' {"s,,:,f", "n":0, "a": [true,false,null]}'
+let copy = JSON.parse(s); //copy = {s:"”, n:0, a: [true, false, null]}
+
+//_API-интерфейс интернационализации
+//Intl.NumberFormat, Inti.DateTimeFormat и Inti.Col lator
+
+//_Форматирование чисел
+let euros = Inti.NumberFormat("es", {
+  style: "currency",
+  currency: "EUR",
+}).euros.format(10); // => "10,00 €": десять евро, испанское форматирование
+
+let data = [0.05, 0.75, 1];
+let formatData = Intl.NumberFormat(undefined, {
+  style: "percent",
+  minimumFractionDigits: 1,
+  maximumFractionDigits: 1,
+}).format;
+data.map(formatData); // => ["5.0%", "75.0%", "100.0%"]: в локали en-US
+
+//_Форматирование даты и времени
+let d = new Date("2020-01-02T13:14:15Z");
+Intl.DateTimeFormat("en-US").format(d); // => "1/2/2020"
+
+// Время в Нью-Йорке для франкоговорящих канадцев
+opts =
+  { hour: "numeric", minute: "2-digit", timeZone: "America/New__York" } /
+  Intl.DateTimeFormat("fr-CA", opts).format(d); // => "8 h 14"
+
+//_Сравнение строк
+//Если вы хотите отображать строки пользователю в порядке, который он сочтет естественным, тогда использования метода sort() на массиве строк будет недостаточно
+
+// Базовый компаратор для сортировки согласно локали пользователя.
+// Никогда не сортируйте строки, читабельные человеком, без передачи чего - то вроде такого:
+const collator = new Inti.Collator().compare;
+["a", "z", "A", "Z"].sort(collator) // => ["a", "A”, "z", ”Z"]
+
+// Имена файлов часто включают числа, поэтому мы должны их
+// сортировать особым образом:
+const filenameOrder = new Inti.Collator(undefined,
+  { numeric: true }).compare;
+["page 10", "page9"].sort (filenameOrder) // => ["page9", "pagelO”]
+
+//_API-интерфейс Console
+//console.debug( ), console.info( ), console.warn( ) , console.error( ) ....
+
+//_API-интерфейсы URL
+
+//разбирает URL
+let url = new URL("https://example.com:8000/path/name?q=term#fragment");
+url.href // => "https://example.com:8000/path/name?q=term#fragment"
+url.origin // => "https://example.com:8000"
+url.protocol // => "https:"
+url.host // => "example.com:8000"
+url.hostname // => "example.com"
+url.port // => "8000"
+url.pathname // => "/path/name”
+url.search // => "?q=term"
+url.hash // => "#fragment"
+
+//закодировать пары имя/значение подобного рода в виде порции запроса URL
+let url = new URL("https://example.com/search");
+url.search // => пока запроса нет
+url.searchParams.append("q", "term"); // Добавить параметр поиска
+url.search // => "?q=term"
+url.searchParams.set("q", "x");// Изменить значение этого параметра
+url.search // => "?q=x"
+url.searchParams.get("q") // => "x": запросить значение параметра
+url.searchParams.has("q") // => true: имеется параметр q
+url.searchParams.has("p") // => false: параметр p отсутствует
+
+//encodeURI() и decodeURI() . Функция encodeU RI () принимает в своем аргументе строку и возвращает новую строку, в которой закодированы символы, отличающиеся от ASCII
+
+//encodeURIComponentO и decodeURIComponent ( ) . Данные две функции работают подобно encodeU RI() и decodeU R I(), но они предназначены для кодирования индивидуальных компонентов URI, а потому также кодируют управляющие символы вроде /, ? и #, которые используются для отделения этих компонентов
+
+//_Таймеры
+setTimeout(() => { console.log("Ready..."); }, 1000);
+
+// Раз в секунду: очистить консоль и вывести текущее время.
+let clock = setlnterval(() => {
+  console.clear();
+  console.log(new Date().toLocaleTimeString());
+}, 1000);
+// Спустя 10 секунд: прекратить повторение выполнения кода выше.
+setTimeout(() => { clearlnterval(clock); }, 10000);
+
+//----------------------------------
+//______Итераторы и генераторы___//
 
