@@ -2592,23 +2592,23 @@ function importScript(url) {
 //отражает древовидную структуру HTML-документа
 
 //Глобальный объект в веб-браузерах
-window
+window;
 
 //Выполнение программ JavaScript
 //-Веб-браузер создает объект Document и начинает синтаксический анализ веб - страницы, добавляя в документ объекты Element и узлы Text по меретого, как он анализирует HTML - элементы
 //-встречает элемент < script> , который имеет установленный атрибут
-//- DOMContentLoaded и load - инициируется, когда HTML -документ был полностью загружен и синтаксически проанализирован 
+//- DOMContentLoaded и load - инициируется, когда HTML -документ был полностью загружен и синтаксически проанализирован
 
 //Модель безопасности веб-сети
 //- JavaScript не может удалять данные или внедрять вирусы
 //-  CORS
 
 //___События
-//Зависимые от устройства события ввода - "keydown" 
+//Зависимые от устройства события ввода - "keydown"
 //Независимые от устройства события ввода - "click"
 //События пользовательского интерфейса - "focus", "change"
 //События изменения состояни - " load ”
-//События, специфичные для API-интерфейса - "waiting" 
+//События, специфичные для API-интерфейса - "waiting"
 
 //_Регистрация обработчиков событий
 
@@ -2617,14 +2617,16 @@ window
 
 //addEventListener
 let b = document.querySelector("#mybutton");
-addEventListener(" click ", () => { console.log("Thanks a g a in !"); });
+addEventListener(" click ", () => {
+  console.log("Thanks a g a in !");
+});
 //удаляет функцию обработчика
 document.removeEventListener("mouseup", handleMouseUp);
 //объект Options - capture(как захватывающий обработчик),  once(автоматически удален после однократного запуска), passiv(никогда не будет вызывать метод preventDefault())
 document.addEventListener("click", handleClick, {
   capture: true,
   once: true,
-  passive: true
+  passive: true,
 });
 
 //_Вызов обработчиков событий
@@ -2637,4 +2639,225 @@ document.addEventListener("click", handleClick, {
 
 //_Контекст обработчика событий
 //this ссылается на объект, для которого обработчик был зарегистрирован
-//стр 472
+
+//_Распространение событий
+//- стадией захвата
+//- стадия распространения событий
+
+//_Отмена событий
+//preventDefault()
+//stopPropagation() - отменять распространение событий
+
+//_ собственные события
+// Отправить специальное событие, чтобы уведомить
+// пользовательский интерфейс о том, что мы заняты.
+document.dispatchEvent(new CustomEvent("busy", { detail: true }));
+// Где-то в другом месте программы можно зарегистрировать обработчик для событий "busy" и использовать его для показа или сокрытия вращателя, уведомляющего пользователя о занятости,
+document.addEventListener("busy", (е) => {
+  if (е.detail) {
+    showSpinner();
+  } else {
+    hideSpinner();
+  }
+});
+
+//___ Работа с документами в сценариях
+// Искать элемент документа для HTML-дескриптора
+// с атрибутом id = "spinner” .
+let spinner = document.querySelector("tspinner");
+
+// Искать все объекты Element для дескрипторов < hl >, <h2> и <h3>.
+let titles = document.querySelectorAll("h i, h2, h3");
+
+//Найти ближайший объемлющий дескриптор <а>, который имеет атрибут href
+let hyperlink = event.target.closest("a [href ]");
+
+// Возвратить true, если е - заголовочный HTML-элемент.
+function isHeading(e) {
+  return е.matches("hl,h2,h3,h4,h5,h6");
+}
+
+// Искать элемент по идентификатору.
+// Аргументом является только идентификатор без префикса #
+// селектора CSS. Подобен document .querySelector ("# sect 1") .
+let sectl = document.getElementByld("sectl");
+
+// Искать все элементы (такие как флажки в форме),
+// которые имеют атрибут name="color".
+// Подобен document. querySelectorAll ('* [name=" color"] ') .
+let colors = document.getElementsByName("color");
+
+// Искать все элементы <hl> в документе.
+// Подобен document.querySelectorAll ("hi") .
+let headings = document.getElementsByTagName("hi");
+
+// Метод getElementsByTagName() также определен в элементах.
+// Получить все элементы <h2> внутри элемента sectl.
+let subheads = sectl.getElementsByTagName("h2");
+
+// Искать все элементы, которые имеют класс "tooltip".
+// Подобен document.querySelectorAll (" .tooltip") .
+let tooltips = document.getElementsByClassName("tooltip");
+
+// Искать всех потомков элемента sectl, которые имеют класс "sidebar".
+// Подобен sectl.querySelectorAll(".sidebar").
+let sidebars = sectl.getElementsByClassName("sidebar");
+
+//_ Структура и обход документ
+//parentNode children childElementCount firstElemen tChild , lastElementChild  nextElementSibling , previousElementSibling
+document.children[0].children[1];
+document.firstElementChild.firstElementChild.nextElementSibling;
+
+// Выполняет рекурсивный обход объекта е типа Document или Element
+// с вызовом функции f для объекта е и для каждого его потомка.
+function traverse(е, f) {
+  f(е);
+  for (let child of e.children) traverse(child, f);
+}
+// Вызвать f() для e
+// Проход по дочерним элементам
+// Рекурсия для каждого
+
+//__Атрибуты
+let image = document.querySelector("#main_image");
+let url = image.src; // Атрибут src - это URL изображения.
+image.id === "main__image"; // => true; мы ищем изображение no id.
+
+let f = document.querySelector("form"); // Первый элемент <form>
+// в документе.
+f.action = "https://www.example.com/submit"; //Установить URL для отправки
+f.method = "POST"; //Установить тип HTTP-запроса
+
+// Когда м ы хотим уведомить пользователя о том, что заняты, мы отображаем вращатель.
+// Для этого мы должны удалить класс "hidden" и добавить класс "animated”
+// (предполагается, что таблицы стилей сконфигурированы корректно) .
+let spinner = document.querySelector("#spinner");
+spinner.classList.remove("hidden");
+spinner.classList.add("animated");
+
+//<h2 id="title" data-section-number=="16.l”>Attributes</h2>
+let number = document.querySelector("#title").dataset.sectionNumber;
+
+//document.body.innerHTML = "<hl>Oops</hl>";
+
+let para = document.querySelector("p"); // Первый элемент <p>
+// в документе.
+let text = para.textContent; // Получить текст абзаца.
+para.textContent = "Hello World!"; // Изменить текст абзаца.
+
+//_Создание, вставка и удаление узлов
+let paragraph = document.createElement("p"); // Создать пустой
+// элемент <p>.
+let emphasis = document.createElement("em"); // Создать пустой
+// элемент <em>.
+emphasis.append("WorId"); // Добавить текст в элемент <em>.
+paragraph.append("Hello"),
+  emphasis, // Добавить текст и <em> в <p>
+  paragraph.prepend("i"); // Еще добавить текст в начало <р>-
+paragraph.innerHTML; // => "iHello <em>World</em>!”
+
+// Найти заголовочный элемент с class="greetings".
+let greetings = document.querySelector("h2.greetings");
+// Вставить новый абзац и горизонтальную линию после этого
+// заголовочного элемента.
+greetings.after(paragraph, document.createElement("hr"));
+
+//_ Работа с CSS в сценариях
+//Предположим, что этот элемент "tooltip" имеет class="hidden" в НТМЬ'Фа^ле
+// Вот как мы можем сделать его видимым:
+document.querySelector("#tooltip").classList.remove("hidden");
+// А так мы можем его скрыть:
+document.querySelector("#tooltip").classList.add("hidden");
+
+function displayAt(tooltip, х, у) {
+  tooltip.style.display = "block";
+  tooltip.style.position = "absolute";
+  tooltip.style.left = `${x}pxs`;
+  tooltip.style.top = `${y}px`;
+}
+
+//___Геометрия и прокрутка документов
+// Получить высоты документа и окна просмотра.
+let documentHeight = document.documentElement.offsetHeight;
+let viewportHeight = window.innerHeight;
+// Выполнить прокрутку, чтобы в окне просмотра
+// появилась последняя "страница” .
+window.scrollTo({
+  left: 0,
+  top: documentHeight - viewportHeight,
+  behavior: "smooth",
+});
+
+//___Веб-компоненты
+//кастомный компонент
+
+{
+  /* <Р>
+  The document has one marble: <inline-circlex /><inline-circle>.
+  <inline-circle diameter=M1.2em" color="blue"></inline-circle>
+</p> */
+}
+customElements.define(
+  "inline -circle ",
+  class InlineCircle extends HTMLElement {
+    // Браузер вызывает этот метод, когда элемент < inlin e - circle >
+    // вставляется в документ. Существует также метод
+    // disconnectedCallbackO, который в настоящем примере не нужен.
+    connectedCallback() {
+      // Установить стили, необходимые для создания кругов.
+      this.style.display = "inline-block";
+      this.style.borderRadius = "50%";
+      this.style.border = "solid black 1px";
+      this.style.transform = "translateY(10%)";
+      // Если размер еще не определен, тогда установить стандартный
+      // размер, который основан на текущем размере шрифта,
+      if (!this.style.width) {
+        this.style.width = "0.8em";
+        this.style.height = "0.8em";
+      }
+    }
+    // Статическое свойство observedAttributes указывает, об изменениях
+    // каких атрибутов мы хотим получать уведомления.
+    // (Мы используем здесь метод получения, поскольку static можно
+    // применять только с методами.)
+    static get observedAttributes() {
+      return ["diameter", "color"];
+    }
+    // Этот обратный вызов вызывается в случае изменения одного из
+    // перечисленных выше атрибутов либо при синтаксическом анализе
+    // специального элемента в первый раз, либо позже.
+    attributeChangedCallback(name, oldValue, newValue) {
+      switch (name) {
+        case "diameter":
+          // Если изменился атрибут diameter, тогда обновить стили размеров,
+          this, style, (width = newValue);
+          this, style, (height = newValue);
+          break;
+        case "color":
+          // Если изменился атрибут color, тогда обновить стиль цвета.
+          this.style.backgroundColor = newValue;
+          break;
+      }
+    }
+    // Определить свойства JavaScript, которые соответствуют атрибутам
+    // элемента. Эти методы получения и установки просто получают
+    // и устанавливают лежащие в основе атрибуты.
+    // Установка свойства JavaScript приводит к установке атрибута, что
+    // инициирует вызов метода attributeChangedCallback(), который
+    // обновляет стили элемента.
+    get diameter() {
+      return this.getAttribute("diameter");
+    }
+    set diameter(diameter) {
+      this.setAttribute("diameter", diameter);
+    }
+    get color() {
+      return this.getAttribute("color");
+    }
+    set color(color) {
+      this.setAttribute("color", color);
+    }
+  }
+);
+
+//_Теневая модель DOM
