@@ -2496,9 +2496,9 @@ let р = { z: 3 };
 let о = {
   х: 1,
   У: 2,
-  __proto__: р
+  __proto__: р,
 };
-o.z // => 3: о унаследован от р
+o.z; // => 3: о унаследован от р
 
 //____Symbol
 
@@ -2506,50 +2506,135 @@ o.z // => 3: о унаследован от р
 let uint8 = {
   [Symbol.haslnstance](x) {
     return Number.islnteger(x) && x >= 0 && x <= 255;
-  }
+  },
 };
-128 instanceof uint8 // => true
-256 instanceof uint8 // => false: слишком большой
-Math.PI instanceof uint8 // => false: не целый
+128 instanceof uint8; // => true
+256 instanceof uint8; // => false: слишком большой
+Math.PI instanceof uint8; // => false: не целый
 
 //toString
-Object.prototype.toString.call([]) // => "[object Array]"
+Object.prototype.toString.call([]); // => "[object Array]"
 
 //Symbol.species
 //extends по коробкой
 class EZArray extends Array {
-  static get [Symbol.species]() { return Array; }
-  get first() { return this[0]; }
-  get last() { return this[this.length - 1]; }
+  static get [Symbol.species]() {
+    return Array;
+  }
+  get first() {
+    return this[0];
+  }
+  get last() {
+    return this[this.length - 1];
+  }
 }
 
 //isConcatSpreadable
 class NonSpreadableArray extends Array {
-  get [Symbol.isConcatSpreadable]() { return false; }
+  get [Symbol.isConcatSpreadable]() {
+    return false;
+  }
 }
 let a = new NonSpreadableArray(1, 2, 3);
-[].concat(a).length // => 1; (в случае распространения длина
+[].concat(a).length; // => 1; (в случае распространения длина
 // составляла бы 3 элемента)
 //...
 
 //___API-интерфейс Reflect
-Reflect.apply(f,о,args ) // Эквивалентна f.appl(о , args)
+Reflect.apply(f, о, args); // Эквивалентна f.appl(о , args)
 //....
 
 //___Объекты Proxy
 //м огут исп ользоваться как необязательноаннулируем ы е оболочки для улучш ения ин кап суляц и и кода и такж е могут применяться для реализации нестандартных линий поведения объектов
 //объект цели(target) и объект обработчиков(handlers)
-let proxy = new Proxy(target, handlers) 
+let proxy = new Proxy(target, handlers);
 let t = { х: 1, у: 2 };
 let р = new Proxy(t, {});
-р.х // => 1
-delete р.у // => t r u e : уд ал яет свой ство у посредника
-t.y // => u n d e fin e d : у д ал яет е го также в объекте цели
+р.х; // => 1
+delete р.у; // => t r u e : уд ал яет свой ство у посредника
+t.y; // => u n d e fin e d : у д ал яет е го также в объекте цели
 р.z = 3; // Определение нового сво й ства в посреднике
-t.z // => 3: оп ред еляет свой ство в о бъекте цели
+t.z; // => 3: оп ред еляет свой ство в о бъекте цели
 
 //--------------------------------------
 //_____JavaScript в веб - браузерах___//
 
 //__Основы программирования для веб-сети
 //< script src = "scripts/digital_clock. js"></ script >
+
+/* 
+<script defer src="deferred. js"></script> - после
+заГрузки документа
+<script async src="async. js"></script> - дополняться, как только модуль и все его зависимости будут загружены
+*/
+
+//Загрузка сценариев по запросу
+// Асинхронно загружает и выполняет сценарий из указанного URL.
+// Возвращает объект Promise, который разрешается, когда сценарий загружен
+function importScript(url) {
+  return new Promise((resolve, reject) => {
+    let s = document.createElement("script"); // Создать
+    // элемент <script>.
+    s.onload = () => {
+      resolve();
+    }; // Разрешить объект Promise,
+    // когда сценарий загружен,
+    s.onerror = (е) => {
+      reject(е);
+    }; // Отклонить объект Promise
+    //в случае неудачи.
+    s.src = url; // Установить URL сценария,
+    document.head, append(s); //Добавить <script> в документ
+  });
+}
+
+//DOM
+//отражает древовидную структуру HTML-документа
+
+//Глобальный объект в веб-браузерах
+window
+
+//Выполнение программ JavaScript
+//-Веб-браузер создает объект Document и начинает синтаксический анализ веб - страницы, добавляя в документ объекты Element и узлы Text по меретого, как он анализирует HTML - элементы
+//-встречает элемент < script> , который имеет установленный атрибут
+//- DOMContentLoaded и load - инициируется, когда HTML -документ был полностью загружен и синтаксически проанализирован 
+
+//Модель безопасности веб-сети
+//- JavaScript не может удалять данные или внедрять вирусы
+//-  CORS
+
+//___События
+//Зависимые от устройства события ввода - "keydown" 
+//Независимые от устройства события ввода - "click"
+//События пользовательского интерфейса - "focus", "change"
+//События изменения состояни - " load ”
+//События, специфичные для API-интерфейса - "waiting" 
+
+//_Регистрация обработчиков событий
+
+//не более одного обработчика для каждого типа событий
+//<button onclick=”console.log 'Thank you');”>Please Click</button>
+
+//addEventListener
+let b = document.querySelector("#mybutton");
+addEventListener(" click ", () => { console.log("Thanks a g a in !"); });
+//удаляет функцию обработчика
+document.removeEventListener("mouseup", handleMouseUp);
+//объект Options - capture(как захватывающий обработчик),  once(автоматически удален после однократного запуска), passiv(никогда не будет вызывать метод preventDefault())
+document.addEventListener("click", handleClick, {
+  capture: true,
+  once: true,
+  passive: true
+});
+
+//_Вызов обработчиков событий
+//вызываются с объектом Event
+//- type. Тип события, которое произошло
+//- target. Объект, в котором произошло событие
+//- currentTarget. Для распространяемых событий это свойство представляет собой объект, в котором был зарегистрирован текущий обработчик событий
+//- timestamp  -Отметка времени
+//- isTrusted -отправлено самим веб-браузером
+
+//_Контекст обработчика событий
+//this ссылается на объект, для которого обработчик был зарегистрирован
+//стр 472
