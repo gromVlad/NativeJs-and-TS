@@ -2117,13 +2117,12 @@ opts =
 // Базовый компаратор для сортировки согласно локали пользователя.
 // Никогда не сортируйте строки, читабельные человеком, без передачи чего - то вроде такого:
 const collator = new Inti.Collator().compare;
-["a", "z", "A", "Z"].sort(collator) // => ["a", "A”, "z", ”Z"]
+["a", "z", "A", "Z"].sort(collator); // => ["a", "A”, "z", ”Z"]
 
 // Имена файлов часто включают числа, поэтому мы должны их
 // сортировать особым образом:
-const filenameOrder = new Inti.Collator(undefined,
-  { numeric: true }).compare;
-["page 10", "page9"].sort (filenameOrder) // => ["page9", "pagelO”]
+const filenameOrder = new Inti.Collator(undefined, { numeric: true }).compare;
+["page 10", "page9"].sort(filenameOrder); // => ["page9", "pagelO”]
 
 //_API-интерфейс Console
 //console.debug( ), console.info( ), console.warn( ) , console.error( ) ....
@@ -2132,33 +2131,35 @@ const filenameOrder = new Inti.Collator(undefined,
 
 //разбирает URL
 let url = new URL("https://example.com:8000/path/name?q=term#fragment");
-url.href // => "https://example.com:8000/path/name?q=term#fragment"
-url.origin // => "https://example.com:8000"
-url.protocol // => "https:"
-url.host // => "example.com:8000"
-url.hostname // => "example.com"
-url.port // => "8000"
-url.pathname // => "/path/name”
-url.search // => "?q=term"
-url.hash // => "#fragment"
+url.href; // => "https://example.com:8000/path/name?q=term#fragment"
+url.origin; // => "https://example.com:8000"
+url.protocol; // => "https:"
+url.host; // => "example.com:8000"
+url.hostname; // => "example.com"
+url.port; // => "8000"
+url.pathname; // => "/path/name”
+url.search; // => "?q=term"
+url.hash; // => "#fragment"
 
 //закодировать пары имя/значение подобного рода в виде порции запроса URL
 let url = new URL("https://example.com/search");
-url.search // => пока запроса нет
+url.search; // => пока запроса нет
 url.searchParams.append("q", "term"); // Добавить параметр поиска
-url.search // => "?q=term"
-url.searchParams.set("q", "x");// Изменить значение этого параметра
-url.search // => "?q=x"
-url.searchParams.get("q") // => "x": запросить значение параметра
-url.searchParams.has("q") // => true: имеется параметр q
-url.searchParams.has("p") // => false: параметр p отсутствует
+url.search; // => "?q=term"
+url.searchParams.set("q", "x"); // Изменить значение этого параметра
+url.search; // => "?q=x"
+url.searchParams.get("q"); // => "x": запросить значение параметра
+url.searchParams.has("q"); // => true: имеется параметр q
+url.searchParams.has("p"); // => false: параметр p отсутствует
 
 //encodeURI() и decodeURI() . Функция encodeU RI () принимает в своем аргументе строку и возвращает новую строку, в которой закодированы символы, отличающиеся от ASCII
 
 //encodeURIComponentO и decodeURIComponent ( ) . Данные две функции работают подобно encodeU RI() и decodeU R I(), но они предназначены для кодирования индивидуальных компонентов URI, а потому также кодируют управляющие символы вроде /, ? и #, которые используются для отделения этих компонентов
 
 //_Таймеры
-setTimeout(() => { console.log("Ready..."); }, 1000);
+setTimeout(() => {
+  console.log("Ready...");
+}, 1000);
 
 // Раз в секунду: очистить консоль и вывести текущее время.
 let clock = setlnterval(() => {
@@ -2166,8 +2167,389 @@ let clock = setlnterval(() => {
   console.log(new Date().toLocaleTimeString());
 }, 1000);
 // Спустя 10 секунд: прекратить повторение выполнения кода выше.
-setTimeout(() => { clearlnterval(clock); }, 10000);
+setTimeout(() => {
+  clearlnterval(clock);
+}, 10000);
 
 //----------------------------------
-//______Итераторы и генераторы___//
+//___Итераторы и генераторы___//
 
+//_Особенности работы итераторов
+//Итерируемый объект — это любой объект со специальным итераторным методом, который возвращает объект итератор
+//особенность генераторов заключается в том, что они позволяют приостанавливать вычисление, выдавать промежуточные результаты и позже возобновлять вычисление
+
+//цикл for/of по итерируемому объекту iterable
+let iterable = [99];
+let iterator = iterable[Symbol.iterator]();
+for (let result = iterator.next(); !result.done; result = iterator.next()) {
+  console.log(result.value); // result.value == 99
+}
+
+let list = [1, 2, 3, 4, 5];
+let iter = list[Symbol.iterator]();
+let head = iter.next().value; // head == 1
+let tail = [...iter]; // tail == [2,3,4,5]
+
+//_ Генераторы
+//function* , yield вместо return()
+function* oneDigitPrimes() {
+  // При вызове этой функции код не выполняется, а просто возвращается объект генератора
+  yield 2;
+  yield 3;
+  yield 5;
+  yield 7;
+  // Вызов метода next() данного генератора приводит к выполнению кода до тех пор, пока оператор yield не предоставит возвращаемое значение для метода next () .
+}
+primes.next().value; // => 2
+primes.next().value; // => 3
+primes.next().value; // => 5
+primes.next().value; // => 7
+Primes.next().done; // => true
+
+//// Мы можем использовать генераторы подобно другим итерируемым типам
+for (let prime of oneDigitPrimes()) sum += prime;
+sum; // => 17
+
+const seq = function* (from, to) {
+  for (let i = from; i <= to; i++) yield i;
+};
+[...seq(3, 5)]; // => [3, 4, 5]
+
+//сокращенную запись
+let о = {
+  х: 1,
+  у: 2,
+  z: 3,
+  // Генератор, который выдает каждый ключ этого объекта.
+  *q() {
+    for (let key of Object.keys(this)) {
+      yield key;
+    }
+  },
+};
+[...o.g()]; // => ["x", "y", "z"
+
+//записать генераторную функцию с применением синтаксиса стрелочных функций не удастся
+
+// throw() исключения или преждевременный выход из функции
+
+//---------------------------------
+//___-Асинхронный JavaScript______//
+//асинхронное программирование JavaScript производится с помощью обратных вызовов
+
+//_Таймеры
+//запустить какой-то код по истечении определенного времени
+
+//_События
+//ожидают, пока пользователь что-то сделает, после чего реагируют на действия пользователя
+
+//_События сети
+//сетевые запросы
+
+//_Обратные вызовы и события в Node
+//Node.js глубоко асинхронна и определяет многочисленные API - интерфейсы, в которых применяются обратные вызовы и события
+
+const fs = require("fs"); // Модуль fs содержит А Р I-интерфейсы,
+// связанные с файловой системой.
+let options = {
+  // Объект для хранения параметров для нашей программы.
+  // Здесь задаются параметры по умолчанию.
+};
+//Прочитать конфигурационный файл, затем вызвать функцию обратного вызова
+fs.readFile("config.json", "utf-8", (err, text) => {
+  if (err) {
+    //Если возникла ошибка, тогда отобразить предупреждение, но продолжить
+    console.warn("Could not read config file:", err);
+    //He удалось прочитать конфигурационный файл
+  } else {
+    // В противном случае произвести разбор содержимого файла
+    // и присвоить объекту параметров.
+    Object.assign(options, JSON.parse(text));
+  }
+  // В любом случае теперь мы можем начать выполнение программы,
+  startProgram(options);
+});
+
+//___Объекты Promise
+//можно выстраивать в цепочки -  цепочкой методов
+//вызов метода then() обязан возвращать объект Promise
+
+fetch("/api/user/profile") // Начать HTTP-запрос.
+  .then((response) => {
+    //Вызывается, когда готовы состояние и заголовки,
+    if (!response.ok) {
+      // Если м ы получаем ошибку
+      // 404 Not Found или похожую.
+      return null; // Возможно, пользователь вышел из системы;
+      // возвратить профиль null.
+    }
+    // Проверить заголовки, чтобы удостовериться,
+    // что сервер отправил нам JSON.
+    // Если нет, тогда наш сервер неисправен, а это серьезная ошибка!
+    let type = response.headers.get("content-type");
+    if (type !== "application/json") {
+      throw new TypeError("Expected JSON, got ${type}");
+    }
+    // Ожидался JSON, но получен другой тип
+    // Если мы попали сюда, то получили состояние 2хх
+    // и тип содержимого JSON, поэтому можем уверенно возвратить
+    // объект Promise для тела ответа как объект JSON.
+    return response.json();
+  })
+  .then((profile) => {
+    //Вызывается с разобранным телом ответа или null
+    if (profile) {
+      displayUserProfile(profile);
+    } else {
+      // Если мы получили ошибку 404 выше
+      // и возвратили null, то окажемся здесь.
+      displayLoggedOutProfilePage();
+    }
+  })
+  .catch((е) => {
+    if (е instanceof NetworkError) {
+      // fetch () может потерпеть такую неудачу,
+      // если исчезло подключение к Интернету.
+      displayErrorMessage("Check your internet connection.");
+      // Проверьте свое подключение к Интернету.
+    } else if (е instanceof TypeError) {
+      // Это происходит в случае генерации TypeError выше.
+      displayErrorMessage("Something is wrong with our server!");
+      // Что-то не так с нашим сервером!
+    } else {
+      // Это должна быть непредвиденная ошибка какого-то вида,
+      console.error(е);
+    }
+  });
+
+//_Параллельное выполнение нескольких асинхронных операций с помощью Promise
+
+//Promise.all(), котораяпринимает на входе массив объектов P rom ise и возвращает объект Promise ,Promise будет отклонен, если отклонен любой из входных объектов Promise
+
+//Мы начинаем с массива URL.
+const urls = [
+  /* ноль или большее количество URL */
+];
+// И преобразуем его в массив объектов Promise.
+promises = urls.map((url) => fetch(url).then((r) => r.textf));
+//Теперь получаем объект Promise для запуска всех объектов Promise параллельно
+Promise.all(promises)
+  .then((bodies) => {
+    /* делать что-нибудь с массивом строк */
+  })
+  .catch((е) => console.error(е));
+
+//Promise.allSettled - никогда не отклоняет возвращенный объект P romise и не удовлетворяет его до тех пор, пока не будут урегулированы все входные объекты Promise
+Promise.allSettled([Promise.resolve(1), Promise.reject(2), 3]).then(
+  (results) => {
+    results[0]; // => { status: "fulfilled", value: 1 }
+    results[1]; // => { status: "rejected", reason: 2 )
+    results[2]; // => { status: "fulfilled", value: 3 }
+  }
+);
+
+//значение вычисляется синхронно и возвращается асинхронно
+Promise.resolve();
+Promise.reject();
+
+//_Объекты Promise с нуля
+function wait(duration) {
+  // Создать и возвратить новый объект Promise.
+  return new Promise((resolve, reject) => {
+    // Это контролирует
+    // объект Promise.
+    //Если значение аргумента недопустимо, тогда отклонить объект Promise
+    if (duration < 0) {
+      reject(new Error("Time travel not yet implemented"));
+    }
+    // Путешествия во времени пока не осуществимы
+    // В противном случае асинхронно ожидать и затем разрешить
+    // объект Promise.
+    //setTimeout будет вызывать resolve()без аргументов, а это значит,
+    // что объект Promise будет удовлетворен в значение undefined.
+    setTimeout(resolve, duration);
+  });
+}
+
+//___async и await
+async function getHighScore() {
+  let response = await fetch("/api/user/profile");
+  let profile = await response.json();
+  return profile.highScore;
+}
+
+//Ожидание множества объектов Promise
+let valuel = await getJSON(urll);
+let value2 = await getJSON(url2);
+let [valuel, value2] = await Promise.all([getJSON(urll), getJSON(url2)]);
+
+//_Цикл for / await
+const fs = require("fs");
+async function parseFile(filename) {
+  let stream = fs.createReadStream(filename, { encoding: "utf-8" });
+  for await (let chunk of stream) {
+    parseChunk(chunk); // Функция parseChunk() определена
+    // где-то в другом месте
+  }
+}
+
+for (const promise of promises) {
+  response = await promise;
+  handle(responce);
+}
+//упростить код c for/await
+for await (const response of promises) {
+  handle(response);
+}
+
+//___Асинхронные генераторы
+//[Symbol.asynclterator]()
+
+function elapsedTime(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function* clock(interval, max = Infinity) {
+  for (let count = 1; count <= max; count++) {
+    // Обыкновенный цикл for
+    await elapsedTime(interval); // Ожидать в течение
+    // указанного времени.
+    yield count; // Выдать счетчик.
+  }
+}
+
+// Тестовая функция, которая использует асинхронный генератор
+// с циклом for/await.
+async function test() {
+  //Асинхронная, поэтому можно применять for/await.
+  for await (let tick of clock(300, 100)) {
+    // Цикл 100 раз каждые
+    // 300 миллисекунд.
+    console.log(tick);
+  }
+}
+
+//-----------------------------------
+//______Метапрограммирование_______//
+//расширенных возможносте й JavaScript, которы е обычно не прим еняю тся при повседневном программировании
+
+//___Атрибуты свойств
+//дескриптором свойств - writable (записываемое) / атрибут enumerable / атрибут configurable
+let о = {};
+// Добавить неперечислимое свойство данных х со значением 1.
+Object.defineProperty(о, "х", {
+  value: 1,
+  writable: true,
+  enumerable: false,
+  configurable: true,
+});
+
+// более одного свойства за раз
+let р = Object.defineProperties(
+  {},
+  {
+    х: { value: 1, writable: true, enumerable: true, configurable: true },
+    y: { value: 1, writable: true, enumerable: true, configurable: true },
+    r: {
+      get() {
+        return Math, sqrt(this.x * this.x + this.y * this.y);
+      },
+      enumerable: true,
+      configurable: true,
+    },
+  }
+);
+p.r; // => Math.SQRT2
+
+//_Расширяемость объектов
+//является ли объект расширяемым - Object.isExtensible()
+//сделать нерасширяемым - Object.preventExtensions()
+
+//_ Атрибут prototype
+//А трибут prototype устанавливается, когда объект создается
+//Объекты , созданные посредством new, применяют для своих прототипов значение свойства prototype функции конструктора
+
+//запросить прототип
+Object.getPrototypeOf({}); // => Obj e c t .prototype
+Object.getPrototypeOf([]); // => Array.prototype
+Object.getPrototypeOf(() => {}); // => Function.prototype
+
+//определения, является ли один объект прототипом другого объекта
+let р = { х: 1 }; // Определить объект прототипа.
+let о = Object.create(р); // Создать объект с этим прототипом
+р.isPrototypeOf(о); // => true: о наследуется из р
+Object.prototype.isPrototypeOf(p); // из Object .prototype
+Object.prototype.isPrototypeOf(о); // => true: о тоже
+
+//прототип объекта можно изменять
+let о = {
+  х: 1,
+};
+let р = { у: 2 };
+Object.setPrototypeOf(о, p); // Установить прототип объекта о в р.
+о.у; // => 2: о теперь наследует свойство у
+let а = [1 / 2 / 3] / Object.setPrototypeOf(a, p); // Установить прототип массива а в p
+a.join; // => undefined: а больше не имеет метода join()
+
+//свойство давно устарело - __proto__ / аналог prototype
+let р = { z: 3 };
+let о = {
+  х: 1,
+  У: 2,
+  __proto__: р
+};
+o.z // => 3: о унаследован от р
+
+//____Symbol
+
+//проверка типов
+let uint8 = {
+  [Symbol.haslnstance](x) {
+    return Number.islnteger(x) && x >= 0 && x <= 255;
+  }
+};
+128 instanceof uint8 // => true
+256 instanceof uint8 // => false: слишком большой
+Math.PI instanceof uint8 // => false: не целый
+
+//toString
+Object.prototype.toString.call([]) // => "[object Array]"
+
+//Symbol.species
+//extends по коробкой
+class EZArray extends Array {
+  static get [Symbol.species]() { return Array; }
+  get first() { return this[0]; }
+  get last() { return this[this.length - 1]; }
+}
+
+//isConcatSpreadable
+class NonSpreadableArray extends Array {
+  get [Symbol.isConcatSpreadable]() { return false; }
+}
+let a = new NonSpreadableArray(1, 2, 3);
+[].concat(a).length // => 1; (в случае распространения длина
+// составляла бы 3 элемента)
+//...
+
+//___API-интерфейс Reflect
+Reflect.apply(f,о,args ) // Эквивалентна f.appl(о , args)
+//....
+
+//___Объекты Proxy
+//м огут исп ользоваться как необязательноаннулируем ы е оболочки для улучш ения ин кап суляц и и кода и такж е могут применяться для реализации нестандартных линий поведения объектов
+//объект цели(target) и объект обработчиков(handlers)
+let proxy = new Proxy(target, handlers) 
+let t = { х: 1, у: 2 };
+let р = new Proxy(t, {});
+р.х // => 1
+delete р.у // => t r u e : уд ал яет свой ство у посредника
+t.y // => u n d e fin e d : у д ал яет е го также в объекте цели
+р.z = 3; // Определение нового сво й ства в посреднике
+t.z // => 3: оп ред еляет свой ство в о бъекте цели
+
+//--------------------------------------
+//_____JavaScript в веб - браузерах___//
+
+//__Основы программирования для веб-сети
+//< script src = "scripts/digital_clock. js"></ script >
