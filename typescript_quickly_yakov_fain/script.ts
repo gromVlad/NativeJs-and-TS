@@ -729,12 +729,137 @@ enum Weekdays {
 let dayOff = Weekdays.Tuesday;
 
 enum Direction {
- Up = "UP",
- Down = "DOWN",
- Left = "LEFT",
- Right = "RIGHT",
-//Инициализирует член enum со строковым значением
+  Up = "UP",
+  Down = "DOWN",
+  Left = "LEFT",
+  Right = "RIGHT",
+  //Инициализирует член enum со строковым значением
 }
 
 //___ИСПОЛЬЗОВАНИЕ ОБОБЩЕНИЙ
-//стр 106
+
+const values1: string[] = ["Mary", "Joe"];
+const values2: Array<string> = ["Mary", "Joe"];
+const values4: Array<string | number> = ["Joe", 123, 567];
+
+//___Создание собственных обобщенных типов
+
+//без обобщенных типов
+interface Comparator {
+  compareTo(value: any): number;
+}
+
+interface Comparator2<T> {
+  compareTo(value: T): number;
+}
+
+class Rectangle implements Comparator2<Rectangle> {
+  constructor(private width: number, private height: number) {}
+  compareTo(value: Rectangle): number {
+    return this.width * this.height - value.width * value.height;
+  }
+}
+const rect1: Rectangle = new Rectangle(2, 5);
+const rect2: Rectangle = new Rectangle(2, 3);
+rect1.compareTo(rect2) > 0
+  ? console.log("rect1 is bigger")
+  : rect1.compareTo(rect2) == 0
+  ? console.log("rectangles are equal")
+  : console.log("rect1 is smaller");
+
+//ПРЕДУСТАНОВЛЕННЫЕ ЗНАЧЕНИЯ ОБОБЩЕННЫХ ТИПОВ
+class A<T = any> {
+  // объявление предустановленного параметра типа.
+  value: T;
+}
+
+//Обобщенная функция
+//Использует тип T для функции, параметра и возвращаемого значения
+function printMe<T>(content: T): T {
+  console.log(content);
+  return content;
+}
+const a = printMe("Hello");
+class Per {
+  constructor(public name: string) {}
+}
+const b = printMe(new Per("Joe"));
+
+//Использование обобщенных типов в стрелочных функциях
+const printMe2 = <T>(content: T): T => {
+  console.log(content);
+  return content;
+};
+//можете вызвать эти функции, указав типы явно
+const a1 = printMe<string>("Hello");
+
+class Pair<K, V> {
+  //Объявляет класс с двумя параметризованными типами
+  key: K; //Объявляет свойство обобщенного типа K
+  value: V; //Объявляет свойство обобщенного типа V
+}
+
+//Отображение строчных перечислений
+interface User {
+  //Объявляет пользовательский тип User
+  name: string;
+  role: UserRole;
+}
+
+enum UserRole { //Объявляет строчное перечисление
+  Administrator = "admin",
+  Manager = "manager",
+}
+
+function loadUser<T>(): T {
+  //Объявляет обобщенную функцию
+  return JSON.parse('{ "name": "john", "role": "admin" }');
+}
+
+const user = loadUser<User>();
+
+switch (
+  user.role //Переключает роль пользователя с помощью строчного enum
+) {
+  case UserRole.Administrator:
+    console.log("Show control panel");
+    break;
+  case UserRole.Manager:
+    console.log("Hide control panel");
+    break;
+}
+
+//_Обеспечение возвращаемого типа функциивысшего порядка
+
+//Использование функции высшего порядка
+const outerFunc = (someValue: number) => (multiplier: number) =>
+  someValue * multiplier;
+const innerFunc = outerFunc(10);
+let result = innerFunc(5); // Вызывает возвращаемую функцию
+console.log(result); // Выводит в консоль 50
+
+//объявления обобщенной функции, которая может получать обобщенный тип T, но возвращает функцию (c: number) ? number
+type numFunc<T> = (arg: T) => (c: number) => number;
+
+//Вызывает функцию без аргументов 
+const noArgFunc: numFunc<void> = () => (c: number) => c + 5;
+
+//Вызывает функцию с численным аргументом 
+const numArgFunc: numFunc<number> =
+  (someValue: number) => (multiplier: number) =>
+    someValue * multiplier;
+
+//Вызывает функциюсо строчным аргументом
+const stringArgFunc: numFunc<string> =
+  (someText: string) => (padding: number) =>
+    someText.length + padding;
+
+//const createSumString: numFunc<number> = () => (x: number) => "Hello"; -> Ошибка компиляции: numFunc ожидает другую сигнатур
+
+//------------------------------------------
+//_______Декораторы и продвинутые типы____//
+
+//___ДЕКОРАТОРЫ
+//декоратор — особый вид объявления, который может быть прикреплен к объявлению класса, метода, аксессора, свойства или параметра
+
+
