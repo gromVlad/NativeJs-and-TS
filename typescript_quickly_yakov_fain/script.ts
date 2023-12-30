@@ -841,10 +841,10 @@ console.log(result); // Выводит в консоль 50
 //объявления обобщенной функции, которая может получать обобщенный тип T, но возвращает функцию (c: number) ? number
 type numFunc<T> = (arg: T) => (c: number) => number;
 
-//Вызывает функцию без аргументов 
+//Вызывает функцию без аргументов
 const noArgFunc: numFunc<void> = () => (c: number) => c + 5;
 
-//Вызывает функцию с численным аргументом 
+//Вызывает функцию с численным аргументом
 const numArgFunc: numFunc<number> =
   (someValue: number) => (multiplier: number) =>
     someValue * multiplier;
@@ -860,6 +860,36 @@ const stringArgFunc: numFunc<string> =
 //_______Декораторы и продвинутые типы____//
 
 //___ДЕКОРАТОРЫ
-//декоратор — особый вид объявления, который может быть прикреплен к объявлению класса, метода, аксессора, свойства или параметра
+//декоратор — особый вид объявления, который может быть прикреплен к объявлению класса, метода, аксессора, свойства или параметра,добавляет дополнительные данные о других данных.
 
+function whoAmI(target: Function): void {
+  console.log(`You are: \n ${target}`);
+}
 
+// Applying the decorator whoAmI to the class
+@whoAmI
+class Friend {
+  constructor(private name: string, private age: number) {}
+}
+/* 
+You are:
+function Friend(name, age) {
+ this.name = name;
+ this.age = age;
+}
+*/
+
+function UIcomponent(html: string) {
+  //У этой фабрики декораторов есть аргумент
+  console.log(`The decorator received ${html} \n`);
+  return function (target: Function) {
+    //Это функция-декоратор
+    console.log(`Someone wants to create a UI component from
+ \n ${target} `);
+  };
+}
+
+@UIcomponent('<h1>Hello Shopper!</h1>')// Передает декоратору HTML
+class Shopper {
+ constructor(private name: string) {}
+}
